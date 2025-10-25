@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Notebook",
+    "displayName": "Subscriptions",
+    "description": "Azure Subscriptions data extraction notebook - retrieves subscription information using Azure Management SDK and stores in FinOpsHub Delta Lake"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "d4e8b2c1-8a9f-4b6e-9d5c-7e8f9a0b1c2d"
+  }
+}

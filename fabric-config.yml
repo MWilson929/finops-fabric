@@ -1,9 +1,6 @@
 # Microsoft Fabric CI/CD Configuration
 # Configuration-based deployment for all Fabric item types
-
-# Experimental features (must be at root level)
-enable_experimental_features: true
-enable_config_deploy: true
+# Note: Feature flags are set programmatically in deploy_fabric_items.py
 
 core:
   # Environment-specific workspace mappings
@@ -27,6 +24,9 @@ publish:
   
   # Exclude items in specific folders
   folder_exclude_regex: "^(temp|debug|drafts)/"
+  
+  # Force update existing items
+  overwrite_existing: true
   
   # Environment-specific publishing controls
   skip:

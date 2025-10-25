@@ -56,7 +56,6 @@ FabricCICD/
 │   └── deploy_fabric_items.py  # Main deployment script using fabric-cicd library
 ├── docs/                        # Documentation
 ├── artifacts/                   # General artifacts and shared resources
-├── MIGRATION_GUIDE.md          # Migration guide from custom implementations
 └── README.md                   # This file
 ```
 
@@ -302,7 +301,7 @@ For support and questions:
 **🚀 Ready to deploy your Fabric items with confidence!**
 
 - **🆕 First-time setup**: [FIRST_TIME_SETUP.md](FIRST_TIME_SETUP.md)
-- **🔄 Migration guide**: [MIGRATION_GUIDE.md](MIGRATION_GUIDE.md)  
-- **📚 Official docs**: [Microsoft fabric-cicd](https://microsoft.github.io/fabric-cicd/latest/)
+- ** Official docs**: [Microsoft fabric-cicd](https://microsoft.github.io/fabric-cicd/latest/)
+- **🛠️ Fabric documentation**: [Microsoft Fabric](https://docs.microsoft.com/en-us/fabric/)
 
 **Made with ❤️ for the Fabric community**

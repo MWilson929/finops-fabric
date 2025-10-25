@@ -1,5 +1,5 @@
 # Azure DevOps Pipeline for Microsoft Fabric CI/CD (General Purpose)
-# Implements Option 2: Git-based deployments using Microsoft fabric-cicd library
+# Git-based deployments using Microsoft fabric-cicd library
 
 parameters:
 - name: deployToDev
@@ -92,7 +92,7 @@ stages:
   displayName: 'Build and Validate'
   jobs:
   - job: BuildJob
-    displayName: 'Build and Test FCA Components'
+    displayName: 'Build and Validate Fabric Resources'
     steps:
     
     - checkout: self
@@ -283,7 +283,7 @@ stages:
       displayName: 'Publish Build Artifacts'
       inputs:
         targetPath: '$(Build.SourcesDirectory)'
-        artifact: 'fca-deployment-package'
+        artifact: 'fabric-deployment-package'
         publishLocation: 'pipeline'
 
 # ==============================================================================
@@ -297,7 +297,7 @@ stages:
   - group: fabric-dev-variables
   jobs:
   - deployment: DeployToFabricDev
-    displayName: 'Deploy FCA to Development Environment'
+    displayName: 'Deploy Resources to Development Environment'
     environment: 'fabric-dev'
     strategy:
       runOnce:
@@ -305,7 +305,7 @@ stages:
           steps:
           
           - download: current
-            artifact: 'fca-deployment-package'
+            artifact: 'fabric-deployment-package'
           
           - task: UsePythonVersion@0
             inputs:
@@ -355,7 +355,7 @@ stages:
               DEV_SUBSCRIPTION_ID: $(dev-subscription-id)
           
           - script: |
-              cd "$(Pipeline.Workspace)/fca-deployment-package"
+              cd "$(Pipeline.Workspace)/fabric-deployment-package"
               python scripts/deploy_fabric_items.py --environment dev --config-file fabric-config.yml --install-deps
             displayName: 'Deploy Fabric Items to Dev Environment'
             env:
@@ -376,7 +376,7 @@ stages:
                 print("🔍 Validating deployment to DEV environment...")
                 
                 # Check if fabric-config.yml exists
-                config_file = "$(Pipeline.Workspace)/fca-deployment-package/fabric-config.yml"
+                config_file = "$(Pipeline.Workspace)/fabric-deployment-package/fabric-config.yml"
                 if os.path.exists(config_file):
                     print(f"✅ Configuration file found: {config_file}")
                 else:
@@ -398,7 +398,7 @@ stages:
   - group: fabric-test-variables
   jobs:
   - deployment: DeployToFabricTest
-    displayName: 'Deploy FCA to Test Environment'
+    displayName: 'Deploy Resources to Test Environment'
     environment: 'fabric-test'
     strategy:
       runOnce:
@@ -406,7 +406,7 @@ stages:
           steps:
           
           - download: current
-            artifact: 'fca-deployment-package'
+            artifact: 'fabric-deployment-package'
           
           - task: UsePythonVersion@0
             inputs:
@@ -423,8 +423,8 @@ stages:
             displayName: 'Configure Notebooks for Test Environment'
             inputs:
               scriptSource: 'filePath'
-              scriptPath: '$(Pipeline.Workspace)/fca-deployment-package/scripts/configure_notebooks.py'
-              arguments: '--environment test --artifact-path $(Pipeline.Workspace)/fca-deployment-package'
+              scriptPath: '$(Pipeline.Workspace)/fabric-deployment-package/scripts/configure_notebooks.py'
+              arguments: '--environment test --artifact-path $(Pipeline.Workspace)/fabric-deployment-package'
             env:
               TEST_STORAGE_ACCOUNT: $(test-storage-account)
               TEST_WORKSPACE_ID: $(test-workspace-id)
@@ -438,8 +438,8 @@ stages:
               azureSubscription: '$(azureServiceConnection)'
               scriptType: 'bash'
               scriptLocation: 'scriptPath'
-              scriptPath: '$(Pipeline.Workspace)/fca-deployment-package/scripts/deploy_to_fabric.sh'
-              arguments: 'test $(Pipeline.Workspace)/fca-deployment-package'
+              scriptPath: '$(Pipeline.Workspace)/fabric-deployment-package/scripts/deploy_to_fabric.sh'
+              arguments: 'test $(Pipeline.Workspace)/fabric-deployment-package'
             env:
               AZURE_CONFIG_DIR: $(Agent.TempDirectory)/.azure
               TEST_WORKSPACE_NAME: $(test-workspace-name)
@@ -448,7 +448,7 @@ stages:
             displayName: 'Run Integration Tests'
             inputs:
               scriptSource: 'filePath'
-              scriptPath: '$(Pipeline.Workspace)/fca-deployment-package/scripts/run_integration_tests.py'
+              scriptPath: '$(Pipeline.Workspace)/fabric-deployment-package/scripts/run_integration_tests.py'
               arguments: '--environment test'
             env:
               TEST_WORKSPACE_ID: $(test-workspace-id)
@@ -464,7 +464,7 @@ stages:
   - group: fabric-prod-variables
   jobs:
   - deployment: DeployToFabricProd
-    displayName: 'Deploy FCA to Production Environment'
+    displayName: 'Deploy Resources to Production Environment'
     environment: 'fabric-prod'
     strategy:
       runOnce:
@@ -472,7 +472,7 @@ stages:
           steps:
           
           - download: current
-            artifact: 'fca-deployment-package'
+            artifact: 'fabric-deployment-package'
           
           - task: UsePythonVersion@0
             inputs:
@@ -488,8 +488,8 @@ stages:
             displayName: 'Configure Notebooks for Production Environment'
             inputs:
               scriptSource: 'filePath'
-              scriptPath: '$(Pipeline.Workspace)/fca-deployment-package/scripts/configure_notebooks.py'
-              arguments: '--environment prod --artifact-path $(Pipeline.Workspace)/fca-deployment-package'
+              scriptPath: '$(Pipeline.Workspace)/fabric-deployment-package/scripts/configure_notebooks.py'
+              arguments: '--environment prod --artifact-path $(Pipeline.Workspace)/fabric-deployment-package'
             env:
               PROD_STORAGE_ACCOUNT: $(prod-storage-account)
               PROD_WORKSPACE_ID: $(prod-workspace-id)
@@ -503,8 +503,8 @@ stages:
               azureSubscription: '$(azureServiceConnection)'
               scriptType: 'bash'
               scriptLocation: 'scriptPath'
-              scriptPath: '$(Pipeline.Workspace)/fca-deployment-package/scripts/deploy_to_fabric.sh'
-              arguments: 'prod $(Pipeline.Workspace)/fca-deployment-package'
+              scriptPath: '$(Pipeline.Workspace)/fabric-deployment-package/scripts/deploy_to_fabric.sh'
+              arguments: 'prod $(Pipeline.Workspace)/fabric-deployment-package'
             env:
               AZURE_CONFIG_DIR: $(Agent.TempDirectory)/.azure
               PROD_WORKSPACE_NAME: $(prod-workspace-name)
@@ -513,7 +513,7 @@ stages:
             displayName: 'Production Health Check'
             inputs:
               scriptSource: 'filePath'
-              scriptPath: '$(Pipeline.Workspace)/fca-deployment-package/scripts/production_health_check.py'
+              scriptPath: '$(Pipeline.Workspace)/fabric-deployment-package/scripts/production_health_check.py'
               arguments: '--environment prod'
             env:
               PROD_WORKSPACE_ID: $(prod-workspace-id)

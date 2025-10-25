@@ -23,25 +23,29 @@ def load_environment_config(config_file_path):
 
 
 def get_environment_variables(environment):
-    """Get environment-specific variables from environment variables"""
+    """Get environment-specific variables from Azure DevOps environment variables"""
+    # Map environment names to mapped environment variables from ADO pipeline
     env_vars = {
         'dev': {
             'storage_account': os.environ.get('DEV_STORAGE_ACCOUNT', ''),
             'workspace_id': os.environ.get('DEV_WORKSPACE_ID', ''),
             'container_name': os.environ.get('DEV_CONTAINER_NAME', 'costexport'),
-            'workspace_name': os.environ.get('DEV_WORKSPACE_NAME', 'Finops Dev')
+            'workspace_name': os.environ.get('DEV_WORKSPACE_NAME', 'Finops Dev'),
+            'subscription_id': os.environ.get('DEV_SUBSCRIPTION_ID', '')
         },
         'test': {
             'storage_account': os.environ.get('TEST_STORAGE_ACCOUNT', ''),
             'workspace_id': os.environ.get('TEST_WORKSPACE_ID', ''),
             'container_name': os.environ.get('TEST_CONTAINER_NAME', 'costexport'),
-            'workspace_name': os.environ.get('TEST_WORKSPACE_NAME', 'Finops Test')
+            'workspace_name': os.environ.get('TEST_WORKSPACE_NAME', 'Finops Test'),
+            'subscription_id': os.environ.get('TEST_SUBSCRIPTION_ID', '')
         },
         'prod': {
             'storage_account': os.environ.get('PROD_STORAGE_ACCOUNT', ''),
             'workspace_id': os.environ.get('PROD_WORKSPACE_ID', ''),
             'container_name': os.environ.get('PROD_CONTAINER_NAME', 'costexport'),
-            'workspace_name': os.environ.get('PROD_WORKSPACE_NAME', 'Finops Prod')
+            'workspace_name': os.environ.get('PROD_WORKSPACE_NAME', 'Finops Prod'),
+            'subscription_id': os.environ.get('PROD_SUBSCRIPTION_ID', '')
         }
     }
     

@@ -97,6 +97,7 @@ dev-storage-account: "devstorageaccount001"
 dev-workspace-id: "12345678-1234-1234-1234-123456789012"  
 dev-workspace-name: "Finops Dev"
 dev-container-name: "costexport"
+dev-subscription-id: "12345678-1234-1234-1234-123456789abc"
 ```
 
 #### fabric-test-variables  
@@ -105,6 +106,7 @@ test-storage-account: "teststorageaccount001"
 test-workspace-id: "12345678-1234-1234-1234-123456789013"
 test-workspace-name: "Finops Test"  
 test-container-name: "costexport"
+test-subscription-id: "12345678-1234-1234-1234-123456789def"
 ```
 
 #### fabric-prod-variables
@@ -113,6 +115,7 @@ prod-storage-account: "prodstorageaccount001"
 prod-workspace-id: "12345678-1234-1234-1234-123456789014"
 prod-workspace-name: "Finops Prod"
 prod-container-name: "costexport"
+prod-subscription-id: "12345678-1234-1234-1234-123456789ghi"
 ```
 
 ### Notebook Configuration

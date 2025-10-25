@@ -59,6 +59,7 @@ Variables:
   dev-workspace-id: your-dev-workspace-id
   dev-workspace-name: Finops Dev
   dev-container-name: costexport
+  dev-subscription-id: your-dev-subscription-id
   dev-fabric-capacity: your-dev-capacity-name
 ```
 
@@ -69,6 +70,7 @@ Variables:
   test-workspace-id: your-test-workspace-id
   test-workspace-name: Finops Test
   test-container-name: costexport
+  test-subscription-id: your-test-subscription-id
   test-fabric-capacity: your-test-capacity-name
 ```
 
@@ -79,6 +81,7 @@ Variables:
   prod-workspace-id: your-prod-workspace-id
   prod-workspace-name: Finops Prod
   prod-container-name: costexport
+  prod-subscription-id: your-prod-subscription-id
   prod-fabric-capacity: your-prod-capacity-name
 ```
 

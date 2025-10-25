@@ -43,18 +43,41 @@ def validate_environment_variables(environment):
         ]
     }
     
-    missing_vars = []
-    env_vars = required_vars.get(environment.lower(), [])
+    # Authentication variables (recommended for CI/CD)
+    auth_vars = [
+        'AZURE_CLIENT_ID',
+        'AZURE_CLIENT_SECRET', 
+        'AZURE_TENANT_ID'
+    ]
     
+    missing_vars = []
+    missing_auth_vars = []
+    
+    # Check environment-specific variables
+    env_vars = required_vars.get(environment.lower(), [])
     for var in env_vars:
         if not os.environ.get(var):
             missing_vars.append(var)
     
+    # Check authentication variables
+    for var in auth_vars:
+        if not os.environ.get(var):
+            missing_auth_vars.append(var)
+    
+    # Report missing variables
     if missing_vars:
         print(f"❌ Missing required environment variables for {environment}:")
         for var in missing_vars:
             print(f"   - {var}")
         return False
+    
+    if missing_auth_vars:
+        print(f"⚠️  Missing authentication variables (will use DefaultAzureCredential):")
+        for var in missing_auth_vars:
+            print(f"   - {var}")
+        print("   💡 For CI/CD pipelines, it's recommended to set these variables")
+    else:
+        print("✅ All authentication variables present")
     
     print(f"✅ All required environment variables present for {environment}")
     return True
@@ -65,7 +88,7 @@ def deploy_fabric_items(environment, config_file_path, dry_run=False):
     # Import fabric-cicd after ensuring it's installed
     try:
         from fabric_cicd import deploy_with_config
-        from azure.identity import DefaultAzureCredential
+        from azure.identity import DefaultAzureCredential, ClientSecretCredential
     except ImportError as e:
         print(f"❌ Failed to import fabric-cicd: {e}")
         return False
@@ -74,8 +97,40 @@ def deploy_fabric_items(environment, config_file_path, dry_run=False):
     print("=" * 60)
     
     try:
-        # Use DefaultAzureCredential for authentication
-        credential = DefaultAzureCredential()
+        # Determine authentication method based on available environment variables
+        client_id = os.environ.get('AZURE_CLIENT_ID')
+        client_secret = os.environ.get('AZURE_CLIENT_SECRET')
+        tenant_id = os.environ.get('AZURE_TENANT_ID')
+        
+        if client_id and client_secret and tenant_id:
+            print("🔐 Using Service Principal authentication")
+            print(f"   Client ID: {client_id[:8]}..." if len(client_id) > 8 else client_id)
+            print(f"   Tenant ID: {tenant_id[:8]}..." if len(tenant_id) > 8 else tenant_id)
+            
+            # Validate tenant ID format (should be a GUID)
+            import re
+            guid_pattern = r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
+            if not re.match(guid_pattern, tenant_id, re.IGNORECASE):
+                print(f"❌ Invalid tenant ID format: {tenant_id}")
+                print("   Tenant ID must be a valid GUID (e.g., 12345678-1234-1234-1234-123456789abc)")
+                print("   You can find your tenant ID here: https://learn.microsoft.com/partner-center/find-ids-and-domain-names")
+                return False
+            
+            credential = ClientSecretCredential(
+                tenant_id=tenant_id,
+                client_id=client_id,
+                client_secret=client_secret
+            )
+        else:
+            print("🔐 Using DefaultAzureCredential (Managed Identity or other)")
+            if not client_id:
+                print("   Missing AZURE_CLIENT_ID environment variable")
+            if not client_secret:
+                print("   Missing AZURE_CLIENT_SECRET environment variable")
+            if not tenant_id:
+                print("   Missing AZURE_TENANT_ID environment variable")
+            print("   Falling back to DefaultAzureCredential...")
+            credential = DefaultAzureCredential()
         
         if dry_run:
             print("🔍 DRY RUN MODE - No actual deployment will occur")
@@ -95,6 +150,12 @@ def deploy_fabric_items(environment, config_file_path, dry_run=False):
         
     except Exception as e:
         print(f"❌ Deployment failed: {str(e)}")
+        print(f"   Error type: {type(e).__name__}")
+        if "tenant" in str(e).lower():
+            print("   💡 This appears to be a tenant ID issue. Please check:")
+            print("      - Ensure your tenant ID is correct in your variable group")
+            print("      - Verify the tenant ID is in GUID format (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)")
+            print("      - Confirm your service principal exists in the correct tenant")
         return False
 
 def main():

@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """
-Standard Fabric deployment script using fabric-cicd library
-Uses the standard FabricWorkspace approach instead of experimental config files
+Debug script to check Fabric workspace contents and verify deployment
 """
 
 import os
@@ -25,10 +24,6 @@ def install_fabric_cicd():
         
     except subprocess.CalledProcessError as e:
         print(f"❌ Failed to install fabric-cicd: {e}")
-        if e.stdout:
-            print(f"stdout: {e.stdout}")
-        if e.stderr:
-            print(f"stderr: {e.stderr}")
         return False
 
 def load_workspace_config(environment):
@@ -56,52 +51,28 @@ def load_workspace_config(environment):
                         env_var = workspace_ref[5:]  # Remove "$ENV:" prefix
                         workspace_id = os.environ.get(env_var)
                         if workspace_id:
-                            print(f"   Resolved from environment variable {env_var}: {workspace_id}")
+                            print(f"   ✅ Resolved from environment variable {env_var}: {workspace_id}")
                             return workspace_id
                         else:
                             print(f"   ❌ Environment variable {env_var} not found")
+                            print(f"       Available environment variables:")
+                            for key in sorted(os.environ.keys()):
+                                if 'WORKSPACE' in key.upper():
+                                    print(f"         {key}={os.environ[key]}")
                     else:
                         # Direct workspace ID
-                        print(f"🎯 Target workspace for {environment}: {workspace_ref}")
+                        print(f"✅ Target workspace for {environment}: {workspace_ref}")
                         return workspace_ref
-            
-            # Try simple workspaces structure
-            if 'workspaces' in config and environment in config['workspaces']:
-                workspace_id = config['workspaces'][environment]
-                print(f"🎯 Target workspace for {environment}: {workspace_id}")
-                return workspace_id
-            
-            # Try alternative environments structure
-            if 'environments' in config and environment in config['environments']:
-                env_config = config['environments'][environment]
-                if 'workspace_id' in env_config:
-                    workspace_id = env_config['workspace_id']
-                    print(f"🎯 Target workspace for {environment}: {workspace_id}")
-                    return workspace_id
-    
-    # Fallback to direct environment variable
-    env_var = f"{environment.upper()}_WORKSPACE_ID"
-    workspace_id = os.environ.get(env_var)
-    if workspace_id:
-        print(f"🎯 Using direct environment variable {env_var}: {workspace_id}")
-        return workspace_id
-    
-    # Last resort - FABRIC_WORKSPACE_ID format
-    env_var_alt = f"FABRIC_WORKSPACE_ID_{environment.upper()}"
-    workspace_id = os.environ.get(env_var_alt)
-    if workspace_id:
-        print(f"🎯 Using alternative environment variable {env_var_alt}: {workspace_id}")
-        return workspace_id
     
     print(f"❌ Could not find workspace ID for environment: {environment}")
     return None
 
-def deploy_fabric_items_standard(environment, dry_run=False):
-    """Deploy Fabric items using standard fabric-cicd library approach"""
+def check_workspace_contents(environment):
+    """Check what's actually in the Fabric workspace"""
     
     # Import fabric-cicd after ensuring it's installed
     try:
-        from fabric_cicd import FabricWorkspace, publish_all_items, unpublish_all_orphan_items
+        from fabric_cicd import FabricWorkspace
         from azure.identity import DefaultAzureCredential, ClientSecretCredential
         
         print(f"📦 fabric-cicd imported successfully")
@@ -110,7 +81,7 @@ def deploy_fabric_items_standard(environment, dry_run=False):
         print(f"❌ Failed to import fabric-cicd: {e}")
         return False
     
-    print(f"🚀 Starting Standard Fabric deployment to {environment.upper()} environment")
+    print(f"🔍 Checking Fabric workspace contents for {environment.upper()} environment")
     print("=" * 60)
     
     try:
@@ -135,23 +106,64 @@ def deploy_fabric_items_standard(environment, dry_run=False):
             print("🔐 Using DefaultAzureCredential")
             credential = DefaultAzureCredential()
         
-        if dry_run:
-            print("🔍 DRY RUN MODE - No actual deployment will occur")
-            print(f"   Target workspace: {workspace_id}")
-            print(f"   Environment: {environment}")
-            print(f"   Repository directory: {os.getcwd()}")
-            return True
+        print(f"🏗️ Connecting to workspace: {workspace_id}")
         
-        # Check what items exist in repository before deployment
+        # Try to list items in the workspace using Fabric REST API
+        try:
+            import requests
+            from azure.core.credentials import TokenCredential
+            
+            # Get access token
+            token = credential.get_token("https://analysis.windows.net/powerbi/api/.default")
+            
+            # List workspace items
+            headers = {
+                'Authorization': f'Bearer {token.token}',
+                'Content-Type': 'application/json'
+            }
+            
+            url = f"https://api.fabric.microsoft.com/v1/workspaces/{workspace_id}/items"
+            response = requests.get(url, headers=headers)
+            
+            if response.status_code == 200:
+                items = response.json().get('value', [])
+                print(f"\n📋 Found {len(items)} item(s) in workspace:")
+                
+                for item in items:
+                    item_type = item.get('type', 'Unknown')
+                    item_name = item.get('displayName', 'Unknown')
+                    item_id = item.get('id', 'Unknown')
+                    print(f"   🔸 {item_type}: {item_name} (ID: {item_id})")
+                
+                # Filter for our item types
+                notebooks = [item for item in items if item.get('type') == 'Notebook']
+                lakehouses = [item for item in items if item.get('type') == 'Lakehouse']
+                
+                print(f"\n📊 Item Summary:")
+                print(f"   📓 Notebooks: {len(notebooks)}")
+                print(f"   🏠 Lakehouses: {len(lakehouses)}")
+                
+                if notebooks:
+                    print(f"   Notebook names: {[nb.get('displayName') for nb in notebooks]}")
+                if lakehouses:
+                    print(f"   Lakehouse names: {[lh.get('displayName') for lh in lakehouses]}")
+                
+            else:
+                print(f"❌ Failed to list workspace items: {response.status_code}")
+                print(f"   Response: {response.text}")
+                
+        except Exception as api_error:
+            print(f"❌ Failed to access Fabric API: {api_error}")
+        
+        print(f"\n🔍 Repository Contents Check:")
         repo_dir = os.getcwd()
-        print(f"🔍 Repository scan:")
         print(f"   Working directory: {repo_dir}")
         
         # Check for notebooks
         notebooks_dir = os.path.join(repo_dir, "notebooks")
         if os.path.exists(notebooks_dir):
             notebooks = list(Path(notebooks_dir).glob("*.ipynb"))
-            print(f"   Found {len(notebooks)} notebook(s): {[nb.name for nb in notebooks]}")
+            print(f"   📓 Found {len(notebooks)} notebook(s) in repo: {[nb.name for nb in notebooks]}")
         else:
             print(f"   ❌ Notebooks directory not found: {notebooks_dir}")
         
@@ -159,60 +171,20 @@ def deploy_fabric_items_standard(environment, dry_run=False):
         lakehouses_dir = os.path.join(repo_dir, "lakehouses")
         if os.path.exists(lakehouses_dir):
             lakehouses = [d for d in Path(lakehouses_dir).iterdir() if d.is_dir()]
-            print(f"   Found {len(lakehouses)} lakehouse(s): {[lh.name for lh in lakehouses]}")
+            print(f"   🏠 Found {len(lakehouses)} lakehouse(s) in repo: {[lh.name for lh in lakehouses]}")
         else:
             print(f"   ❌ Lakehouses directory not found: {lakehouses_dir}")
         
-        # Initialize the FabricWorkspace object
-        print(f"🏗️ Initializing Fabric workspace...")
-        print(f"   Workspace ID: {workspace_id}")
-        print(f"   Repository directory: {repo_dir}")
-        print(f"   Item types in scope: ['Notebook', 'Lakehouse']")
-        
-        target_workspace = FabricWorkspace(
-            workspace_id=workspace_id,
-            repository_directory=repo_dir,
-            item_type_in_scope=["Notebook", "Lakehouse"],
-            token_credential=credential
-        )
-        
-        # Publish all items in scope
-        print(f"📦 Publishing items to workspace...")
-        print(f"   This will deploy all Notebooks and Lakehouses found in the repository")
-        
-        try:
-            result = publish_all_items(target_workspace)
-            print(f"   ✅ Publish operation completed: {result}")
-        except Exception as pub_error:
-            print(f"   ❌ Publish operation failed: {pub_error}")
-            raise pub_error
-        
-        # Unpublish orphan items
-        print(f"🧹 Cleaning up orphan items...")
-        print(f"   This will remove items in workspace not found in repository")
-        
-        try:
-            result = unpublish_all_orphan_items(target_workspace)
-            print(f"   ✅ Cleanup operation completed: {result}")
-        except Exception as cleanup_error:
-            print(f"   ❌ Cleanup operation failed: {cleanup_error}")
-            # Don't fail deployment if cleanup fails
-            print(f"   ⚠️  Continuing despite cleanup failure...")
-        
-        print(f"✅ Standard deployment to {environment.upper()} completed successfully!")
         return True
         
     except Exception as e:
-        print(f"❌ Standard deployment failed: {str(e)}")
-        print(f"   Error type: {type(e).__name__}")
+        print(f"❌ Workspace check failed: {str(e)}")
         return False
 
 def main():
-    parser = argparse.ArgumentParser(description='Deploy Fabric items using standard fabric-cicd library')
+    parser = argparse.ArgumentParser(description='Debug Fabric workspace contents')
     parser.add_argument('--environment', required=True, choices=['dev', 'test', 'prod'],
                        help='Target environment (dev, test, prod)')
-    parser.add_argument('--dry-run', action='store_true',
-                       help='Validate configuration without deploying')
     parser.add_argument('--install-deps', action='store_true',
                        help='Install fabric-cicd library if missing')
     
@@ -223,13 +195,13 @@ def main():
         if not install_fabric_cicd():
             sys.exit(1)
     
-    # Run deployment
-    success = deploy_fabric_items_standard(args.environment, args.dry_run)
+    # Check workspace contents
+    success = check_workspace_contents(args.environment)
     
     if not success:
         sys.exit(1)
     
-    print("🎉 Deployment completed!")
+    print("\n🎉 Workspace check completed!")
 
 if __name__ == '__main__':
     main()

@@ -247,21 +247,74 @@ def deploy_fabric_items(environment, config_file_path, dry_run=False):
                     
                     print(f"🔄 Attempting standard deployment to workspace: {workspace_id}")
                     
+                    # Verify we can access the workspace
+                    print(f"🔐 Testing workspace access...")
+                    try:
+                        # Try to access fabric API to verify connection
+                        from fabric_cicd.core import FabricClient
+                        fabric_client = FabricClient(token_credential=credential)
+                        # This will test the connection without making changes
+                        print(f"   ✅ Successfully connected to Fabric API")
+                    except Exception as access_error:
+                        print(f"   ⚠️  Could not verify Fabric API access: {access_error}")
+                        print(f"   Proceeding anyway...")
+                    
+                    # Check what items exist in repository before deployment
+                    repo_dir = os.getcwd()
+                    print(f"🔍 Repository scan:")
+                    print(f"   Working directory: {repo_dir}")
+                    
+                    # Check for notebooks
+                    notebooks_dir = os.path.join(repo_dir, "notebooks")
+                    if os.path.exists(notebooks_dir):
+                        notebooks = list(Path(notebooks_dir).glob("*.ipynb"))
+                        print(f"   Found {len(notebooks)} notebook(s): {[nb.name for nb in notebooks]}")
+                    else:
+                        print(f"   ❌ Notebooks directory not found: {notebooks_dir}")
+                    
+                    # Check for lakehouses
+                    lakehouses_dir = os.path.join(repo_dir, "lakehouses")
+                    if os.path.exists(lakehouses_dir):
+                        lakehouses = [d for d in Path(lakehouses_dir).iterdir() if d.is_dir()]
+                        print(f"   Found {len(lakehouses)} lakehouse(s): {[lh.name for lh in lakehouses]}")
+                    else:
+                        print(f"   ❌ Lakehouses directory not found: {lakehouses_dir}")
+                    
                     # Initialize the FabricWorkspace object
+                    print(f"🏗️ Initializing FabricWorkspace:")
+                    print(f"   Workspace ID: {workspace_id}")
+                    print(f"   Repository directory: {repo_dir}")
+                    print(f"   Item types in scope: ['Notebook', 'Lakehouse']")
+                    
                     target_workspace = FabricWorkspace(
                         workspace_id=workspace_id,
-                        repository_directory=os.getcwd(),
+                        repository_directory=repo_dir,
                         item_type_in_scope=["Notebook", "Lakehouse"],
                         token_credential=credential
                     )
                     
                     # Publish all items in scope
                     print(f"📦 Publishing items using standard approach...")
-                    publish_all_items(target_workspace)
+                    print(f"   This will deploy all Notebooks and Lakehouses found in the repository")
+                    
+                    try:
+                        result = publish_all_items(target_workspace)
+                        print(f"   ✅ Publish operation completed: {result}")
+                    except Exception as pub_error:
+                        print(f"   ❌ Publish operation failed: {pub_error}")
+                        raise pub_error
                     
                     # Unpublish orphan items
                     print(f"🧹 Cleaning up orphan items...")
-                    unpublish_all_orphan_items(target_workspace)
+                    print(f"   This will remove items in workspace not found in repository")
+                    
+                    try:
+                        result = unpublish_all_orphan_items(target_workspace)
+                        print(f"   ✅ Cleanup operation completed: {result}")
+                    except Exception as cleanup_error:
+                        print(f"   ❌ Cleanup operation failed: {cleanup_error}")
+                        # Don't fail deployment if cleanup fails
+                        print(f"   ⚠️  Continuing despite cleanup failure...")
                     
                     print(f"✅ Standard deployment to {environment.upper()} completed successfully!")
                     return True

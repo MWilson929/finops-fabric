@@ -1,0 +1,86 @@
+[
+  {
+    "name": "costexport",
+    "path": "/Tables",
+    "target": {
+      "type": "AdlsGen2",
+      "adlsGen2": {
+        "connectionId": "ac9d047e-1e22-404f-ab2c-3a3a71e90273",
+        "location": "https://2trickcostexport.dfs.core.windows.net",
+        "subpath": "/costexport"
+      }
+    }
+  },
+  {
+    "name": "azure_billing_exports",
+    "path": "/Tables",
+    "target": {
+      "type": "AdlsGen2",
+      "adlsGen2": {
+        "connectionId": "ac9d047e-1e22-404f-ab2c-3a3a71e90273",
+        "location": "https://2trickcostexport.dfs.core.windows.net",
+        "subpath": "/billing/azure"
+      }
+    }
+  },
+  {
+    "name": "aws_cost_reports",
+    "path": "/Tables", 
+    "target": {
+      "type": "AdlsGen2",
+      "adlsGen2": {
+        "connectionId": "ac9d047e-1e22-404f-ab2c-3a3a71e90273",
+        "location": "https://2trickcostexport.dfs.core.windows.net",
+        "subpath": "/billing/aws"
+      }
+    }
+  },
+  {
+    "name": "resource_inventory",
+    "path": "/Tables",
+    "target": {
+      "type": "AdlsGen2", 
+      "adlsGen2": {
+        "connectionId": "ac9d047e-1e22-404f-ab2c-3a3a71e90273",
+        "location": "https://2trickcostexport.dfs.core.windows.net",
+        "subpath": "/inventory"
+      }
+    }
+  },
+  {
+    "name": "budget_allocations",
+    "path": "/Tables",
+    "target": {
+      "type": "AdlsGen2",
+      "adlsGen2": {
+        "connectionId": "ac9d047e-1e22-404f-ab2c-3a3a71e90273", 
+        "location": "https://2trickcostexport.dfs.core.windows.net",
+        "subpath": "/budgets"
+      }
+    }
+  },
+  {
+    "name": "external_data_sources",
+    "path": "/Files",
+    "target": {
+      "type": "AdlsGen2",
+      "adlsGen2": {
+        "connectionId": "ac9d047e-1e22-404f-ab2c-3a3a71e90273",
+        "location": "https://2trickcostexport.dfs.core.windows.net", 
+        "subpath": "/external"
+      }
+    }
+  },
+  {
+    "name": "archived_reports",
+    "path": "/Files",
+    "target": {
+      "type": "AdlsGen2",
+      "adlsGen2": {
+        "connectionId": "ac9d047e-1e22-404f-ab2c-3a3a71e90273",
+        "location": "https://2trickcostexport.dfs.core.windows.net",
+        "subpath": "/archives"
+      }
+    }
+  }
+]

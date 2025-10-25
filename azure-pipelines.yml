@@ -1,6 +1,33 @@
 # Azure DevOps Pipeline for Microsoft Fabric CI/CD (General Purpose)
 # Implements Option 2: Git-based deployments using Microsoft fabric-cicd library
 
+parameters:
+- name: deployToDev
+  displayName: 'Deploy to Development'
+  type: boolean
+  default: 'true'
+- name: deployToTest
+  displayName: 'Deploy to Test'
+  type: boolean
+  default: 'false'
+- name: deployToProd
+  displayName: 'Deploy to Production'
+  type: boolean
+  default: 'false'
+- name: targetEnvironment
+  displayName: 'Target Environment (overrides individual checkboxes)'
+  type: string
+  default: 'auto'
+  values:
+  - auto
+  - dev-only
+  - test-only
+  - prod-only
+  - dev-test
+  - dev-prod
+  - test-prod
+  - all
+
 trigger:
   branches:
     include:
@@ -263,7 +290,7 @@ stages:
 - stage: DeployDev
   displayName: 'Deploy to Development'
   dependsOn: Build
-  condition: succeeded()
+  condition: and(succeeded(), or(eq('${{ parameters.deployToDev }}', 'true'), containsValue('${{ parameters.targetEnvironment }}', 'dev'), eq('${{ parameters.targetEnvironment }}', 'all'), eq('${{ parameters.targetEnvironment }}', 'auto')))
   variables:
   - group: fabric-dev-variables
   jobs:
@@ -364,7 +391,7 @@ stages:
 - stage: DeployTest
   displayName: 'Deploy to Test'
   dependsOn: DeployDev
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+  condition: and(succeeded(), or(eq('${{ parameters.deployToTest }}', 'true'), contains('${{ parameters.targetEnvironment }}', 'test'), eq('${{ parameters.targetEnvironment }}', 'all')))
   variables:
   - group: fabric-test-variables
   jobs:
@@ -430,7 +457,7 @@ stages:
 - stage: DeployProd
   displayName: 'Deploy to Production'
   dependsOn: DeployTest
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+  condition: and(succeeded(), or(eq('${{ parameters.deployToProd }}', 'true'), contains('${{ parameters.targetEnvironment }}', 'prod'), eq('${{ parameters.targetEnvironment }}', 'all')))
   variables:
   - group: fabric-prod-variables
   jobs:

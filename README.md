@@ -85,10 +85,93 @@ FabricCICD/
 
 ### Trigger Conditions
 
-- **Push to main**: Full Dev → Test → Prod deployment
+- **Push to main**: Full Dev → Test → Prod deployment (default)
 - **Push to develop**: Dev deployment only  
 - **Pull requests**: Validation and build only
 - **Path filters**: Only triggers on Fabric item/config changes
+
+## 🎯 Environment Deployment Control
+
+### Method 1: Manual Pipeline Parameters (Recommended)
+
+When running the pipeline manually, you can control which environments to deploy to:
+
+1. **Go to Azure DevOps → Pipelines → [Your Pipeline] → Run Pipeline**
+2. **Choose deployment options:**
+   - ✅ **Deploy to Development**: Individual environment checkbox
+   - ✅ **Deploy to Test**: Individual environment checkbox  
+   - ✅ **Deploy to Production**: Individual environment checkbox
+   - **Target Environment**: Override dropdown with preset combinations
+     - `auto` - Use branch-based rules (default)
+     - `dev-only` - Deploy to Development only
+     - `test-only` - Deploy to Test only (requires Dev success)
+     - `prod-only` - Deploy to Production only (requires Test success)
+     - `dev-test` - Deploy to Dev and Test
+     - `dev-prod` - Deploy to Dev and Production  
+     - `test-prod` - Deploy to Test and Production
+     - `all` - Deploy to all environments
+
+**Example Use Cases:**
+```yaml
+# Hotfix to production only (after manual validation)
+Target Environment: "prod-only"
+
+# Feature testing (skip production)  
+Target Environment: "dev-test"
+
+# Emergency rollback (specific environment)
+Deploy to Development: false
+Deploy to Test: false
+Deploy to Production: true
+```
+
+### Method 2: Branch-Based Automatic Deployment
+
+The pipeline automatically determines deployments based on the source branch:
+
+```yaml
+# Deployment Rules:
+main branch:     → DEV → TEST → PROD (full pipeline)
+develop branch:  → DEV only
+feature/* branch: → DEV only  
+hotfix/* branch: → DEV → TEST → PROD
+```
+
+### Method 3: Configuration-Based Control
+
+Use `fabric-config.yml` to control deployment behavior:
+
+```yaml
+publish:
+  skip:
+    DEV: false    # Always deploy to dev
+    TEST: false   # Deploy to test (if stage runs)
+    PROD: false   # Deploy to prod (if stage runs)
+
+# Environment-specific exclusions
+exclude_regex: "^(TEMP_|DEBUG_|DRAFT_).*"
+folder_exclude_regex: "^(temp|debug|drafts)/"
+```
+
+### Method 4: Environment Approvals
+
+Configure environment-specific approvals in Azure DevOps:
+
+1. **Go to Environments → [Environment Name] → Approvals and Checks**
+2. **Add approval requirements:**
+   - **Dev**: No approval (automatic)
+   - **Test**: Team lead approval required
+   - **Prod**: Business owner + change board approval
+
+### Method 5: Variable Group Overrides
+
+Control deployment by modifying variable groups:
+
+```yaml
+# In fabric-dev-variables (example)
+DEPLOYMENT_ENABLED: "true"   # Set to "false" to skip deployment
+DEPLOYMENT_MODE: "full"      # Options: full, validation-only, rollback
+```
 
 ## ⚙️ Configuration
 

@@ -1,0 +1,173 @@
+{
+  "schemas": {
+    "bronze": {
+      "description": "Raw data layer - ingested data in its original format with minimal transformation",
+      "purpose": "Landing zone for all source data",
+      "data_quality": "Raw, unvalidated data with source timestamps",
+      "retention_policy": "Long-term retention for audit and reprocessing",
+      "tables": {
+        "raw_cost_data": {
+          "source": "Azure Cost Management API",
+          "format": "JSON/Parquet",
+          "partition_by": ["ingestion_date", "subscription_id"],
+          "description": "Raw cost and usage data from cloud providers"
+        },
+        "raw_usage_metrics": {
+          "source": "Resource monitoring systems", 
+          "format": "JSON/Parquet",
+          "partition_by": ["ingestion_date", "resource_type"],
+          "description": "Raw resource utilization metrics"
+        },
+        "raw_billing_exports": {
+          "source": "Billing system exports",
+          "format": "CSV/Parquet", 
+          "partition_by": ["export_date", "account_id"],
+          "description": "Raw billing data exports from enterprise systems"
+        }
+      }
+    },
+    "silver": {
+      "description": "Cleansed and validated data layer with standardized schema",
+      "purpose": "Cleaned, deduplicated, and validated data ready for analysis",
+      "data_quality": "Validated, standardized, and enriched data",
+      "retention_policy": "Medium-term retention optimized for analytics",
+      "tables": {
+        "cleansed_cost_data": {
+          "source": "bronze.raw_cost_data",
+          "transformations": ["data_validation", "deduplication", "currency_normalization"],
+          "partition_by": ["billing_date", "resource_group"],
+          "description": "Validated and standardized cost data"
+        },
+        "normalized_usage_metrics": {
+          "source": "bronze.raw_usage_metrics",
+          "transformations": ["unit_standardization", "metric_validation", "outlier_detection"],
+          "partition_by": ["metric_date", "service_category"],
+          "description": "Normalized resource usage metrics"
+        },
+        "enriched_resource_inventory": {
+          "source": ["bronze.raw_cost_data", "external_apis"],
+          "transformations": ["tag_enrichment", "hierarchy_mapping", "cost_center_assignment"],
+          "partition_by": ["resource_type", "region"],
+          "description": "Enriched resource metadata with organizational context"
+        },
+        "validated_budget_data": {
+          "source": "bronze.raw_billing_exports", 
+          "transformations": ["budget_validation", "allocation_rules", "variance_calculation"],
+          "partition_by": ["fiscal_year", "department"],
+          "description": "Validated budget allocations and tracking data"
+        }
+      }
+    },
+    "gold": {
+      "description": "Business-ready aggregated data optimized for reporting and analytics",
+      "purpose": "Curated datasets for business intelligence and executive reporting",
+      "data_quality": "Business-ready, aggregated, and optimized data",
+      "retention_policy": "Optimized for fast queries and reporting",
+      "tables": {
+        "monthly_cost_summary": {
+          "source": "silver.cleansed_cost_data",
+          "aggregation_level": "monthly",
+          "dimensions": ["department", "service_category", "region", "environment"],
+          "measures": ["total_cost", "budget_variance", "cost_trend"],
+          "description": "Monthly cost rollups for executive dashboards"
+        },
+        "resource_optimization_insights": {
+          "source": ["silver.cleansed_cost_data", "silver.normalized_usage_metrics"],
+          "aggregation_level": "weekly", 
+          "dimensions": ["resource_type", "utilization_band", "recommendation_type"],
+          "measures": ["potential_savings", "optimization_priority", "implementation_effort"],
+          "description": "Actionable resource optimization recommendations"
+        },
+        "department_chargeback": {
+          "source": ["silver.cleansed_cost_data", "silver.enriched_resource_inventory"],
+          "aggregation_level": "monthly",
+          "dimensions": ["department", "cost_center", "project", "environment"],
+          "measures": ["allocated_cost", "shared_cost", "direct_cost", "total_chargeback"],
+          "description": "Department-level cost allocation for chargeback/showback"
+        },
+        "budget_performance_kpis": {
+          "source": ["silver.validated_budget_data", "silver.cleansed_cost_data"],
+          "aggregation_level": "monthly",
+          "dimensions": ["fiscal_period", "budget_category", "variance_type"],
+          "measures": ["budget_utilization_pct", "variance_amount", "forecast_accuracy"],
+          "description": "Budget performance metrics and KPIs"
+        },
+        "cost_anomaly_alerts": {
+          "source": ["silver.cleansed_cost_data", "ml_predictions"],
+          "aggregation_level": "daily",
+          "dimensions": ["anomaly_type", "severity", "affected_resources"],
+          "measures": ["anomaly_score", "cost_impact", "confidence_level"],
+          "description": "ML-detected cost anomalies and alerts"
+        }
+      }
+    }
+  },
+  "data_pipeline_flow": {
+    "ingestion": {
+      "description": "Data flows from external sources to Bronze layer",
+      "frequency": "Real-time/Hourly/Daily depending on source",
+      "sources": ["Azure APIs", "AWS APIs", "GCP APIs", "Enterprise Systems", "External Files"]
+    },
+    "transformation": {
+      "description": "Data flows from Bronze to Silver with cleansing and validation",
+      "frequency": "Daily/Hourly",
+      "processes": ["Data validation", "Schema standardization", "Deduplication", "Enrichment"]
+    },
+    "aggregation": {
+      "description": "Data flows from Silver to Gold with business logic and aggregation", 
+      "frequency": "Daily/Weekly/Monthly depending on use case",
+      "processes": ["Business rules", "Aggregations", "KPI calculations", "ML predictions"]
+    }
+  },
+  "data_governance": {
+    "bronze": {
+      "access_level": "Data Engineers, System Administrators",
+      "sensitivity": "Raw data - may contain PII",
+      "compliance": "Full audit trail required"
+    },
+    "silver": {
+      "access_level": "Data Engineers, Data Analysts, FinOps Teams",
+      "sensitivity": "Cleansed data - PII handled according to policy",
+      "compliance": "Validated data quality metrics"
+    },
+    "gold": {
+      "access_level": "Business Users, Executives, Finance Teams",
+      "sensitivity": "Aggregated business data - minimal PII exposure", 
+      "compliance": "Business-ready certified datasets"
+    }
+  },
+  "performance_optimization": {
+    "bronze": {
+      "partitioning_strategy": "Date-based partitioning for efficient ingestion",
+      "file_format": "Delta Lake with ZORDER optimization",
+      "compression": "GZIP/Snappy for storage efficiency"
+    },
+    "silver": {
+      "partitioning_strategy": "Business dimension partitioning (department, service)",
+      "file_format": "Delta Lake with V-Order optimization", 
+      "indexing": "Bloom filters on frequently queried columns"
+    },
+    "gold": {
+      "partitioning_strategy": "Time-based partitioning aligned with reporting periods",
+      "file_format": "Delta Lake with aggressive V-Order optimization",
+      "caching": "Frequently accessed aggregations cached in memory"
+    }
+  },
+  "monitoring_and_quality": {
+    "data_freshness": {
+      "bronze": "Monitor ingestion lag < 4 hours",
+      "silver": "Monitor transformation lag < 2 hours", 
+      "gold": "Monitor aggregation lag < 1 hour"
+    },
+    "data_quality_checks": {
+      "bronze": ["Schema validation", "Null checks", "Duplicate detection"],
+      "silver": ["Business rule validation", "Referential integrity", "Range checks"],
+      "gold": ["Aggregation validation", "KPI consistency", "Trend anomaly detection"]
+    },
+    "alerting": {
+      "pipeline_failures": "Immediate alerts for failed transformations",
+      "data_quality_issues": "Daily summary of quality check failures",
+      "performance_degradation": "Alert when query performance degrades > 20%"
+    }
+  }
+}

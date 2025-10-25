@@ -33,7 +33,7 @@ def get_environment_config(environment):
     config = {
         'prod': {
             'workspace_id': os.environ.get('PROD_WORKSPACE_ID'),
-            'workspace_name': os.environ.get('PROD_WORKSPACE_NAME', 'FCA-Production'),
+            'workspace_name': os.environ.get('PROD_WORKSPACE_NAME', 'Finops Prod'),
             'storage_account': os.environ.get('PROD_STORAGE_ACCOUNT')
         }
     }

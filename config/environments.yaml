@@ -1,7 +1,7 @@
 environments:
   dev:
     storage_account: "PLACEHOLDER_DEV_STORAGE_ACCOUNT"
-    workspace_name: "FCA-Development" 
+    workspace_name: "Finops Dev" 
     workspace_id: "PLACEHOLDER_DEV_WORKSPACE_ID"
     container_name: "msexports"
     subscription_id: "PLACEHOLDER_DEV_SUBSCRIPTION_ID"
@@ -10,7 +10,7 @@ environments:
     
   test:
     storage_account: "PLACEHOLDER_TEST_STORAGE_ACCOUNT"
-    workspace_name: "FCA-Test"
+    workspace_name: "Finops Test"
     workspace_id: "PLACEHOLDER_TEST_WORKSPACE_ID" 
     container_name: "msexports"
     subscription_id: "PLACEHOLDER_TEST_SUBSCRIPTION_ID"
@@ -19,7 +19,7 @@ environments:
     
   prod:
     storage_account: "PLACEHOLDER_PROD_STORAGE_ACCOUNT"
-    workspace_name: "FCA-Production"
+    workspace_name: "Finops Prod"
     workspace_id: "PLACEHOLDER_PROD_WORKSPACE_ID"
     container_name: "msexports" 
     subscription_id: "PLACEHOLDER_PROD_SUBSCRIPTION_ID"

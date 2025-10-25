@@ -95,7 +95,7 @@ Each environment requires these variable groups in Azure DevOps:
 ```yaml
 dev-storage-account: "devstorageaccount001"
 dev-workspace-id: "12345678-1234-1234-1234-123456789012"  
-dev-workspace-name: "FCA-Development"
+dev-workspace-name: "Finops Dev"
 dev-container-name: "msexports"
 ```
 
@@ -103,7 +103,7 @@ dev-container-name: "msexports"
 ```yaml
 test-storage-account: "teststorageaccount001"
 test-workspace-id: "12345678-1234-1234-1234-123456789013"
-test-workspace-name: "FCA-Test"  
+test-workspace-name: "Finops Test"  
 test-container-name: "msexports"
 ```
 
@@ -111,7 +111,7 @@ test-container-name: "msexports"
 ```yaml
 prod-storage-account: "prodstorageaccount001"
 prod-workspace-id: "12345678-1234-1234-1234-123456789014"
-prod-workspace-name: "FCA-Production"
+prod-workspace-name: "Finops Prod"
 prod-container-name: "msexports"
 ```
 

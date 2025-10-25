@@ -30,13 +30,13 @@ echo "✅ Fabric authentication configured"
 # Get workspace name based on environment
 case $ENVIRONMENT in
     dev)
-        WORKSPACE_NAME=${DEV_WORKSPACE_NAME:-"FCA-Development"}
+        WORKSPACE_NAME=${DEV_WORKSPACE_NAME:-"Finops Dev"}
         ;;
     test)
-        WORKSPACE_NAME=${TEST_WORKSPACE_NAME:-"FCA-Test"}
+        WORKSPACE_NAME=${TEST_WORKSPACE_NAME:-"Finops Test"}
         ;;
     prod)
-        WORKSPACE_NAME=${PROD_WORKSPACE_NAME:-"FCA-Production"}
+        WORKSPACE_NAME=${PROD_WORKSPACE_NAME:-"Finops Prod"}
         ;;
     *)
         echo "❌ Invalid environment: $ENVIRONMENT"

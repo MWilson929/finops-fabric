@@ -57,7 +57,7 @@ Create three variable groups with these exact names:
 Variables:
   dev-storage-account: your-dev-storage-account
   dev-workspace-id: your-dev-workspace-id
-  dev-workspace-name: FCA-Development
+  dev-workspace-name: Finops Dev
   dev-container-name: msexports
   dev-fabric-capacity: your-dev-capacity-name
 ```
@@ -67,7 +67,7 @@ Variables:
 Variables:
   test-storage-account: your-test-storage-account
   test-workspace-id: your-test-workspace-id
-  test-workspace-name: FCA-Test
+  test-workspace-name: Finops Test
   test-container-name: msexports
   test-fabric-capacity: your-test-capacity-name
 ```
@@ -77,7 +77,7 @@ Variables:
 Variables:
   prod-storage-account: your-prod-storage-account
   prod-workspace-id: your-prod-workspace-id
-  prod-workspace-name: FCA-Production
+  prod-workspace-name: Finops Prod
   prod-container-name: msexports
   prod-fabric-capacity: your-prod-capacity-name
 ```
@@ -155,21 +155,21 @@ environments:
   dev:
     storage_account: "your-dev-storage-account"
     workspace_id: "your-dev-workspace-id"
-    workspace_name: "FCA-Development"
+    workspace_name: "Finops Dev"
     container_name: "msexports"
     fabric_capacity: "your-dev-capacity"
     
   test:
     storage_account: "your-test-storage-account" 
     workspace_id: "your-test-workspace-id"
-    workspace_name: "FCA-Test"
+    workspace_name: "Finops Test"
     container_name: "msexports"
     fabric_capacity: "your-test-capacity"
     
   prod:
     storage_account: "your-prod-storage-account"
     workspace_id: "your-prod-workspace-id" 
-    workspace_name: "FCA-Production"
+    workspace_name: "Finops Prod"
     container_name: "msexports"
     fabric_capacity: "your-prod-capacity"
 ```

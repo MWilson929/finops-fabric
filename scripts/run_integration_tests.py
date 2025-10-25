@@ -36,15 +36,15 @@ def get_environment_config(environment):
     config = {
         'dev': {
             'workspace_id': os.environ.get('DEV_WORKSPACE_ID'),
-            'workspace_name': os.environ.get('DEV_WORKSPACE_NAME', 'FCA-Development')
+            'workspace_name': os.environ.get('DEV_WORKSPACE_NAME', 'Finops Dev')
         },
         'test': {
             'workspace_id': os.environ.get('TEST_WORKSPACE_ID'),
-            'workspace_name': os.environ.get('TEST_WORKSPACE_NAME', 'FCA-Test')
+            'workspace_name': os.environ.get('TEST_WORKSPACE_NAME', 'Finops Test')
         },
         'prod': {
             'workspace_id': os.environ.get('PROD_WORKSPACE_ID'),
-            'workspace_name': os.environ.get('PROD_WORKSPACE_NAME', 'FCA-Production')
+            'workspace_name': os.environ.get('PROD_WORKSPACE_NAME', 'Finops Prod')
         }
     }
     

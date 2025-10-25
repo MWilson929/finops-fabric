@@ -1,6 +1,6 @@
-# Fabric Cost Analysis CI/CD Pipeline
+# Microsoft Fabric CI/CD Pipeline
 
-A comprehensive Azure DevOps CI/CD pipeline for deploying Microsoft Fabric Cost Analysis (FCA) solutions across multiple environments with automated testing, validation, and deployment.
+A comprehensive Azure DevOps CI/CD pipeline for deploying Microsoft Fabric items (notebooks, lakehouses, data pipelines, reports, etc.) across multiple environments with automated testing, validation, and deployment.
 
 ## 🚀 Quick Start
 
@@ -8,50 +8,56 @@ A comprehensive Azure DevOps CI/CD pipeline for deploying Microsoft Fabric Cost 
 - Azure DevOps organization and project
 - Microsoft Fabric capacity and workspaces (Dev, Test, Prod)
 - Azure subscription with appropriate permissions
-- Cost Management exports configured
+- Service principal with Fabric API access
 
 ### Setup Steps
 
-1. **Clone this repository**
-   ```bash
-   git clone <repository-url>
-   cd FabricCICD
-   ```
+🚀 **New to this pipeline?** Follow the **[First-Time Setup Guide](FIRST_TIME_SETUP.md)** for complete step-by-step instructions.
 
-2. **Configure Azure service principal**
+**Quick Setup Summary:**
+
+1. **Create Service Principal & Configure Fabric Access**
    ```bash
    az ad sp create-for-rbac --name "fabric-cicd-sp" --role contributor --scopes /subscriptions/{subscription-id}
    ```
 
-3. **Set up Azure DevOps**
+2. **Set up Azure DevOps**
    - Create service connection with service principal credentials
-   - Create variable groups for each environment
+   - Create variable groups for each environment (DEV, TEST, PROD)
    - Set up environments with appropriate approvals
 
-4. **Deploy pipeline**
-   - Commit code to trigger first pipeline run
+3. **Configure Your Repository**
+   - Update `parameter.yml` with environment-specific values
+   - Update `fabric-config.yml` with workspace IDs
+   - Add your Fabric items to appropriate folders
+
+4. **Deploy Pipeline**
+   - Commit Fabric items to trigger first pipeline run
    - Monitor deployment across Dev → Test → Prod
+
+📖 **Detailed Instructions**: See [FIRST_TIME_SETUP.md](FIRST_TIME_SETUP.md) for comprehensive setup guidance.
 
 ## 📁 Repository Structure
 
 ```
 FabricCICD/
 ├── azure-pipelines.yml          # Main CI/CD pipeline
-├── config/                      # Configuration files
-│   ├── environments.yaml        # Environment-specific settings
-│   └── deployment_order.json    # Deployment sequence
-├── notebooks/                   # Fabric notebooks
-│   ├── 00_Deploy_FCA.ipynb     # Main deployment notebook
-│   ├── cost-ingestion.ipynb    # Cost data ingestion
-│   └── data-processing.ipynb   # Data transformation
+├── parameter.yml                # Environment-specific parameter replacements
+├── fabric-config.yml            # Fabric deployment configuration
+├── notebooks/                   # Jupyter notebooks and .Notebook folders
+├── lakehouses/                  # Lakehouse definitions (.Lakehouse folders)
+├── datapipelines/               # Data Pipeline definitions (.DataPipeline folders)
+├── dataflows/                   # Dataflow definitions (.Dataflow folders)
+├── reports/                     # Power BI Reports (.Report folders)
+├── semanticmodels/              # Semantic Models (.SemanticModel folders)
+├── environments/                # Spark Environment configurations (.Environment folders)
+├── warehouses/                  # Data Warehouse definitions (.Warehouse folders)
 ├── scripts/                     # Deployment automation
-│   ├── configure_notebooks.py  # Environment configuration
-│   ├── deploy_to_fabric.sh     # Fabric deployment
-│   ├── validate_deployment.py  # Deployment validation
-│   ├── run_integration_tests.py # Integration testing
-│   └── production_health_check.py # Production validation
+│   └── deploy_fabric_items.py  # Main deployment script using fabric-cicd library
 ├── docs/                        # Documentation
-└── README.md                    # This file
+├── artifacts/                   # General artifacts and shared resources
+├── MIGRATION_GUIDE.md          # Migration guide from custom implementations
+└── README.md                   # This file
 ```
 
 ## 🔄 Pipeline Workflow
@@ -59,22 +65,22 @@ FabricCICD/
 ### Stages
 
 1. **Build & Validate** 
-   - Validates notebook syntax and structure
-   - Validates configuration files
+   - Validates Fabric item syntax and structure
+   - Validates configuration files (parameter.yml, fabric-config.yml)
    - Creates deployment artifacts
 
 2. **Deploy to Development**
-   - Configures notebooks for dev environment
-   - Deploys to dev workspace
+   - Applies environment-specific parameters
+   - Deploys all Fabric items to dev workspace
    - Runs basic validation tests
 
 3. **Deploy to Test** *(main branch only)*
-   - Configures notebooks for test environment  
+   - Applies test environment parameters  
    - Deploys to test workspace
    - Runs comprehensive integration tests
 
 4. **Deploy to Production** *(requires approval)*
-   - Configures notebooks for production environment
+   - Applies production environment parameters
    - Deploys to production workspace
    - Runs production health checks
 
@@ -83,7 +89,7 @@ FabricCICD/
 - **Push to main**: Full Dev → Test → Prod deployment
 - **Push to develop**: Dev deployment only  
 - **Pull requests**: Validation and build only
-- **Path filters**: Only triggers on notebook/config changes
+- **Path filters**: Only triggers on Fabric item/config changes
 
 ## ⚙️ Configuration
 
@@ -93,44 +99,64 @@ Each environment requires these variable groups in Azure DevOps:
 
 #### fabric-dev-variables
 ```yaml
-dev-storage-account: "devstorageaccount001"
-dev-workspace-id: "12345678-1234-1234-1234-123456789012"  
-dev-workspace-name: "Finops Dev"
-dev-container-name: "costexport"
-dev-subscription-id: "12345678-1234-1234-1234-123456789abc"
+DEV_WORKSPACE_ID: "12345678-1234-1234-1234-123456789012"  
+DEV_WORKSPACE_NAME: "Fabric Development"
+DEV_SUBSCRIPTION_ID: "12345678-1234-1234-1234-123456789abc"
+DEV_STORAGE_ACCOUNT: "devstorageaccount001"
+DEV_CONTAINER_NAME: "data"
 ```
 
 #### fabric-test-variables  
 ```yaml
-test-storage-account: "teststorageaccount001"
-test-workspace-id: "12345678-1234-1234-1234-123456789013"
-test-workspace-name: "Finops Test"  
-test-container-name: "costexport"
-test-subscription-id: "12345678-1234-1234-1234-123456789def"
+TEST_WORKSPACE_ID: "12345678-1234-1234-1234-123456789013"
+TEST_WORKSPACE_NAME: "Fabric Test"  
+TEST_SUBSCRIPTION_ID: "12345678-1234-1234-1234-123456789def"
+TEST_STORAGE_ACCOUNT: "teststorageaccount001"
+TEST_CONTAINER_NAME: "data"
 ```
 
 #### fabric-prod-variables
 ```yaml
-prod-storage-account: "prodstorageaccount001"
-prod-workspace-id: "12345678-1234-1234-1234-123456789014"
-prod-workspace-name: "Finops Prod"
-prod-container-name: "costexport"
-prod-subscription-id: "12345678-1234-1234-1234-123456789ghi"
+PROD_WORKSPACE_ID: "12345678-1234-1234-1234-123456789014"
+PROD_WORKSPACE_NAME: "Fabric Production"
+PROD_SUBSCRIPTION_ID: "12345678-1234-1234-1234-123456789ghi"
+PROD_STORAGE_ACCOUNT: "prodstorageaccount001"
+PROD_CONTAINER_NAME: "data"
 ```
 
-### Notebook Configuration
+### Parameter Configuration
 
-Update your notebooks with placeholders that the pipeline will replace:
+Configure your Fabric items with placeholders that the pipeline will replace:
 
+**In notebooks:**
 ```python
 # Example notebook cell:
 storage_account = "PLACEHOLDER_STORAGE_ACCOUNT"
 workspace_id = "PLACEHOLDER_WORKSPACE_ID"  
 container_name = "PLACEHOLDER_CONTAINER_NAME"
+lakehouse_id = "$items.Lakehouse.MainLakehouse.$id"  # Dynamic reference
 
-# Cost export path
-read_path = f"abfss://{container_name}@{storage_account}.dfs.core.windows.net/focus/finops-focus-cost/"
+# Data path example
+data_path = f"abfss://{container_name}@{storage_account}.dfs.core.windows.net/data/"
 ```
+
+**In data pipelines (JSON):**
+```json
+{
+  "properties": {
+    "activities": [{
+      "typeProperties": {
+        "source": {
+          "datasetSettings": {
+            "externalReferences": {
+              "connection": "PLACEHOLDER_CONNECTION_ID"
+            }
+          }
+        }
+      }
+    }]
+  }
+}
 
 ## 🔒 Security
 
@@ -169,9 +195,9 @@ read_path = f"abfss://{container_name}@{storage_account}.dfs.core.windows.net/fo
 
 ### Common Issues
 
-#### "fab command not found"
-- Ensure ms-fabric-cli is installed in pipeline
-- Check PATH configuration in deployment scripts
+#### "fabric-cicd library not found"
+- Ensure fabric-cicd is installed in pipeline
+- Check pip installation in deployment script
 
 #### "Workspace not found"  
 - Verify workspace IDs in variable groups
@@ -181,22 +207,27 @@ read_path = f"abfss://{container_name}@{storage_account}.dfs.core.windows.net/fo
 - Check service connection configuration
 - Verify Fabric API permissions are enabled
 
+#### "Parameter replacement failed"
+- Check parameter.yml syntax and formatting
+- Verify environment variable mappings
+
 #### Pipeline timeout
 - Increase timeout values in azure-pipelines.yml
-- Optimize notebook deployment order
+- Optimize Fabric item deployment order
 
 ### Debug Commands
 
-```bash
-# Test Fabric CLI locally
-fab --version
-fab auth login
+```python
+# Test fabric-cicd library locally
+pip install fabric-cicd
+python -c "import fabric_cicd; print('Library installed successfully')"
 
-# Validate workspace access
-fab get /WorkspaceName.Workspace
+# Validate configuration files
+python -c "import yaml; yaml.safe_load(open('parameter.yml')); print('Parameter file valid')"
+python -c "import yaml; yaml.safe_load(open('fabric-config.yml')); print('Config file valid')"
 
-# Check deployment status
-fab api -X get workspaces/{workspace-id}/items
+# Test deployment (dry run)
+python scripts/deploy_fabric_items.py --environment dev --dry-run
 ```
 
 ## 📈 Advanced Features
@@ -209,12 +240,13 @@ fab api -X get workspaces/{workspace-id}/items
 ### Custom Validation
 - Extend validation scripts for business rules
 - Add data quality checks
-- Implement cost threshold alerts
+- Implement deployment health checks
 
 ### Integration Options
 - Azure Monitor integration for alerts
-- Teams/Slack notifications
+- Teams/Slack notifications for deployment status
 - JIRA/ServiceNow integration for approvals
+- Power BI reports for deployment metrics
 
 ## 🤝 Contributing
 
@@ -253,18 +285,24 @@ For support and questions:
 
 ### v2.0 Features
 - [ ] Multi-tenant deployment support
-- [ ] Automated cost optimization recommendations  
-- [ ] Advanced monitoring dashboards
+- [ ] Advanced item dependency management  
+- [ ] Deployment rollback mechanisms
 - [ ] Custom approval workflows
 - [ ] Performance optimization tools
 
 ### v3.0 Features  
-- [ ] GitOps integration
+- [ ] GitOps integration with Fabric Git
 - [ ] Infrastructure as Code templates
 - [ ] Advanced security scanning
-- [ ] Automated rollback mechanisms
-- [ ] Cross-cloud deployment support
+- [ ] Automated testing frameworks
+- [ ] Cross-workspace deployment support
 
 ---
+
+**🚀 Ready to deploy your Fabric items with confidence!**
+
+- **🆕 First-time setup**: [FIRST_TIME_SETUP.md](FIRST_TIME_SETUP.md)
+- **🔄 Migration guide**: [MIGRATION_GUIDE.md](MIGRATION_GUIDE.md)  
+- **📚 Official docs**: [Microsoft fabric-cicd](https://microsoft.github.io/fabric-cicd/latest/)
 
 **Made with ❤️ for the Fabric community**

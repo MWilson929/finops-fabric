@@ -1,6 +1,6 @@
-# Fabric CI/CD Setup Guide
+# Microsoft Fabric CI/CD Setup Guide
 
-This guide provides step-by-step instructions for setting up the complete Fabric Cost Analysis CI/CD pipeline.
+This guide provides step-by-step instructions for setting up a complete Microsoft Fabric CI/CD pipeline for deploying any Fabric items (notebooks, lakehouses, data pipelines, reports, etc.) across multiple environments.
 
 ## Prerequisites Checklist
 
@@ -12,6 +12,7 @@ Before starting, ensure you have:
 - [ ] Three Fabric workspaces (Dev, Test, Prod)
 - [ ] Azure CLI installed locally
 - [ ] Git repository access
+- [ ] Python 3.9+ for local testing
 
 ## Step 1: Azure Service Principal Setup
 
@@ -31,12 +32,14 @@ az ad sp create-for-rbac --name "fabric-cicd-sp" \
 1. Navigate to **Microsoft Fabric Admin Portal** → **Tenant Settings**
 2. Enable **"Service principals can use Fabric APIs"**
 3. Add your service principal to the allowed list
+4. Enable **"Allow service principals to use read-only admin APIs"**
 
 ### 1.3 Grant Workspace Access
 
 For each workspace (Dev, Test, Prod):
 1. Go to **Workspace Settings** → **Access**
 2. Add service principal with **Admin** permissions
+3. Note down the workspace ID (found in workspace URL or settings)
 
 ## Step 2: Azure DevOps Configuration
 
@@ -55,34 +58,34 @@ Create three variable groups with these exact names:
 #### fabric-dev-variables
 ```yaml
 Variables:
-  dev-storage-account: your-dev-storage-account
-  dev-workspace-id: your-dev-workspace-id
-  dev-workspace-name: Finops Dev
-  dev-container-name: costexport
-  dev-subscription-id: your-dev-subscription-id
-  dev-fabric-capacity: your-dev-capacity-name
+  DEV_WORKSPACE_ID: your-dev-workspace-id
+  DEV_WORKSPACE_NAME: Fabric Development
+  DEV_SUBSCRIPTION_ID: your-dev-subscription-id
+  DEV_STORAGE_ACCOUNT: your-dev-storage-account
+  DEV_CONTAINER_NAME: data
+  DEV_FABRIC_CAPACITY: your-dev-capacity-name
 ```
 
 #### fabric-test-variables
 ```yaml
 Variables:
-  test-storage-account: your-test-storage-account
-  test-workspace-id: your-test-workspace-id
-  test-workspace-name: Finops Test
-  test-container-name: costexport
-  test-subscription-id: your-test-subscription-id
-  test-fabric-capacity: your-test-capacity-name
+  TEST_WORKSPACE_ID: your-test-workspace-id
+  TEST_WORKSPACE_NAME: Fabric Test
+  TEST_SUBSCRIPTION_ID: your-test-subscription-id
+  TEST_STORAGE_ACCOUNT: your-test-storage-account
+  TEST_CONTAINER_NAME: data
+  TEST_FABRIC_CAPACITY: your-test-capacity-name
 ```
 
 #### fabric-prod-variables
 ```yaml
 Variables:
-  prod-storage-account: your-prod-storage-account
-  prod-workspace-id: your-prod-workspace-id
-  prod-workspace-name: Finops Prod
-  prod-container-name: costexport
-  prod-subscription-id: your-prod-subscription-id
-  prod-fabric-capacity: your-prod-capacity-name
+  PROD_WORKSPACE_ID: your-prod-workspace-id
+  PROD_WORKSPACE_NAME: Fabric Production
+  PROD_SUBSCRIPTION_ID: your-prod-subscription-id
+  PROD_STORAGE_ACCOUNT: your-prod-storage-account
+  PROD_CONTAINER_NAME: data
+  PROD_FABRIC_CAPACITY: your-prod-capacity-name
 ```
 
 **Security Note:** Mark storage account and workspace details as **Secret** if they contain sensitive information.
@@ -92,48 +95,51 @@ Variables:
 1. Go to **Pipelines** → **Environments**
 2. Create three environments:
 
-#### Development
-- **Name:** `Development`
+#### fabric-dev
+- **Name:** `fabric-dev`
 - **Approvals:** None required
 - **Checks:** None
 
-#### Test  
-- **Name:** `Test`
+#### fabric-test  
+- **Name:** `fabric-test`
 - **Approvals:** Add your team leads
 - **Checks:** Optional - add required reviewers
 
-#### Production
-- **Name:** `Production` 
+#### fabric-prod
+- **Name:** `fabric-prod` 
 - **Approvals:** Add business owners and change board
 - **Checks:** Add business hours restriction if needed
 
-## Step 3: Cost Management Export Setup
+## Step 3: First-Time Setup Instructions
 
-### 3.1 Create Cost Export
+### 3.1 Create Your Fabric Items
 
-1. Navigate to **Azure Portal** → **Cost Management**
-2. Go to **Exports** → **Create**
-3. Configure export settings:
-   - **Export type:** Daily export of month-to-date costs
-   - **Format:** FOCUS (FinOps Open Cost and Usage Specification)
-   - **Storage account:** Use the accounts from your variable groups
-   - **Container:** `costexport`
-   - **Path:** `focus/finops-focus-cost/`
+Start by creating your Fabric items in the Development workspace:
 
-### 3.2 Verify Export Path Structure
+1. **Create a Lakehouse** (recommended first item):
+   ```
+   Name: MainLakehouse
+   Purpose: Primary data storage for your solution
+   ```
 
-Ensure your exports create this structure:
-```
-costexport/
-└── focus/
-    └── finops-focus-cost/
-        ├── 20241201-20241231/
-        │   └── focus_2024-12-01_2024-12-31_*.csv
-        ├── 20241101-20241130/
-        │   └── focus_2024-11-01_2024-11-30_*.csv
-        └── 20241001-20241031/
-            └── focus_2024-10-01_2024-10-31_*.csv
-```
+2. **Create Notebooks** for data processing:
+   ```
+   Name: DataProcessing.ipynb
+   Purpose: Main data processing logic
+   ```
+
+3. **Create Data Pipelines** (if needed):
+   ```
+   Name: DataIngestion
+   Purpose: Automated data ingestion processes
+   ```
+
+### 3.2 Export Items to Git Integration
+
+1. In your Development workspace, go to **Workspace Settings** → **Git Integration**
+2. Connect to your repository
+3. Initialize Git integration
+4. This will create the proper folder structure in your repository
 
 ## Step 4: Repository Configuration
 
@@ -150,52 +156,63 @@ git push origin develop
 git checkout main
 ```
 
-### 4.2 Update Configuration Files
+### 4.2 Update Parameter Configuration
 
-Edit `config/environments.yaml` with your specific values:
+Edit `parameter.yml` with your environment-specific values:
 
 ```yaml
-environments:
-  dev:
-    storage_account: "your-dev-storage-account"
-    workspace_id: "your-dev-workspace-id"
-    workspace_name: "Finops Dev"
-    container_name: "costexport"
-    fabric_capacity: "your-dev-capacity"
-    
-  test:
-    storage_account: "your-test-storage-account" 
-    workspace_id: "your-test-workspace-id"
-    workspace_name: "Finops Test"
-    container_name: "costexport"
-    fabric_capacity: "your-test-capacity"
-    
-  prod:
-    storage_account: "your-prod-storage-account"
-    workspace_id: "your-prod-workspace-id" 
-    workspace_name: "Finops Prod"
-    container_name: "costexport"
-    fabric_capacity: "your-prod-capacity"
+find_replace:
+  - find_value: "PLACEHOLDER_STORAGE_ACCOUNT"
+    replace_value:
+      DEV: "your-dev-storage-account"
+      TEST: "your-test-storage-account"
+      PROD: "your-prod-storage-account"
+      
+  - find_value: "PLACEHOLDER_WORKSPACE_ID"
+    replace_value:
+      _ALL_: "$workspace.$id"  # Dynamic workspace ID resolution
+      
+  - find_value: "PLACEHOLDER_CONTAINER_NAME"
+    replace_value:
+      DEV: "data"
+      TEST: "data"
+      PROD: "data"
 ```
 
-### 4.3 Update Notebook Placeholders
+### 4.3 Update Fabric Item Placeholders
 
-In your notebooks, replace hardcoded values with placeholders:
+In your Fabric items, use placeholders that will be replaced during deployment:
 
+**In notebooks:**
 ```python
-# Replace this:
-storage_account = "mystorageaccount001"
-
-# With this:
+# Replace hardcoded values with placeholders:
 storage_account = "PLACEHOLDER_STORAGE_ACCOUNT"
+workspace_id = "PLACEHOLDER_WORKSPACE_ID"
+container_name = "PLACEHOLDER_CONTAINER_NAME"
+lakehouse_id = "$items.Lakehouse.MainLakehouse.$id"  # Dynamic reference
+```
+
+**In data pipelines:**
+```json
+{
+  "typeProperties": {
+    "source": {
+      "datasetSettings": {
+        "externalReferences": {
+          "connection": "PLACEHOLDER_CONNECTION_ID"
+        }
+      }
+    }
+  }
+}
 ```
 
 Common placeholders to use:
 - `PLACEHOLDER_STORAGE_ACCOUNT`
 - `PLACEHOLDER_WORKSPACE_ID`
-- `PLACEHOLDER_WORKSPACE_NAME`
 - `PLACEHOLDER_CONTAINER_NAME`
-- `PLACEHOLDER_FABRIC_CAPACITY`
+- `PLACEHOLDER_CONNECTION_ID`
+- `$items.{ItemType}.{ItemName}.$id` (dynamic references)
 
 ## Step 5: Pipeline Deployment
 

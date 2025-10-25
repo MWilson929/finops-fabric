@@ -1,0 +1,37 @@
+# Example Lakehouse: MainLakehouse
+
+This is an example lakehouse that demonstrates the structure for Fabric Lakehouse items.
+
+## Configuration
+
+- **Name**: MainLakehouse
+- **Type**: Lakehouse
+- **Environment**: All (with environment-specific references)
+
+## Usage in Notebooks
+
+Reference this lakehouse in notebooks using dynamic replacement:
+
+```python
+# Use dynamic reference that resolves at deployment time
+lakehouse_id = "$items.Lakehouse.MainLakehouse.$id"
+workspace_id = "$workspace.$id"
+
+# Connection string example
+connection_string = f"abfss://PLACEHOLDER_CONTAINER_NAME@PLACEHOLDER_STORAGE_ACCOUNT.dfs.core.windows.net/"
+```
+
+## Dependencies
+
+This lakehouse should be deployed before:
+- Notebooks that reference it
+- Data pipelines that write to it
+- Reports that read from it
+
+## Environment-Specific Notes
+
+- DEV: Used for development and testing
+- TEST: Used for integration testing  
+- PROD: Production data storage
+
+The lakehouse ID will be automatically resolved by fabric-cicd during deployment.

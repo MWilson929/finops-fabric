@@ -1,0 +1,103 @@
+# Microsoft Fabric CI/CD Parameter Configuration
+# This file manages environment-specific replacements for all Fabric items
+
+find_replace:
+  # Storage Account Connections - Replace storage account names across all files
+  - find_value: "PLACEHOLDER_STORAGE_ACCOUNT"
+    replace_value:
+      DEV: "devstorageaccount001"
+      TEST: "teststorageaccount001" 
+      PROD: "prodstorageaccount001"
+    
+  # Container Names - Replace container names for data sources
+  - find_value: "PLACEHOLDER_CONTAINER_NAME"
+    replace_value:
+      DEV: "costexport"
+      TEST: "costexport"
+      PROD: "costexport"
+      
+  # Subscription IDs - Replace Azure subscription IDs
+  - find_value: "PLACEHOLDER_SUBSCRIPTION_ID"
+    replace_value:
+      DEV: "$ENV:DEV_SUBSCRIPTION_ID"
+      TEST: "$ENV:TEST_SUBSCRIPTION_ID"
+      PROD: "$ENV:PROD_SUBSCRIPTION_ID"
+
+  # Workspace References - Replace workspace IDs using dynamic replacement
+  - find_value: "PLACEHOLDER_WORKSPACE_ID"
+    replace_value:
+      _ALL_: "$workspace.$id"
+      
+  # Data Source Paths - Replace data paths for different environments
+  - find_value: "PLACEHOLDER_DATA_PATH"
+    replace_value:
+      DEV: "focus/finops-focus-cost/dev"
+      TEST: "focus/finops-focus-cost/test"
+      PROD: "focus/finops-focus-cost"
+      
+  # Environment-specific connection strings
+  - find_value: "PLACEHOLDER_CONNECTION_STRING"
+    replace_value:
+      DEV: "DefaultEndpointsProtocol=https;AccountName=devstorageaccount001;AccountKey=$ENV:DEV_STORAGE_KEY;EndpointSuffix=core.windows.net"
+      TEST: "DefaultEndpointsProtocol=https;AccountName=teststorageaccount001;AccountKey=$ENV:TEST_STORAGE_KEY;EndpointSuffix=core.windows.net"
+      PROD: "DefaultEndpointsProtocol=https;AccountName=prodstorageaccount001;AccountKey=$ENV:PROD_STORAGE_KEY;EndpointSuffix=core.windows.net"
+
+  # Lakehouse references using dynamic replacement
+  - find_value: \#\s*META\s+"default_lakehouse":\s*"([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})"
+    replace_value:
+      _ALL_: "$items.Lakehouse.MainLakehouse.$id"
+    is_regex: "true"
+    item_type: "Notebook"
+    
+  # Lakehouse workspace references using dynamic replacement
+  - find_value: \#\s*META\s+"default_lakehouse_workspace_id":\s*"([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})"
+    replace_value:
+      _ALL_: "$workspace.$id"
+    is_regex: "true"
+    item_type: "Notebook"
+
+key_value_replace:
+  # Data Pipeline connection references
+  - find_key: $.properties.activities[?(@.typeProperties.source.datasetSettings.externalReferences.connection)]
+    replace_value:
+      DEV: "$ENV:DEV_CONNECTION_ID"
+      TEST: "$ENV:TEST_CONNECTION_ID" 
+      PROD: "$ENV:PROD_CONNECTION_ID"
+    item_type: "DataPipeline"
+    
+  # Schedule enablement by environment
+  - find_key: $.schedules[?(@.jobType=="Execute")].enabled
+    replace_value:
+      DEV: false
+      TEST: true
+      PROD: true
+    file_path: "**/.schedules"
+    
+  # Dataflow connection settings
+  - find_key: $.connections[?(@.kind=="Lakehouse")].connectionId
+    replace_value:
+      DEV: "$ENV:DEV_LAKEHOUSE_CONNECTION"
+      TEST: "$ENV:TEST_LAKEHOUSE_CONNECTION"
+      PROD: "$ENV:PROD_LAKEHOUSE_CONNECTION"
+    item_type: "Dataflow"
+
+spark_pool:
+  # Environment-specific Spark pool configurations
+  - instance_pool_id: "PLACEHOLDER_SPARK_POOL_ID"
+    replace_value:
+      DEV:
+        type: "Workspace"
+        name: "DefaultPool"
+      TEST:
+        type: "Capacity"
+        name: "TestPool_Medium"
+      PROD:
+        type: "Capacity" 
+        name: "ProdPool_Large"
+
+gateway_binding:
+  # On-premises gateway bindings for semantic models
+  - gateway_id: "$ENV:GATEWAY_ID"
+    dataset_name: 
+      - "CostAnalysisModel"
+      - "FinOpsReporting"

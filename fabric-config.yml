@@ -1,0 +1,82 @@
+# Microsoft Fabric CI/CD Configuration
+# Configuration-based deployment for all Fabric item types
+
+core:
+  # Environment-specific workspace mappings
+  workspace_id:
+    DEV: "$ENV:DEV_WORKSPACE_ID"
+    TEST: "$ENV:TEST_WORKSPACE_ID"
+    PROD: "$ENV:PROD_WORKSPACE_ID"
+    
+  workspace:
+    DEV: "Fabric Development"
+    TEST: "Fabric Test"
+    PROD: "Fabric Production"
+    
+  # Repository directory containing all Fabric items
+  repository_directory: "."
+  
+  # All supported Fabric item types for general-purpose deployment
+  item_types_in_scope:
+    - Notebook
+    - Lakehouse
+    - DataPipeline
+    - Environment
+    - Report
+    - SemanticModel
+    - Dataflow
+    - Warehouse
+    - KQLDatabase
+    - Eventhouse
+    - MirroredDatabase
+    - VariableLibrary
+    - CopyJob
+    - KQLQueryset
+    - Reflex
+    - Eventstream
+    - SQLDatabase
+    - KQLDashboard
+    - GraphQLApi
+    - ApacheAirflowJob
+    - MountedDataFactory
+    - DataAgent
+    - OrgApp
+    
+  # Parameter file for environment-specific replacements
+  parameter: "parameter.yml"
+
+publish:
+  # Exclude items with specific patterns from deployment
+  exclude_regex: "^(TEMP_|DEBUG_|DRAFT_).*"
+  
+  # Exclude items in specific folders
+  folder_exclude_regex: "^(temp|debug|drafts)/"
+  
+  # Environment-specific publishing controls
+  skip:
+    DEV: false    # Always deploy to dev
+    TEST: false   # Deploy to test after approval
+    PROD: false   # Deploy to prod after approval
+
+unpublish:
+  # Remove orphaned items not found in repository
+  exclude_regex: "^(SYSTEM_|ADMIN_).*"
+  
+  skip:
+    DEV: false    # Clean up dev environment
+    TEST: false   # Clean up test environment  
+    PROD: true    # Never auto-cleanup production
+
+features:
+  # Enable experimental features for advanced capabilities
+  - enable_experimental_features
+  - enable_config_deploy
+  - enable_shortcut_publish
+  - enable_environment_variable_replacement
+  - enable_items_to_include
+
+constants:
+  # Override default constants if needed
+  DEFAULT_API_ROOT_URL: "https://api.fabric.microsoft.com"
+  MAX_RETRY_ATTEMPTS: 3
+  RETRY_DELAY_SECONDS: 5

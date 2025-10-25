@@ -117,14 +117,6 @@ def load_workspace_config(environment, config_file_path):
             print(f"   Found in workspaces: {workspace_id}")
             return workspace_id
         
-        # Try alternative environments structure
-        if 'environments' in config and environment in config['environments']:
-            env_config = config['environments'][environment]
-            if 'workspace_id' in env_config:
-                workspace_id = env_config['workspace_id']
-                print(f"   Found in environments: {workspace_id}")
-                return workspace_id
-        
         print(f"   ❌ Could not find workspace ID for {environment}")
         return None
         

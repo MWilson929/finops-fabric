@@ -200,6 +200,7 @@ def deploy_fabric_items(environment, config_file_path, dry_run=False):
             append_feature_flag("enable_warehouse_unpublish")
             append_feature_flag("enable_environment_variable_replacement")
             append_feature_flag("enable_exclude_folder")
+            append_feature_flag("enable_verbose_logging")
             append_feature_flag("disable_print_identity")
             print("🧪 Feature flags configured using append_feature_flag:")
             print("   ✅ enable_experimental_features")
@@ -208,6 +209,7 @@ def deploy_fabric_items(environment, config_file_path, dry_run=False):
             print("   ✅ enable_warehouse_unpublish")
             print("   ✅ enable_environment_variable_replacement")
             print("   ✅ enable_exclude_folder")
+            print("   ✅ enable_verbose_logging")
             print("   ✅ disable_print_identity")
         except ImportError:
             print("❌ ERROR: append_feature_flag not available. Please update fabric-cicd library.")
@@ -242,6 +244,11 @@ def deploy_fabric_items(environment, config_file_path, dry_run=False):
             
             # Replace environment variable references with actual values
             config_content = config_content.replace('$ENV:DEV_WORKSPACE_ID', workspace_id)
+            
+            # Fix repository directory to use absolute path instead of relative
+            import os
+            repo_root = os.path.dirname(os.path.abspath(config_file_path))
+            config_content = config_content.replace('repository_directory: "."', f'repository_directory: "{repo_root}"')
             
             # Create temporary config file
             temp_config_fd, temp_config_path = tempfile.mkstemp(suffix='.yml', text=True)

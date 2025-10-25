@@ -199,6 +199,7 @@ def deploy_fabric_items(environment, config_file_path, dry_run=False):
             append_feature_flag("enable_lakehouse_unpublish")
             append_feature_flag("enable_warehouse_unpublish")
             append_feature_flag("enable_environment_variable_replacement")
+            append_feature_flag("enable_exclude_folder")
             append_feature_flag("disable_print_identity")
             print("🧪 Feature flags configured using append_feature_flag:")
             print("   ✅ enable_experimental_features")
@@ -206,6 +207,7 @@ def deploy_fabric_items(environment, config_file_path, dry_run=False):
             print("   ✅ enable_lakehouse_unpublish") 
             print("   ✅ enable_warehouse_unpublish")
             print("   ✅ enable_environment_variable_replacement")
+            print("   ✅ enable_exclude_folder")
             print("   ✅ disable_print_identity")
         except ImportError:
             print("❌ ERROR: append_feature_flag not available. Please update fabric-cicd library.")

@@ -1,0 +1,368 @@
+# Azure DevOps Pipeline for Fabric Cost Analysis (FCA) CI/CD
+# This pipeline implements Option 2: Git-based deployments using Build environments
+
+trigger:
+  branches:
+    include:
+    - main
+    - develop
+  paths:
+    include:
+    - notebooks/*
+    - config/*
+    - scripts/*
+    exclude:
+    - README.md
+    - docs/*
+
+pr:
+  branches:
+    include:
+    - main
+  paths:
+    include:
+    - notebooks/*
+    - config/*
+
+variables:
+  # Global variables
+  - name: pythonVersion
+    value: '3.11'
+  - name: fabricApiVersion
+    value: 'v1'
+  - name: azureServiceConnection
+    value: 'fabric-service-connection' # Update with your service connection name
+  # Variable groups for different environments
+  - group: fabric-dev-variables
+  - group: fabric-test-variables  
+  - group: fabric-prod-variables
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+stages:
+# ==============================================================================
+# BUILD STAGE - Validate and prepare artifacts
+# ==============================================================================
+- stage: Build
+  displayName: 'Build and Validate'
+  jobs:
+  - job: BuildJob
+    displayName: 'Build and Test FCA Components'
+    steps:
+    
+    - checkout: self
+      persistCredentials: 'true'
+      clean: 'true'
+    
+    - task: UsePythonVersion@0
+      displayName: 'Set Python Version'
+      inputs:
+        versionSpec: '$(pythonVersion)'
+        addToPath: true
+    
+    - script: |
+        python -m pip install --upgrade pip
+        pip install ms-fabric-cli
+        pip install requests
+        pip install pyyaml
+        pip install jsonschema
+      displayName: 'Install Dependencies'
+    
+    - task: PythonScript@0
+      displayName: 'Validate Notebook Syntax'
+      inputs:
+        scriptSource: 'inline'
+        script: |
+          import json
+          import os
+          import sys
+          
+          def validate_notebook(notebook_path):
+              """Validate notebook JSON structure"""
+              try:
+                  with open(notebook_path, 'r', encoding='utf-8') as f:
+                      notebook = json.load(f)
+                  
+                  # Basic validation
+                  required_keys = ['cells', 'metadata', 'nbformat']
+                  for key in required_keys:
+                      if key not in notebook:
+                          print(f"ERROR: Missing required key '{key}' in {notebook_path}")
+                          return False
+                  
+                  # Validate cells
+                  for i, cell in enumerate(notebook.get('cells', [])):
+                      if 'cell_type' not in cell:
+                          print(f"ERROR: Cell {i} missing 'cell_type' in {notebook_path}")
+                          return False
+                  
+                  print(f"✓ Validated: {notebook_path}")
+                  return True
+                  
+              except json.JSONDecodeError as e:
+                  print(f"ERROR: Invalid JSON in {notebook_path}: {e}")
+                  return False
+              except Exception as e:
+                  print(f"ERROR: Failed to validate {notebook_path}: {e}")
+                  return False
+          
+          # Find and validate all notebook files
+          notebook_dir = "notebooks" if os.path.exists("notebooks") else "."
+          validation_failed = False
+          
+          for root, dirs, files in os.walk(notebook_dir):
+              for file in files:
+                  if file.endswith('.ipynb'):
+                      notebook_path = os.path.join(root, file)
+                      if not validate_notebook(notebook_path):
+                          validation_failed = True
+          
+          if validation_failed:
+              sys.exit(1)
+          else:
+              print("✓ All notebooks validated successfully")
+    
+    - task: PythonScript@0
+      displayName: 'Validate Configuration Files'
+      inputs:
+        scriptSource: 'inline'
+        script: |
+          import json
+          import yaml
+          import os
+          import sys
+          
+          def validate_config_files():
+              """Validate configuration file structure"""
+              config_dir = "config" if os.path.exists("config") else "."
+              validation_failed = False
+              
+              # Expected configuration files
+              expected_files = {
+                  'environments.yaml': 'yaml',
+                  'deployment_order.json': 'json'
+              }
+              
+              for filename, file_type in expected_files.items():
+                  filepath = os.path.join(config_dir, filename)
+                  
+                  if not os.path.exists(filepath):
+                      print(f"WARNING: Optional config file {filepath} not found")
+                      continue
+                  
+                  try:
+                      with open(filepath, 'r', encoding='utf-8') as f:
+                          if file_type == 'json':
+                              json.load(f)
+                          elif file_type == 'yaml':
+                              yaml.safe_load(f)
+                      print(f"✓ Validated: {filepath}")
+                  except Exception as e:
+                      print(f"ERROR: Invalid {file_type.upper()} in {filepath}: {e}")
+                      validation_failed = True
+              
+              return not validation_failed
+          
+          if not validate_config_files():
+              sys.exit(1)
+          else:
+              print("✓ All configuration files validated successfully")
+    
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish Build Artifacts'
+      inputs:
+        targetPath: '$(Build.SourcesDirectory)'
+        artifact: 'fca-deployment-package'
+        publishLocation: 'pipeline'
+
+# ==============================================================================
+# DEV DEPLOYMENT STAGE
+# ==============================================================================
+- stage: DeployDev
+  displayName: 'Deploy to Development'
+  dependsOn: Build
+  condition: succeeded()
+  variables:
+  - group: fabric-dev-variables
+  jobs:
+  - deployment: DeployToFabricDev
+    displayName: 'Deploy FCA to Development Environment'
+    environment: 'fabric-dev'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          
+          - download: current
+            artifact: 'fca-deployment-package'
+          
+          - task: UsePythonVersion@0
+            inputs:
+              versionSpec: '$(pythonVersion)'
+          
+          - script: |
+              python -m pip install --upgrade pip
+              pip install ms-fabric-cli
+              pip install requests
+              pip install pyyaml
+            displayName: 'Install Fabric CLI'
+          
+          - task: PythonScript@0
+            displayName: 'Configure Notebooks for Dev Environment'
+            inputs:
+              scriptSource: 'filePath'
+              scriptPath: '$(Pipeline.Workspace)/fca-deployment-package/scripts/configure_notebooks.py'
+              arguments: '--environment dev --artifact-path $(Pipeline.Workspace)/fca-deployment-package'
+            env:
+              DEV_STORAGE_ACCOUNT: $(dev-storage-account)
+              DEV_WORKSPACE_ID: $(dev-workspace-id)
+              DEV_CONTAINER_NAME: $(dev-container-name)
+          
+          - task: AzureCLI@2
+            displayName: 'Deploy to Fabric Dev Workspace'
+            inputs:
+              azureSubscription: '$(azureServiceConnection)'
+              scriptType: 'bash'
+              scriptLocation: 'scriptPath'
+              scriptPath: '$(Pipeline.Workspace)/fca-deployment-package/scripts/deploy_to_fabric.sh'
+              arguments: 'dev $(Pipeline.Workspace)/fca-deployment-package'
+            env:
+              AZURE_CONFIG_DIR: $(Agent.TempDirectory)/.azure
+              DEV_WORKSPACE_NAME: $(dev-workspace-name)
+          
+          - task: PythonScript@0
+            displayName: 'Run Post-Deployment Validation'
+            inputs:
+              scriptSource: 'filePath'
+              scriptPath: '$(Pipeline.Workspace)/fca-deployment-package/scripts/validate_deployment.py'
+              arguments: '--environment dev'
+            env:
+              DEV_WORKSPACE_ID: $(dev-workspace-id)
+
+# ==============================================================================
+# TEST DEPLOYMENT STAGE
+# ==============================================================================
+- stage: DeployTest
+  displayName: 'Deploy to Test'
+  dependsOn: DeployDev
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+  variables:
+  - group: fabric-test-variables
+  jobs:
+  - deployment: DeployToFabricTest
+    displayName: 'Deploy FCA to Test Environment'
+    environment: 'fabric-test'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          
+          - download: current
+            artifact: 'fca-deployment-package'
+          
+          - task: UsePythonVersion@0
+            inputs:
+              versionSpec: '$(pythonVersion)'
+          
+          - script: |
+              python -m pip install --upgrade pip
+              pip install ms-fabric-cli
+              pip install requests
+              pip install pyyaml
+            displayName: 'Install Fabric CLI'
+          
+          - task: PythonScript@0
+            displayName: 'Configure Notebooks for Test Environment'
+            inputs:
+              scriptSource: 'filePath'
+              scriptPath: '$(Pipeline.Workspace)/fca-deployment-package/scripts/configure_notebooks.py'
+              arguments: '--environment test --artifact-path $(Pipeline.Workspace)/fca-deployment-package'
+            env:
+              TEST_STORAGE_ACCOUNT: $(test-storage-account)
+              TEST_WORKSPACE_ID: $(test-workspace-id)
+              TEST_CONTAINER_NAME: $(test-container-name)
+          
+          - task: AzureCLI@2
+            displayName: 'Deploy to Fabric Test Workspace'
+            inputs:
+              azureSubscription: '$(azureServiceConnection)'
+              scriptType: 'bash'
+              scriptLocation: 'scriptPath'
+              scriptPath: '$(Pipeline.Workspace)/fca-deployment-package/scripts/deploy_to_fabric.sh'
+              arguments: 'test $(Pipeline.Workspace)/fca-deployment-package'
+            env:
+              AZURE_CONFIG_DIR: $(Agent.TempDirectory)/.azure
+              TEST_WORKSPACE_NAME: $(test-workspace-name)
+          
+          - task: PythonScript@0
+            displayName: 'Run Integration Tests'
+            inputs:
+              scriptSource: 'filePath'
+              scriptPath: '$(Pipeline.Workspace)/fca-deployment-package/scripts/run_integration_tests.py'
+              arguments: '--environment test'
+            env:
+              TEST_WORKSPACE_ID: $(test-workspace-id)
+
+# ==============================================================================
+# PRODUCTION DEPLOYMENT STAGE
+# ==============================================================================
+- stage: DeployProd
+  displayName: 'Deploy to Production'
+  dependsOn: DeployTest
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+  variables:
+  - group: fabric-prod-variables
+  jobs:
+  - deployment: DeployToFabricProd
+    displayName: 'Deploy FCA to Production Environment'
+    environment: 'fabric-prod'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          
+          - download: current
+            artifact: 'fca-deployment-package'
+          
+          - task: UsePythonVersion@0
+            inputs:
+              versionSpec: '$(pythonVersion)'
+          
+          - script: |
+              python -m pip install --upgrade pip
+              pip install ms-fabric-cli
+              pip install requests
+            displayName: 'Install Fabric CLI'
+          
+          - task: PythonScript@0
+            displayName: 'Configure Notebooks for Production Environment'
+            inputs:
+              scriptSource: 'filePath'
+              scriptPath: '$(Pipeline.Workspace)/fca-deployment-package/scripts/configure_notebooks.py'
+              arguments: '--environment prod --artifact-path $(Pipeline.Workspace)/fca-deployment-package'
+            env:
+              PROD_STORAGE_ACCOUNT: $(prod-storage-account)
+              PROD_WORKSPACE_ID: $(prod-workspace-id)
+              PROD_CONTAINER_NAME: $(prod-container-name)
+          
+          - task: AzureCLI@2
+            displayName: 'Deploy to Fabric Production Workspace'
+            inputs:
+              azureSubscription: '$(azureServiceConnection)'
+              scriptType: 'bash'
+              scriptLocation: 'scriptPath'
+              scriptPath: '$(Pipeline.Workspace)/fca-deployment-package/scripts/deploy_to_fabric.sh'
+              arguments: 'prod $(Pipeline.Workspace)/fca-deployment-package'
+            env:
+              AZURE_CONFIG_DIR: $(Agent.TempDirectory)/.azure
+              PROD_WORKSPACE_NAME: $(prod-workspace-name)
+          
+          - task: PythonScript@0
+            displayName: 'Production Health Check'
+            inputs:
+              scriptSource: 'filePath'
+              scriptPath: '$(Pipeline.Workspace)/fca-deployment-package/scripts/production_health_check.py'
+              arguments: '--environment prod'
+            env:
+              PROD_WORKSPACE_ID: $(prod-workspace-id)

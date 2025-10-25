@@ -1,4 +1,5 @@
-# Fabric notebook source generated from notebook-content.ipynb
+# Fabric notebook source
+
 # This is a test notebook for validating Microsoft Fabric CI/CD deployment
 
 # METADATA ********************

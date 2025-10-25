@@ -107,10 +107,12 @@ stages:
     
     - script: |
         python -m pip install --upgrade pip
-        pip install fabric-cicd
-        pip install azure-identity
+        pip install --upgrade fabric-cicd
+        pip install --upgrade azure-identity
         pip install pyyaml
         pip install jsonschema
+        echo "Installed fabric-cicd version:"
+        pip show fabric-cicd
       displayName: 'Install Dependencies'
     
     - task: PythonScript@0
@@ -311,9 +313,11 @@ stages:
           
           - script: |
               python -m pip install --upgrade pip
-              pip install fabric-cicd
-              pip install azure-identity
+              pip install --upgrade fabric-cicd
+              pip install --upgrade azure-identity
               pip install pyyaml
+              echo "Installed fabric-cicd version:"
+              pip show fabric-cicd | grep -E "(Name|Version)"
             displayName: 'Install Fabric CI/CD Dependencies'
           
           - task: PythonScript@0

@@ -1,6 +1,10 @@
 # Microsoft Fabric CI/CD Configuration
 # Configuration-based deployment for all Fabric item types
 
+# Experimental features (must be at root level)
+enable_experimental_features: true
+enable_config_deploy: true
+
 core:
   # Environment-specific workspace mappings
   workspace_id:
@@ -67,13 +71,7 @@ unpublish:
     TEST: false   # Clean up test environment  
     PROD: true    # Never auto-cleanup production
 
-features:
-  # Enable experimental features for advanced capabilities (set to true/false)
-  enable_experimental_features: true
-  enable_config_deploy: true
-  enable_shortcut_publish: true
-  enable_environment_variable_replacement: true
-  enable_items_to_include: true
+# Additional features moved to root level above
 
 constants:
   # Override default constants if needed

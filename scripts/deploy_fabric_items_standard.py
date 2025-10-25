@@ -42,13 +42,36 @@ def load_workspace_config(environment):
             with open(config_file, 'r') as f:
                 config = yaml.safe_load(f)
             
-            # Extract workspace ID for environment
+            print(f"🔍 Searching for workspace ID for environment: {environment}")
+            
+            # Try fabric-config.yml structure: core.workspace_id.ENV
+            if 'core' in config and 'workspace_id' in config['core']:
+                workspace_mapping = config['core']['workspace_id']
+                if environment.upper() in workspace_mapping:
+                    workspace_ref = workspace_mapping[environment.upper()]
+                    print(f"   Found workspace reference: {workspace_ref}")
+                    
+                    # Handle environment variable references like "$ENV:DEV_WORKSPACE_ID"
+                    if workspace_ref.startswith('$ENV:'):
+                        env_var = workspace_ref[5:]  # Remove "$ENV:" prefix
+                        workspace_id = os.environ.get(env_var)
+                        if workspace_id:
+                            print(f"   Resolved from environment variable {env_var}: {workspace_id}")
+                            return workspace_id
+                        else:
+                            print(f"   ❌ Environment variable {env_var} not found")
+                    else:
+                        # Direct workspace ID
+                        print(f"🎯 Target workspace for {environment}: {workspace_ref}")
+                        return workspace_ref
+            
+            # Try simple workspaces structure
             if 'workspaces' in config and environment in config['workspaces']:
                 workspace_id = config['workspaces'][environment]
                 print(f"🎯 Target workspace for {environment}: {workspace_id}")
                 return workspace_id
             
-            # Try alternative config structure
+            # Try alternative environments structure
             if 'environments' in config and environment in config['environments']:
                 env_config = config['environments'][environment]
                 if 'workspace_id' in env_config:
@@ -56,11 +79,18 @@ def load_workspace_config(environment):
                     print(f"🎯 Target workspace for {environment}: {workspace_id}")
                     return workspace_id
     
-    # Fallback to environment variable
-    env_var = f"FABRIC_WORKSPACE_ID_{environment.upper()}"
+    # Fallback to direct environment variable
+    env_var = f"{environment.upper()}_WORKSPACE_ID"
     workspace_id = os.environ.get(env_var)
     if workspace_id:
-        print(f"🎯 Using workspace ID from environment variable {env_var}: {workspace_id}")
+        print(f"🎯 Using direct environment variable {env_var}: {workspace_id}")
+        return workspace_id
+    
+    # Last resort - FABRIC_WORKSPACE_ID format
+    env_var_alt = f"FABRIC_WORKSPACE_ID_{environment.upper()}"
+    workspace_id = os.environ.get(env_var_alt)
+    if workspace_id:
+        print(f"🎯 Using alternative environment variable {env_var_alt}: {workspace_id}")
         return workspace_id
     
     print(f"❌ Could not find workspace ID for environment: {environment}")

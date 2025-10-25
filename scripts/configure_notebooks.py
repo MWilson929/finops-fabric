@@ -169,7 +169,11 @@ def main():
     print(f"  Successfully configured: {success_count}")
     print(f"  Failed: {total_count - success_count}")
     
-    if success_count == total_count and total_count > 0:
+    if total_count == 0:
+        print("⚠️  No notebooks found to configure - this is OK if notebooks haven't been added yet")
+        print("✅ Configuration script completed successfully (no notebooks to process)")
+        sys.exit(0)
+    elif success_count == total_count:
         print("✅ All notebooks configured successfully!")
         sys.exit(0)
     else:

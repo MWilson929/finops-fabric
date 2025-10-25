@@ -238,10 +238,10 @@ stages:
                 print("✅ Python environment test completed")
           
           - task: PythonScript@0
-            displayName: 'Configure Notebooks for Dev Environment (Debug)'
+            displayName: 'Configure Notebooks for Dev Environment'
             inputs:
               scriptSource: 'filePath'
-              scriptPath: '$(Pipeline.Workspace)/fca-deployment-package/scripts/configure_notebooks_debug.py'
+              scriptPath: '$(Pipeline.Workspace)/fca-deployment-package/scripts/configure_notebooks.py'
               arguments: '--environment dev --artifact-path $(Pipeline.Workspace)/fca-deployment-package'
             env:
               DEV_STORAGE_ACCOUNT: $(dev-storage-account)

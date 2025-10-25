@@ -87,8 +87,13 @@ def deploy_fabric_items(environment, config_file_path, dry_run=False):
     
     # Import fabric-cicd after ensuring it's installed
     try:
+        import fabric_cicd
         from fabric_cicd import deploy_with_config
         from azure.identity import DefaultAzureCredential, ClientSecretCredential
+        
+        # Display fabric-cicd version for debugging
+        print(f"📦 fabric-cicd version: {fabric_cicd.__version__}")
+        
     except ImportError as e:
         print(f"❌ Failed to import fabric-cicd: {e}")
         return False
@@ -132,30 +137,72 @@ def deploy_fabric_items(environment, config_file_path, dry_run=False):
             print("   Falling back to DefaultAzureCredential...")
             credential = DefaultAzureCredential()
         
+        # Set experimental features environment variables as additional attempt
+        os.environ['FABRIC_ENABLE_EXPERIMENTAL_FEATURES'] = 'true'
+        os.environ['FABRIC_ENABLE_CONFIG_DEPLOY'] = 'true'
+        print("🧪 Set experimental features environment variables")
+        
         if dry_run:
             print("🔍 DRY RUN MODE - No actual deployment will occur")
             print(f"   Config file: {config_file_path}")
             print(f"   Environment: {environment}")
             return True
         
-        # Deploy using configuration file
-        deploy_with_config(
-            config_file_path=config_file_path,
-            environment=environment.upper(),
-            token_credential=credential
-        )
+        # Try main config file first, then minimal if experimental features fail
+        config_files_to_try = [config_file_path]
         
-        print(f"✅ Deployment to {environment.upper()} completed successfully!")
-        return True
+        # Add minimal config as fallback for experimental features issues
+        if 'fabric-config.yml' in config_file_path:
+            minimal_config = config_file_path.replace('fabric-config.yml', 'fabric-config-minimal.yml')
+            if os.path.exists(minimal_config):
+                config_files_to_try.append(minimal_config)
+        
+        last_error = None
+        for config_path in config_files_to_try:
+            print(f"📦 Attempting deployment with: {config_path}")
+            
+            try:
+                # Deploy using configuration file
+                deploy_with_config(
+                    config_file_path=config_path,
+                    environment=environment.upper(),
+                    token_credential=credential
+                )
+                
+                print(f"✅ Deployment to {environment.upper()} completed successfully with {config_path}!")
+                return True
+                
+            except Exception as config_error:
+                last_error = config_error
+                print(f"❌ Failed with {config_path}: {str(config_error)}")
+                
+                if "experimental" in str(config_error).lower():
+                    print("   💡 This appears to be an experimental features issue")
+                    if config_path != config_files_to_try[-1]:
+                        print("   🔄 Trying alternative configuration...")
+                        continue
+                else:
+                    # For non-experimental errors, don't try other configs
+                    break
+        
+        # If we get here, all configs failed
+        raise last_error
         
     except Exception as e:
         print(f"❌ Deployment failed: {str(e)}")
         print(f"   Error type: {type(e).__name__}")
-        if "tenant" in str(e).lower():
+        
+        if "experimental" in str(e).lower():
+            print("   💡 This is an experimental features issue. Try:")
+            print("      - Upgrading fabric-cicd: pip install --upgrade fabric-cicd")
+            print("      - Using alternative deployment method")
+            print("      - Checking fabric-cicd documentation for latest config format")
+        elif "tenant" in str(e).lower():
             print("   💡 This appears to be a tenant ID issue. Please check:")
             print("      - Ensure your tenant ID is correct in your variable group")
             print("      - Verify the tenant ID is in GUID format (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)")
             print("      - Confirm your service principal exists in the correct tenant")
+        
         return False
 
 def main():

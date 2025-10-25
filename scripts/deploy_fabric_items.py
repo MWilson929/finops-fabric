@@ -260,9 +260,12 @@ def deploy_fabric_items(environment, config_file_path, dry_run=False):
                         print(f"   Proceeding anyway...")
                     
                     # Check what items exist in repository before deployment
-                    repo_dir = os.getcwd()
+                    # Use the directory containing the config file as the repository root
+                    repo_dir = os.path.dirname(config_file_path)
                     print(f"🔍 Repository scan:")
-                    print(f"   Working directory: {repo_dir}")
+                    print(f"   Config file path: {config_file_path}")
+                    print(f"   Repository directory (from config): {repo_dir}")
+                    print(f"   Current working directory: {os.getcwd()}")
                     
                     # Check for notebooks
                     notebooks_dir = os.path.join(repo_dir, "notebooks")

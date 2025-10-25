@@ -142,10 +142,27 @@ def deploy_fabric_items_standard(environment, dry_run=False):
             print(f"   Repository directory: {os.getcwd()}")
             return True
         
-        # Check what items exist in repository before deployment
+        # Check what items exist in repository before deployment  
+        # Use current directory, but should be called from repository root
         repo_dir = os.getcwd()
         print(f"🔍 Repository scan:")
         print(f"   Working directory: {repo_dir}")
+        
+        # Try to find repository root if we're not in it
+        potential_repo_dirs = [
+            repo_dir,
+            os.path.dirname(repo_dir),  # Parent directory
+            "/home/vsts/work/1/fca-deployment-package"  # Known artifact path
+        ]
+        
+        actual_repo_dir = repo_dir
+        for test_dir in potential_repo_dirs:
+            if os.path.exists(os.path.join(test_dir, "notebooks")) or os.path.exists(os.path.join(test_dir, "lakehouses")):
+                actual_repo_dir = test_dir
+                print(f"   📁 Found repository structure in: {actual_repo_dir}")
+                break
+        
+        repo_dir = actual_repo_dir
         
         # Check for notebooks
         notebooks_dir = os.path.join(repo_dir, "notebooks")

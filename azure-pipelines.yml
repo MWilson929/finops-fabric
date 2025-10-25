@@ -354,12 +354,10 @@ stages:
               DEV_WORKSPACE_ID: $(dev-workspace-id)
               DEV_SUBSCRIPTION_ID: $(dev-subscription-id)
           
-          - task: PythonScript@0
+          - script: |
+              cd "$(Pipeline.Workspace)/fca-deployment-package"
+              python scripts/deploy_fabric_items.py --environment dev --config-file fabric-config.yml --install-deps
             displayName: 'Deploy Fabric Items to Dev Environment'
-            inputs:
-              scriptSource: 'filePath'
-              scriptPath: '$(Pipeline.Workspace)/fca-deployment-package/scripts/deploy_fabric_items.py'
-              arguments: '--environment dev --config-file $(Pipeline.Workspace)/fca-deployment-package/fabric-config.yml'
             env:
               DEV_WORKSPACE_ID: $(dev-workspace-id)
               DEV_SUBSCRIPTION_ID: $(dev-subscription-id)

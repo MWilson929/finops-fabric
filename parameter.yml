@@ -1,55 +1,41 @@
 # Microsoft Fabric CI/CD Parameter Configuration
-# This file manages environment-specific replacements for all Fabric items
+# Environment-specific replacements for ADLS Gen2 shortcuts and Fabric items
 
 find_replace:
-  # Storage Account Connections - Replace storage account names across all files
+  # ADLS Gen2 Storage Account Names - Replace with environment-specific accounts
   - find_value: "PLACEHOLDER_STORAGE_ACCOUNT"
     replace_value:
-      DEV: "devstorageaccount001"
-      TEST: "teststorageaccount001" 
-      PROD: "prodstorageaccount001"
+      DEV: "$ENV:DEV_STORAGE_ACCOUNT_NAME"
+      TEST: "$ENV:TEST_STORAGE_ACCOUNT_NAME" 
+      PROD: "$ENV:PROD_STORAGE_ACCOUNT_NAME"
     
-  # Container Names - Replace container names for data sources
+  # ADLS Gen2 Container Names - Replace with environment-specific containers  
   - find_value: "PLACEHOLDER_CONTAINER_NAME"
     replace_value:
-      DEV: "costexport"
-      TEST: "costexport"
-      PROD: "costexport"
+      DEV: "$ENV:DEV_CONTAINER_NAME"
+      TEST: "$ENV:TEST_CONTAINER_NAME"
+      PROD: "$ENV:PROD_CONTAINER_NAME"
       
-  # Subscription IDs - Replace Azure subscription IDs
-  - find_value: "PLACEHOLDER_SUBSCRIPTION_ID"
+  # ADLS Gen2 Connection IDs - Replace with environment-specific connection IDs
+  - find_value: "PLACEHOLDER_CONNECTION_ID"
     replace_value:
-      DEV: "$ENV:DEV_SUBSCRIPTION_ID"
-      TEST: "$ENV:TEST_SUBSCRIPTION_ID"
-      PROD: "$ENV:PROD_SUBSCRIPTION_ID"
+      DEV: "$ENV:DEV_CONNECTION_ID"
+      TEST: "$ENV:TEST_CONNECTION_ID"
+      PROD: "$ENV:PROD_CONNECTION_ID"
 
-  # Workspace References - Replace workspace IDs using dynamic replacement
+  # Workspace References - Dynamic replacement for workspace IDs
   - find_value: "PLACEHOLDER_WORKSPACE_ID"
     replace_value:
       _ALL_: "$workspace.$id"
       
-  # Data Source Paths - Replace data paths for different environments
-  - find_value: "PLACEHOLDER_DATA_PATH"
-    replace_value:
-      DEV: "focus/finops-focus-cost/dev"
-      TEST: "focus/finops-focus-cost/test"
-      PROD: "focus/finops-focus-cost"
-      
-  # Environment-specific connection strings
-  - find_value: "PLACEHOLDER_CONNECTION_STRING"
-    replace_value:
-      DEV: "DefaultEndpointsProtocol=https;AccountName=devstorageaccount001;AccountKey=$ENV:DEV_STORAGE_KEY;EndpointSuffix=core.windows.net"
-      TEST: "DefaultEndpointsProtocol=https;AccountName=teststorageaccount001;AccountKey=$ENV:TEST_STORAGE_KEY;EndpointSuffix=core.windows.net"
-      PROD: "DefaultEndpointsProtocol=https;AccountName=prodstorageaccount001;AccountKey=$ENV:PROD_STORAGE_KEY;EndpointSuffix=core.windows.net"
-
-  # Lakehouse references using dynamic replacement
+  # Lakehouse references using dynamic replacement (for notebooks)
   - find_value: \#\s*META\s+"default_lakehouse":\s*"([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})"
     replace_value:
-      _ALL_: "$items.Lakehouse.MainLakehouse.$id"
+      _ALL_: "$items.Lakehouse.FinOpsHub.$id"
     is_regex: "true"
     item_type: "Notebook"
     
-  # Lakehouse workspace references using dynamic replacement
+  # Lakehouse workspace references using dynamic replacement (for notebooks)
   - find_value: \#\s*META\s+"default_lakehouse_workspace_id":\s*"([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})"
     replace_value:
       _ALL_: "$workspace.$id"

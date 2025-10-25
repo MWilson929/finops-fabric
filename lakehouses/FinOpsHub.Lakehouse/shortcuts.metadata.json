@@ -5,9 +5,9 @@
     "target": {
       "type": "AdlsGen2",
       "adlsGen2": {
-        "connectionId": "ac9d047e-1e22-404f-ab2c-3a3a71e90273",
-        "location": "https://2trickcostexport.dfs.core.windows.net",
-        "subpath": "/costexport"
+        "connectionId": "PLACEHOLDER_CONNECTION_ID",
+        "location": "https://PLACEHOLDER_STORAGE_ACCOUNT.dfs.core.windows.net",
+        "subpath": "/PLACEHOLDER_CONTAINER_NAME"
       }
     }
   },
@@ -17,8 +17,8 @@
     "target": {
       "type": "AdlsGen2",
       "adlsGen2": {
-        "connectionId": "ac9d047e-1e22-404f-ab2c-3a3a71e90273",
-        "location": "https://2trickcostexport.dfs.core.windows.net",
+        "connectionId": "PLACEHOLDER_CONNECTION_ID",
+        "location": "https://PLACEHOLDER_STORAGE_ACCOUNT.dfs.core.windows.net",
         "subpath": "/billing/azure"
       }
     }
@@ -29,8 +29,8 @@
     "target": {
       "type": "AdlsGen2",
       "adlsGen2": {
-        "connectionId": "ac9d047e-1e22-404f-ab2c-3a3a71e90273",
-        "location": "https://2trickcostexport.dfs.core.windows.net",
+        "connectionId": "PLACEHOLDER_CONNECTION_ID",
+        "location": "https://PLACEHOLDER_STORAGE_ACCOUNT.dfs.core.windows.net",
         "subpath": "/billing/aws"
       }
     }
@@ -41,9 +41,21 @@
     "target": {
       "type": "AdlsGen2", 
       "adlsGen2": {
-        "connectionId": "ac9d047e-1e22-404f-ab2c-3a3a71e90273",
-        "location": "https://2trickcostexport.dfs.core.windows.net",
+        "connectionId": "PLACEHOLDER_CONNECTION_ID",
+        "location": "https://PLACEHOLDER_STORAGE_ACCOUNT.dfs.core.windows.net",
         "subpath": "/inventory"
+      }
+    }
+  },
+  {
+    "name": "external_data_sources",
+    "path": "/Files",
+    "target": {
+      "type": "AdlsGen2",
+      "adlsGen2": {
+        "connectionId": "PLACEHOLDER_CONNECTION_ID",
+        "location": "https://PLACEHOLDER_STORAGE_ACCOUNT.dfs.core.windows.net", 
+        "subpath": "/external"
       }
     }
   },
@@ -53,8 +65,8 @@
     "target": {
       "type": "AdlsGen2",
       "adlsGen2": {
-        "connectionId": "ac9d047e-1e22-404f-ab2c-3a3a71e90273", 
-        "location": "https://2trickcostexport.dfs.core.windows.net",
+        "connectionId": "PLACEHOLDER_CONNECTION_ID", 
+        "location": "https://PLACEHOLDER_STORAGE_ACCOUNT.dfs.core.windows.net",
         "subpath": "/budgets"
       }
     }
@@ -65,8 +77,8 @@
     "target": {
       "type": "AdlsGen2",
       "adlsGen2": {
-        "connectionId": "ac9d047e-1e22-404f-ab2c-3a3a71e90273",
-        "location": "https://2trickcostexport.dfs.core.windows.net", 
+        "connectionId": "PLACEHOLDER_CONNECTION_ID",
+        "location": "https://PLACEHOLDER_STORAGE_ACCOUNT.dfs.core.windows.net", 
         "subpath": "/external"
       }
     }
@@ -77,8 +89,8 @@
     "target": {
       "type": "AdlsGen2",
       "adlsGen2": {
-        "connectionId": "ac9d047e-1e22-404f-ab2c-3a3a71e90273",
-        "location": "https://2trickcostexport.dfs.core.windows.net",
+        "connectionId": "PLACEHOLDER_CONNECTION_ID",
+        "location": "https://PLACEHOLDER_STORAGE_ACCOUNT.dfs.core.windows.net",
         "subpath": "/archives"
       }
     }

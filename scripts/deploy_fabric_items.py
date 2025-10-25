@@ -243,6 +243,17 @@ def deploy_fabric_items(environment, config_file_path, dry_run=False):
             
             # Create temporary config file
             temp_config_fd, temp_config_path = tempfile.mkstemp(suffix='.yml', text=True)
+            
+            # Also copy parameter.yml to the same directory as temp config if it exists
+            temp_param_path = None
+            param_file_path = os.path.join(os.path.dirname(config_file_path), 'parameter.yml')
+            if os.path.exists(param_file_path):
+                temp_dir = os.path.dirname(temp_config_path)
+                temp_param_path = os.path.join(temp_dir, 'parameter.yml')
+                import shutil
+                shutil.copy2(param_file_path, temp_param_path)
+                print(f"📋 Copied parameter.yml to temporary directory")
+            
             try:
                 with os.fdopen(temp_config_fd, 'w', encoding='utf-8') as f:
                     f.write(config_content)
@@ -257,12 +268,20 @@ def deploy_fabric_items(environment, config_file_path, dry_run=False):
                 )
                 
             finally:
-                # Clean up temporary file
+                # Clean up temporary files
                 try:
                     os.unlink(temp_config_path)
                     print(f"🧹 Cleaned up temporary config file")
                 except:
                     pass
+                
+                # Clean up temporary parameter file if created
+                if temp_param_path and os.path.exists(temp_param_path):
+                    try:
+                        os.unlink(temp_param_path)
+                        print(f"🧹 Cleaned up temporary parameter file")
+                    except:
+                        pass
             
             print(f"✅ Config-based deployment to {environment.upper()} completed successfully!")
             return True

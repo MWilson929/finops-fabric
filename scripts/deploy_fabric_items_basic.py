@@ -163,8 +163,12 @@ def deploy_fabric_items_basic(environment, dry_run=False):
         import fabric_cicd
         from azure.identity import DefaultAzureCredential, ClientSecretCredential
         
-        # Display fabric-cicd version for debugging
-        print(f"📦 fabric-cicd version: {fabric_cicd.__version__}")
+        # Display fabric-cicd version for debugging (if available)
+        try:
+            version = getattr(fabric_cicd, '__version__', 'version not available')
+            print(f"📦 fabric-cicd imported successfully, version: {version}")
+        except:
+            print(f"📦 fabric-cicd imported successfully")
         
     except ImportError as e:
         print(f"❌ Failed to import fabric-cicd: {e}")

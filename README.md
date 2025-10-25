@@ -96,7 +96,7 @@ Each environment requires these variable groups in Azure DevOps:
 dev-storage-account: "devstorageaccount001"
 dev-workspace-id: "12345678-1234-1234-1234-123456789012"  
 dev-workspace-name: "Finops Dev"
-dev-container-name: "msexports"
+dev-container-name: "costexport"
 ```
 
 #### fabric-test-variables  
@@ -104,7 +104,7 @@ dev-container-name: "msexports"
 test-storage-account: "teststorageaccount001"
 test-workspace-id: "12345678-1234-1234-1234-123456789013"
 test-workspace-name: "Finops Test"  
-test-container-name: "msexports"
+test-container-name: "costexport"
 ```
 
 #### fabric-prod-variables
@@ -112,7 +112,7 @@ test-container-name: "msexports"
 prod-storage-account: "prodstorageaccount001"
 prod-workspace-id: "12345678-1234-1234-1234-123456789014"
 prod-workspace-name: "Finops Prod"
-prod-container-name: "msexports"
+prod-container-name: "costexport"
 ```
 
 ### Notebook Configuration
@@ -126,7 +126,7 @@ workspace_id = "PLACEHOLDER_WORKSPACE_ID"
 container_name = "PLACEHOLDER_CONTAINER_NAME"
 
 # Cost export path
-read_path = f"abfss://{container_name}@{storage_account}.dfs.core.windows.net/focuscost/"
+read_path = f"abfss://{container_name}@{storage_account}.dfs.core.windows.net/focus/finops-focus-cost/"
 ```
 
 ## 🔒 Security

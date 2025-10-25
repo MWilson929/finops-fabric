@@ -58,7 +58,7 @@ Variables:
   dev-storage-account: your-dev-storage-account
   dev-workspace-id: your-dev-workspace-id
   dev-workspace-name: Finops Dev
-  dev-container-name: msexports
+  dev-container-name: costexport
   dev-fabric-capacity: your-dev-capacity-name
 ```
 
@@ -68,7 +68,7 @@ Variables:
   test-storage-account: your-test-storage-account
   test-workspace-id: your-test-workspace-id
   test-workspace-name: Finops Test
-  test-container-name: msexports
+  test-container-name: costexport
   test-fabric-capacity: your-test-capacity-name
 ```
 
@@ -78,7 +78,7 @@ Variables:
   prod-storage-account: your-prod-storage-account
   prod-workspace-id: your-prod-workspace-id
   prod-workspace-name: Finops Prod
-  prod-container-name: msexports
+  prod-container-name: costexport
   prod-fabric-capacity: your-prod-capacity-name
 ```
 
@@ -114,21 +114,22 @@ Variables:
    - **Export type:** Daily export of month-to-date costs
    - **Format:** FOCUS (FinOps Open Cost and Usage Specification)
    - **Storage account:** Use the accounts from your variable groups
-   - **Container:** `msexports`
-   - **Path:** `focuscost/`
+   - **Container:** `costexport`
+   - **Path:** `focus/finops-focus-cost/`
 
 ### 3.2 Verify Export Path Structure
 
 Ensure your exports create this structure:
 ```
-msexports/
-└── focuscost/
-    ├── 20241201-20241231/
-    │   └── focus_2024-12-01_2024-12-31_*.csv
-    ├── 20241101-20241130/
-    │   └── focus_2024-11-01_2024-11-30_*.csv
-    └── 20241001-20241031/
-        └── focus_2024-10-01_2024-10-31_*.csv
+costexport/
+└── focus/
+    └── finops-focus-cost/
+        ├── 20241201-20241231/
+        │   └── focus_2024-12-01_2024-12-31_*.csv
+        ├── 20241101-20241130/
+        │   └── focus_2024-11-01_2024-11-30_*.csv
+        └── 20241001-20241031/
+            └── focus_2024-10-01_2024-10-31_*.csv
 ```
 
 ## Step 4: Repository Configuration
@@ -156,21 +157,21 @@ environments:
     storage_account: "your-dev-storage-account"
     workspace_id: "your-dev-workspace-id"
     workspace_name: "Finops Dev"
-    container_name: "msexports"
+    container_name: "costexport"
     fabric_capacity: "your-dev-capacity"
     
   test:
     storage_account: "your-test-storage-account" 
     workspace_id: "your-test-workspace-id"
     workspace_name: "Finops Test"
-    container_name: "msexports"
+    container_name: "costexport"
     fabric_capacity: "your-test-capacity"
     
   prod:
     storage_account: "your-prod-storage-account"
     workspace_id: "your-prod-workspace-id" 
     workspace_name: "Finops Prod"
-    container_name: "msexports"
+    container_name: "costexport"
     fabric_capacity: "your-prod-capacity"
 ```
 

@@ -28,19 +28,19 @@ def get_environment_variables(environment):
         'dev': {
             'storage_account': os.environ.get('DEV_STORAGE_ACCOUNT', ''),
             'workspace_id': os.environ.get('DEV_WORKSPACE_ID', ''),
-            'container_name': os.environ.get('DEV_CONTAINER_NAME', 'msexports'),
+            'container_name': os.environ.get('DEV_CONTAINER_NAME', 'costexport'),
             'workspace_name': os.environ.get('DEV_WORKSPACE_NAME', 'Finops Dev')
         },
         'test': {
             'storage_account': os.environ.get('TEST_STORAGE_ACCOUNT', ''),
             'workspace_id': os.environ.get('TEST_WORKSPACE_ID', ''),
-            'container_name': os.environ.get('TEST_CONTAINER_NAME', 'msexports'),
+            'container_name': os.environ.get('TEST_CONTAINER_NAME', 'costexport'),
             'workspace_name': os.environ.get('TEST_WORKSPACE_NAME', 'Finops Test')
         },
         'prod': {
             'storage_account': os.environ.get('PROD_STORAGE_ACCOUNT', ''),
             'workspace_id': os.environ.get('PROD_WORKSPACE_ID', ''),
-            'container_name': os.environ.get('PROD_CONTAINER_NAME', 'msexports'),
+            'container_name': os.environ.get('PROD_CONTAINER_NAME', 'costexport'),
             'workspace_name': os.environ.get('PROD_WORKSPACE_NAME', 'Finops Prod')
         }
     }
@@ -73,7 +73,7 @@ def update_notebook_for_environment(notebook_path, environment_config):
             replacements = {
                 'PLACEHOLDER_STORAGE_ACCOUNT': environment_config.get('storage_account', ''),
                 'PLACEHOLDER_WORKSPACE_ID': environment_config.get('workspace_id', ''),
-                'PLACEHOLDER_CONTAINER_NAME': environment_config.get('container_name', 'msexports'),
+                'PLACEHOLDER_CONTAINER_NAME': environment_config.get('container_name', 'costexport'),
                 'PLACEHOLDER_WORKSPACE_NAME': environment_config.get('workspace_name', ''),
                 'PLACEHOLDER_SUBSCRIPTION_ID': environment_config.get('subscription_id', '')
             }

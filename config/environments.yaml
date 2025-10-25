@@ -3,27 +3,27 @@ environments:
     storage_account: "PLACEHOLDER_DEV_STORAGE_ACCOUNT"
     workspace_name: "Finops Dev" 
     workspace_id: "PLACEHOLDER_DEV_WORKSPACE_ID"
-    container_name: "msexports"
+    container_name: "costexport"
     subscription_id: "PLACEHOLDER_DEV_SUBSCRIPTION_ID"
-    cost_export_path: "focuscost/dev-subscription-id"
+    cost_export_path: "focus/finops-focus-cost"
     environment_suffix: "_Dev"
     
   test:
     storage_account: "PLACEHOLDER_TEST_STORAGE_ACCOUNT"
     workspace_name: "Finops Test"
     workspace_id: "PLACEHOLDER_TEST_WORKSPACE_ID" 
-    container_name: "msexports"
+    container_name: "costexport"
     subscription_id: "PLACEHOLDER_TEST_SUBSCRIPTION_ID"
-    cost_export_path: "focuscost/test-subscription-id"
+    cost_export_path: "focus/finops-focus-cost"
     environment_suffix: "_Test"
     
   prod:
     storage_account: "PLACEHOLDER_PROD_STORAGE_ACCOUNT"
     workspace_name: "Finops Prod"
     workspace_id: "PLACEHOLDER_PROD_WORKSPACE_ID"
-    container_name: "msexports" 
+    container_name: "costexport" 
     subscription_id: "PLACEHOLDER_PROD_SUBSCRIPTION_ID"
-    cost_export_path: "focuscost/prod-subscription-id"
+    cost_export_path: "focus/finops-focus-cost"
     environment_suffix: ""
 
 # Common settings across all environments

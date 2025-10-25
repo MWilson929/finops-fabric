@@ -237,12 +237,48 @@ def deploy_fabric_items(environment, config_file_path, dry_run=False):
         print(f"📦 Attempting experimental config-based deployment...")
         
         try:
-            # Deploy using configuration file (experimental)
-            deploy_with_config(
-                config_file_path=config_file_path,
-                environment=environment.upper(),
-                token_credential=credential
-            )
+            # Create a temporary config file with resolved workspace IDs
+            import tempfile
+            import shutil
+            
+            # Get workspace ID for current environment
+            workspace_id = load_workspace_config(environment, config_file_path)
+            if not workspace_id:
+                print(f"❌ Could not resolve workspace ID for {environment}")
+                raise Exception(f"Workspace ID not found for environment: {environment}")
+            
+            print(f"🔍 Searching for workspace ID for environment: {environment}")
+            print(f"   Found workspace reference: $ENV:DEV_WORKSPACE_ID")
+            
+            # Load and modify config
+            with open(config_file_path, 'r', encoding='utf-8') as f:
+                config_content = f.read()
+            
+            # Replace environment variable references with actual values
+            config_content = config_content.replace('$ENV:DEV_WORKSPACE_ID', workspace_id)
+            
+            # Create temporary config file
+            temp_config_fd, temp_config_path = tempfile.mkstemp(suffix='.yml', text=True)
+            try:
+                with os.fdopen(temp_config_fd, 'w', encoding='utf-8') as f:
+                    f.write(config_content)
+                
+                print(f"📋 Created temporary config with resolved workspace IDs")
+                
+                # Deploy using configuration file (experimental)
+                deploy_with_config(
+                    config_file_path=temp_config_path,
+                    environment=environment.upper(),
+                    token_credential=credential
+                )
+                
+            finally:
+                # Clean up temporary file
+                try:
+                    os.unlink(temp_config_path)
+                    print(f"🧹 Cleaned up temporary config file")
+                except:
+                    pass
             
             print(f"✅ Config-based deployment to {environment.upper()} completed successfully!")
             return True

@@ -9,13 +9,9 @@ core:
   # Environment-specific workspace mappings
   workspace_id:
     DEV: "$ENV:DEV_WORKSPACE_ID"
-    TEST: "$ENV:TEST_WORKSPACE_ID"
-    PROD: "$ENV:PROD_WORKSPACE_ID"
     
   workspace:
     DEV: "Fabric Development"
-    TEST: "Fabric Test"
-    PROD: "Fabric Production"
     
   # Repository directory containing all Fabric items
   repository_directory: "."
@@ -59,8 +55,6 @@ publish:
   # Environment-specific publishing controls
   skip:
     DEV: false    # Always deploy to dev
-    TEST: false   # Deploy to test after approval
-    PROD: false   # Deploy to prod after approval
 
 unpublish:
   # Remove orphaned items not found in repository
@@ -68,13 +62,9 @@ unpublish:
   
   skip:
     DEV: false    # Clean up dev environment
-    TEST: false   # Clean up test environment  
-    PROD: true    # Never auto-cleanup production
 
 # Additional features moved to root level above
 
 constants:
   # Override default constants if needed
   DEFAULT_API_ROOT_URL: "https://api.fabric.microsoft.com"
-  MAX_RETRY_ATTEMPTS: 3
-  RETRY_DELAY_SECONDS: 5

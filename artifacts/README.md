@@ -17,6 +17,9 @@ FabricCICD/
 ├── semanticmodels/         # Semantic Models/Datasets (.SemanticModel folders)
 ├── environments/           # Spark Environment configurations (.Environment folders)
 ├── warehouses/             # Data Warehouse definitions (.Warehouse folders)
+├── eventhouses/            # Event House definitions for real-time analytics
+├── sqldatabases/           # SQL Database definitions
+├── dataagents/             # AI Data Agents definitions
 ├── parameter.yml           # Environment-specific parameter replacements
 ├── fabric-config.yml       # Fabric CI/CD deployment configuration
 └── scripts/                # Deployment and utility scripts
@@ -26,17 +29,14 @@ FabricCICD/
 
 The `fabric-cicd` library supports these additional item types (create folders as needed):
 
-- `eventhouse/` - Real-time analytics databases
 - `kqldatabases/` - Kusto Query Language databases  
 - `kqlquerysets/` - KQL query collections
 - `reflex/` - Reflex applications
 - `eventstreams/` - Event streaming definitions
-- `sqldatabases/` - SQL Database definitions
 - `kqldashboards/` - KQL dashboards
 - `graphqlapis/` - GraphQL API definitions
 - `apacheairflowjobs/` - Apache Airflow job definitions
 - `mounteddatafactories/` - Mounted Data Factory resources
-- `dataagents/` - AI data agents
 - `orgapps/` - Organizational applications
 
 ## 📋 Item Organization Guidelines

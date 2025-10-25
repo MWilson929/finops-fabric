@@ -246,7 +246,6 @@ def deploy_fabric_items(environment, config_file_path, dry_run=False):
             config_content = config_content.replace('$ENV:DEV_WORKSPACE_ID', workspace_id)
             
             # Fix repository directory to use absolute path instead of relative
-            import os
             repo_root = os.path.dirname(os.path.abspath(config_file_path))
             config_content = config_content.replace('repository_directory: "."', f'repository_directory: "{repo_root}"')
             

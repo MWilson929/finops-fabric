@@ -205,10 +205,27 @@ def deploy_fabric_items(environment, config_file_path, dry_run=False):
             print("   Falling back to DefaultAzureCredential...")
             credential = DefaultAzureCredential()
         
-        # Set experimental features environment variables as additional attempt
-        os.environ['FABRIC_ENABLE_EXPERIMENTAL_FEATURES'] = 'true'
-        os.environ['FABRIC_ENABLE_CONFIG_DEPLOY'] = 'true'
-        print("🧪 Set experimental features environment variables")
+        # Enable experimental features using proper fabric-cicd API
+        try:
+            from fabric_cicd import append_feature_flag
+            append_feature_flag("enable_experimental_features")
+            append_feature_flag("enable_config_deploy") 
+            append_feature_flag("enable_lakehouse_unpublish")
+            append_feature_flag("enable_warehouse_unpublish")
+            append_feature_flag("enable_environment_variable_replacement")
+            append_feature_flag("disable_print_identity")
+            print("🧪 Feature flags configured using append_feature_flag:")
+            print("   ✅ enable_experimental_features")
+            print("   ✅ enable_config_deploy")
+            print("   ✅ enable_lakehouse_unpublish") 
+            print("   ✅ enable_warehouse_unpublish")
+            print("   ✅ enable_environment_variable_replacement")
+            print("   ✅ disable_print_identity")
+        except ImportError:
+            # Fallback to environment variables if append_feature_flag not available
+            os.environ['FABRIC_ENABLE_EXPERIMENTAL_FEATURES'] = 'true'
+            os.environ['FABRIC_ENABLE_CONFIG_DEPLOY'] = 'true'
+            print("🧪 Fallback: Set experimental features via environment variables")
         
         if dry_run:
             print("🔍 DRY RUN MODE - No actual deployment will occur")

@@ -209,10 +209,39 @@ stages:
             displayName: 'Install Fabric CLI'
           
           - task: PythonScript@0
-            displayName: 'Configure Notebooks for Dev Environment'
+            displayName: 'Test Python Environment'
+            inputs:
+              scriptSource: 'inline'
+              script: |
+                import sys
+                import os
+                print(f"Python version: {sys.version}")
+                print(f"Python executable: {sys.executable}")
+                print(f"Current directory: {os.getcwd()}")
+                print(f"Available packages:")
+                try:
+                    import yaml
+                    print("  ✅ yaml")
+                except ImportError:
+                    print("  ❌ yaml")
+                try:
+                    import json
+                    print("  ✅ json")
+                except ImportError:
+                    print("  ❌ json")
+                print(f"Environment variables (sample):")
+                for key in sorted(os.environ.keys()):
+                    if 'DEV_' in key:
+                        value = os.environ[key]
+                        masked = value[:4] + "..." + value[-4:] if len(value) > 8 else value
+                        print(f"  {key}: {masked}")
+                print("✅ Python environment test completed")
+          
+          - task: PythonScript@0
+            displayName: 'Configure Notebooks for Dev Environment (Debug)'
             inputs:
               scriptSource: 'filePath'
-              scriptPath: '$(Pipeline.Workspace)/fca-deployment-package/scripts/configure_notebooks.py'
+              scriptPath: '$(Pipeline.Workspace)/fca-deployment-package/scripts/configure_notebooks_debug.py'
               arguments: '--environment dev --artifact-path $(Pipeline.Workspace)/fca-deployment-package'
             env:
               DEV_STORAGE_ACCOUNT: $(dev-storage-account)

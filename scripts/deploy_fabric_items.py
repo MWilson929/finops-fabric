@@ -7,6 +7,7 @@ Uses the official fabric-cicd library for robust deployment across environments
 import os
 import sys
 import argparse
+import yaml
 from pathlib import Path
 
 def install_fabric_cicd():
@@ -82,6 +83,34 @@ def validate_environment_variables(environment):
     print(f"✅ All required environment variables present for {environment}")
     return True
 
+def load_workspace_config(environment, config_file_path):
+    """Load workspace configuration for environment from config file"""
+    try:
+        with open(config_file_path, 'r') as f:
+            config = yaml.safe_load(f)
+        
+        # Extract workspace ID for environment
+        if 'workspaces' in config and environment in config['workspaces']:
+            return config['workspaces'][environment]
+        
+        # Try alternative config structure
+        if 'environments' in config and environment in config['environments']:
+            env_config = config['environments'][environment]
+            if 'workspace_id' in env_config:
+                return env_config['workspace_id']
+        
+        # Fallback to environment variable
+        env_var = f"FABRIC_WORKSPACE_ID_{environment.upper()}"
+        workspace_id = os.environ.get(env_var)
+        if workspace_id:
+            return workspace_id
+        
+        return None
+        
+    except Exception as e:
+        print(f"❌ Failed to load workspace config: {e}")
+        return None
+
 def deploy_fabric_items(environment, config_file_path, dry_run=False):
     """Deploy Fabric items using configuration-based deployment"""
     
@@ -152,45 +181,62 @@ def deploy_fabric_items(environment, config_file_path, dry_run=False):
             print(f"   Environment: {environment}")
             return True
         
-        # Try main config file first, then minimal if experimental features fail
-        config_files_to_try = [config_file_path]
+        # Try experimental config-based deployment first
+        print(f"📦 Attempting experimental config-based deployment...")
         
-        # Add minimal config as fallback for experimental features issues
-        if 'fabric-config.yml' in config_file_path:
-            minimal_config = config_file_path.replace('fabric-config.yml', 'fabric-config-minimal.yml')
-            if os.path.exists(minimal_config):
-                config_files_to_try.append(minimal_config)
-        
-        last_error = None
-        for config_path in config_files_to_try:
-            print(f"📦 Attempting deployment with: {config_path}")
+        try:
+            # Deploy using configuration file (experimental)
+            deploy_with_config(
+                config_file_path=config_file_path,
+                environment=environment.upper(),
+                token_credential=credential
+            )
             
-            try:
-                # Deploy using configuration file
-                deploy_with_config(
-                    config_file_path=config_path,
-                    environment=environment.upper(),
-                    token_credential=credential
-                )
+            print(f"✅ Config-based deployment to {environment.upper()} completed successfully!")
+            return True
+            
+        except Exception as config_error:
+            print(f"❌ Config-based deployment failed: {str(config_error)}")
+            
+            if "experimental" in str(config_error).lower():
+                print("   💡 Experimental features not available, falling back to standard approach")
                 
-                print(f"✅ Deployment to {environment.upper()} completed successfully with {config_path}!")
-                return True
-                
-            except Exception as config_error:
-                last_error = config_error
-                print(f"❌ Failed with {config_path}: {str(config_error)}")
-                
-                if "experimental" in str(config_error).lower():
-                    print("   💡 This appears to be an experimental features issue")
-                    if config_path != config_files_to_try[-1]:
-                        print("   🔄 Trying alternative configuration...")
-                        continue
-                else:
-                    # For non-experimental errors, don't try other configs
-                    break
-        
-        # If we get here, all configs failed
-        raise last_error
+                # Fall back to standard fabric-cicd approach
+                try:
+                    from fabric_cicd import FabricWorkspace, publish_all_items, unpublish_all_orphan_items
+                    
+                    # Load workspace ID from config
+                    workspace_id = load_workspace_config(environment, config_file_path)
+                    if not workspace_id:
+                        raise Exception("Could not determine workspace ID")
+                    
+                    print(f"🔄 Attempting standard deployment to workspace: {workspace_id}")
+                    
+                    # Initialize the FabricWorkspace object
+                    target_workspace = FabricWorkspace(
+                        workspace_id=workspace_id,
+                        repository_directory=os.getcwd(),
+                        item_type_in_scope=["Notebook", "Lakehouse"],
+                        token_credential=credential
+                    )
+                    
+                    # Publish all items in scope
+                    print(f"📦 Publishing items using standard approach...")
+                    publish_all_items(target_workspace)
+                    
+                    # Unpublish orphan items
+                    print(f"🧹 Cleaning up orphan items...")
+                    unpublish_all_orphan_items(target_workspace)
+                    
+                    print(f"✅ Standard deployment to {environment.upper()} completed successfully!")
+                    return True
+                    
+                except Exception as standard_error:
+                    print(f"❌ Standard deployment also failed: {str(standard_error)}")
+                    raise standard_error
+            else:
+                # For non-experimental errors, re-raise
+                raise config_error
         
     except Exception as e:
         print(f"❌ Deployment failed: {str(e)}")

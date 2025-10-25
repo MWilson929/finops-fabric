@@ -24,35 +24,36 @@ echo "📁 Working directory: $(pwd)"
 echo "� Available files:"
 ls -la
 
-# Try config-based deployment first (experimental features)
+# Try enhanced deployment with automatic fallback
 echo ""
-echo "🧪 Attempting config-based deployment..."
-echo "======================================="
+echo "🚀 Starting enhanced deployment with automatic fallback..."
+echo "=========================================================="
 
 if python3 scripts/deploy_fabric_items.py --environment "$ENVIRONMENT" --config-file fabric-config.yml --install-deps; then
-    echo "✅ Config-based deployment completed successfully!"
+    echo "✅ Deployment completed successfully!"
     exit 0
 fi
 
 echo ""
-echo "⚠️  Config-based deployment failed, trying basic deployment..."
-echo "============================================================="
+echo "⚠️  Enhanced deployment failed, trying standard approach..."
+echo "==========================================================="
 
-# Fallback to basic individual item deployment  
-if python3 scripts/deploy_fabric_items_basic.py --environment "$ENVIRONMENT" --install-deps; then
-    echo "✅ Basic deployment completed successfully!"
+# Fallback to standard fabric-cicd approach
+if python3 scripts/deploy_fabric_items_standard.py --environment "$ENVIRONMENT" --install-deps; then
+    echo "✅ Standard deployment completed successfully!"
     exit 0
 fi
 
 echo ""
-echo "❌ Both deployment methods failed!"
+echo "❌ All deployment methods failed!"
 echo "================================="
 echo ""
 echo "Troubleshooting steps:"
-echo "1. Check that fabric-cicd library supports your configuration"
+echo "1. Check that fabric-cicd library is properly installed"
 echo "2. Verify workspace IDs are correct in fabric-config.yml"
 echo "3. Ensure Service Principal has proper permissions"
-echo "4. Check experimental features are enabled in fabric-cicd"
+echo "4. Check repository structure matches expected format"
+echo "5. Verify authentication credentials are valid"
 echo ""
 
 exit 1

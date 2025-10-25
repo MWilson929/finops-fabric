@@ -16,34 +16,10 @@ core:
   # Repository directory containing all Fabric items
   repository_directory: "."
   
-  # All supported Fabric item types for general-purpose deployment
+  # Basic Fabric item types for simple deployment
   item_types_in_scope:
     - Notebook
     - Lakehouse
-    - DataPipeline
-    - Environment
-    - Report
-    - SemanticModel
-    - Dataflow
-    - Warehouse
-    - KQLDatabase
-    - Eventhouse
-    - MirroredDatabase
-    - VariableLibrary
-    - CopyJob
-    - KQLQueryset
-    - Reflex
-    - Eventstream
-    - SQLDatabase
-    - KQLDashboard
-    - GraphQLApi
-    - ApacheAirflowJob
-    - MountedDataFactory
-    - DataAgent
-    - OrgApp
-    
-  # Parameter file for environment-specific replacements
-  parameter: "parameter.yml"
 
 publish:
   # Exclude items with specific patterns from deployment

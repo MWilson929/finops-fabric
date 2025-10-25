@@ -68,12 +68,12 @@ unpublish:
     PROD: true    # Never auto-cleanup production
 
 features:
-  # Enable experimental features for advanced capabilities
-  - enable_experimental_features
-  - enable_config_deploy
-  - enable_shortcut_publish
-  - enable_environment_variable_replacement
-  - enable_items_to_include
+  # Enable experimental features for advanced capabilities (set to true/false)
+  enable_experimental_features: true
+  enable_config_deploy: true
+  enable_shortcut_publish: true
+  enable_environment_variable_replacement: true
+  enable_items_to_include: true
 
 constants:
   # Override default constants if needed

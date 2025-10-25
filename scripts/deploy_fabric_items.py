@@ -125,20 +125,6 @@ def load_workspace_config(environment, config_file_path):
                 print(f"   Found in environments: {workspace_id}")
                 return workspace_id
         
-        # Fallback to direct environment variable
-        env_var = f"{environment.upper()}_WORKSPACE_ID"
-        workspace_id = os.environ.get(env_var)
-        if workspace_id:
-            print(f"   Using direct environment variable {env_var}: {workspace_id}")
-            return workspace_id
-        
-        # Last resort - DEV_WORKSPACE_ID format
-        env_var_alt = f"FABRIC_WORKSPACE_ID_{environment.upper()}"
-        workspace_id = os.environ.get(env_var_alt)
-        if workspace_id:
-            print(f"   Using alternative environment variable {env_var_alt}: {workspace_id}")
-            return workspace_id
-        
         print(f"   ❌ Could not find workspace ID for {environment}")
         return None
         
@@ -222,10 +208,8 @@ def deploy_fabric_items(environment, config_file_path, dry_run=False):
             print("   ✅ enable_environment_variable_replacement")
             print("   ✅ disable_print_identity")
         except ImportError:
-            # Fallback to environment variables if append_feature_flag not available
-            os.environ['FABRIC_ENABLE_EXPERIMENTAL_FEATURES'] = 'true'
-            os.environ['FABRIC_ENABLE_CONFIG_DEPLOY'] = 'true'
-            print("🧪 Fallback: Set experimental features via environment variables")
+            print("❌ ERROR: append_feature_flag not available. Please update fabric-cicd library.")
+            return False
         
         if dry_run:
             print("🔍 DRY RUN MODE - No actual deployment will occur")
@@ -285,102 +269,7 @@ def deploy_fabric_items(environment, config_file_path, dry_run=False):
             
         except Exception as config_error:
             print(f"❌ Config-based deployment failed: {str(config_error)}")
-            
-            if "experimental" in str(config_error).lower():
-                print("   💡 Experimental features not available, falling back to standard approach")
-                
-                # Fall back to standard fabric-cicd approach
-                try:
-                    from fabric_cicd import FabricWorkspace, publish_all_items, unpublish_all_orphan_items
-                    
-                    # Load workspace ID from config
-                    workspace_id = load_workspace_config(environment, config_file_path)
-                    if not workspace_id:
-                        raise Exception("Could not determine workspace ID")
-                    
-                    print(f"🔄 Attempting standard deployment to workspace: {workspace_id}")
-                    
-                    # Verify we can access the workspace
-                    print(f"🔐 Testing workspace access...")
-                    try:
-                        # Try to access fabric API to verify connection
-                        from fabric_cicd.core import FabricClient
-                        fabric_client = FabricClient(token_credential=credential)
-                        # This will test the connection without making changes
-                        print(f"   ✅ Successfully connected to Fabric API")
-                    except Exception as access_error:
-                        print(f"   ⚠️  Could not verify Fabric API access: {access_error}")
-                        print(f"   Proceeding anyway...")
-                    
-                    # Check what items exist in repository before deployment
-                    # Use the directory containing the config file as the repository root
-                    repo_dir = os.path.dirname(config_file_path)
-                    print(f"🔍 Repository scan:")
-                    print(f"   Config file path: {config_file_path}")
-                    print(f"   Repository directory (from config): {repo_dir}")
-                    print(f"   Current working directory: {os.getcwd()}")
-                    
-                    # Check for notebooks
-                    notebooks_dir = os.path.join(repo_dir, "notebooks")
-                    if os.path.exists(notebooks_dir):
-                        notebooks = list(Path(notebooks_dir).glob("*.ipynb"))
-                        print(f"   Found {len(notebooks)} notebook(s): {[nb.name for nb in notebooks]}")
-                    else:
-                        print(f"   ❌ Notebooks directory not found: {notebooks_dir}")
-                    
-                    # Check for lakehouses
-                    lakehouses_dir = os.path.join(repo_dir, "lakehouses")
-                    if os.path.exists(lakehouses_dir):
-                        lakehouses = [d for d in Path(lakehouses_dir).iterdir() if d.is_dir()]
-                        print(f"   Found {len(lakehouses)} lakehouse(s): {[lh.name for lh in lakehouses]}")
-                    else:
-                        print(f"   ❌ Lakehouses directory not found: {lakehouses_dir}")
-                    
-                    # Initialize the FabricWorkspace object
-                    print(f"🏗️ Initializing FabricWorkspace:")
-                    print(f"   Workspace ID: {workspace_id}")
-                    print(f"   Repository directory: {repo_dir}")
-                    print(f"   Item types in scope: ['Notebook', 'Lakehouse']")
-                    
-                    target_workspace = FabricWorkspace(
-                        workspace_id=workspace_id,
-                        repository_directory=repo_dir,
-                        item_type_in_scope=["Notebook", "Lakehouse"],
-                        token_credential=credential
-                    )
-                    
-                    # Publish all items in scope
-                    print(f"📦 Publishing items using standard approach...")
-                    print(f"   This will deploy all Notebooks and Lakehouses found in the repository")
-                    
-                    try:
-                        result = publish_all_items(target_workspace)
-                        print(f"   ✅ Publish operation completed: {result}")
-                    except Exception as pub_error:
-                        print(f"   ❌ Publish operation failed: {pub_error}")
-                        raise pub_error
-                    
-                    # Unpublish orphan items
-                    print(f"🧹 Cleaning up orphan items...")
-                    print(f"   This will remove items in workspace not found in repository")
-                    
-                    try:
-                        result = unpublish_all_orphan_items(target_workspace)
-                        print(f"   ✅ Cleanup operation completed: {result}")
-                    except Exception as cleanup_error:
-                        print(f"   ❌ Cleanup operation failed: {cleanup_error}")
-                        # Don't fail deployment if cleanup fails
-                        print(f"   ⚠️  Continuing despite cleanup failure...")
-                    
-                    print(f"✅ Standard deployment to {environment.upper()} completed successfully!")
-                    return True
-                    
-                except Exception as standard_error:
-                    print(f"❌ Standard deployment also failed: {str(standard_error)}")
-                    raise standard_error
-            else:
-                # For non-experimental errors, re-raise
-                raise config_error
+            raise config_error
         
     except Exception as e:
         print(f"❌ Deployment failed: {str(e)}")

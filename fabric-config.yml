@@ -37,7 +37,7 @@ unpublish:
   exclude_regex: "^(SYSTEM_|ADMIN_).*"
   
   skip:
-    DEV: false    # Clean up dev environment
+    DEV: true     # Skip unpublish in dev to prevent item removal
 
 # Additional features moved to root level above
 

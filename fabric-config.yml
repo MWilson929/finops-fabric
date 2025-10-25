@@ -17,6 +17,7 @@ core:
   item_types_in_scope:
     - Notebook
     - Lakehouse
+    - SQLDatabase
 
 publish:
   # Exclude items with specific patterns from deployment

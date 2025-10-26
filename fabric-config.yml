@@ -13,12 +13,14 @@ core:
   # Repository directory containing all Fabric items
   repository_directory: "."
   
-  # Basic Fabric item types for simple deployment
+  # Complete Fabric item types for FinOps Hub deployment
   item_types_in_scope:
     - Notebook
     - Lakehouse
     - SQLDatabase
-    - VariableLibrary
+    - SemanticModel
+    - DataPipeline
+    # VariableLibrary temporarily excluded due to deployment issue
 
 publish:
   # Exclude items with specific patterns from deployment

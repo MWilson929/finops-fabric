@@ -1,0 +1,489 @@
+{
+  "version": "1.0",
+  "settings": {
+    "PBIDesktopVersion": "2.123.822.0 (23.11)",
+    "PBIDesktopBuildVersion": "2.123.822.0",
+    "QueryVersion": "1.0"
+  },
+  "model": {
+    "name": "CostSummary",
+    "description": "FinOps Hub unified cost analysis semantic model",
+    "culture": "en-US",
+    "collation": "Latin1_General_CI_AS",
+    "dataAccessOptions": {
+      "legacyRedirects": true,
+      "returnErrorValuesAsNull": true
+    },
+    "defaultPowerBIDataSourceVersion": "powerBI_V3",
+    "tables": [
+      {
+        "name": "Resources",
+        "description": "Azure resources with cost, governance, and metadata information",
+        "columns": [
+          {
+            "name": "resource_id",
+            "dataType": "string",
+            "sourceColumn": "resource_id",
+            "displayFolder": "Identifiers"
+          },
+          {
+            "name": "resource_name",
+            "dataType": "string",
+            "sourceColumn": "resource_name",
+            "displayFolder": "Resource Details"
+          },
+          {
+            "name": "resource_type",
+            "dataType": "string",
+            "sourceColumn": "resource_type",
+            "displayFolder": "Resource Details"
+          },
+          {
+            "name": "location",
+            "dataType": "string",
+            "sourceColumn": "location",
+            "displayFolder": "Geography"
+          },
+          {
+            "name": "subscription_id",
+            "dataType": "string",
+            "sourceColumn": "subscription_id",
+            "displayFolder": "Identifiers"
+          },
+          {
+            "name": "subscription_name",
+            "dataType": "string",
+            "sourceColumn": "subscription_name",
+            "displayFolder": "Organization"
+          },
+          {
+            "name": "resource_group_name",
+            "dataType": "string",
+            "sourceColumn": "resource_group_name",
+            "displayFolder": "Organization"
+          },
+          {
+            "name": "tags",
+            "dataType": "string",
+            "sourceColumn": "tags",
+            "displayFolder": "Metadata"
+          },
+          {
+            "name": "created_time",
+            "dataType": "dateTime",
+            "sourceColumn": "created_time",
+            "displayFolder": "Dates"
+          },
+          {
+            "name": "extracted_at",
+            "dataType": "dateTime",
+            "sourceColumn": "extracted_at",
+            "displayFolder": "Metadata"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Resources",
+            "mode": "directLake",
+            "source": {
+              "type": "entity",
+              "entityName": "Resources",
+              "expressionSource": "DatabaseQuery"
+            }
+          }
+        ]
+      },
+      {
+        "name": "AdvisorRecommendations",
+        "description": "Azure Advisor cost optimization recommendations",
+        "columns": [
+          {
+            "name": "recommendation_id",
+            "dataType": "string",
+            "sourceColumn": "recommendation_id",
+            "displayFolder": "Identifiers"
+          },
+          {
+            "name": "recommendation_name",
+            "dataType": "string",
+            "sourceColumn": "recommendation_name",
+            "displayFolder": "Recommendation Details"
+          },
+          {
+            "name": "category",
+            "dataType": "string",
+            "sourceColumn": "category",
+            "displayFolder": "Classification"
+          },
+          {
+            "name": "impact",
+            "dataType": "string",
+            "sourceColumn": "impact",
+            "displayFolder": "Classification"
+          },
+          {
+            "name": "impacted_resource_id",
+            "dataType": "string",
+            "sourceColumn": "impacted_resource_id",
+            "displayFolder": "Identifiers"
+          },
+          {
+            "name": "potential_annual_savings_usd",
+            "dataType": "double",
+            "sourceColumn": "potential_annual_savings_usd",
+            "displayFolder": "Financial Impact",
+            "formatString": "\\$#,0.00"
+          },
+          {
+            "name": "subscription_id",
+            "dataType": "string",
+            "sourceColumn": "subscription_id",
+            "displayFolder": "Identifiers"
+          },
+          {
+            "name": "subscription_name",
+            "dataType": "string",
+            "sourceColumn": "subscription_name",
+            "displayFolder": "Organization"
+          },
+          {
+            "name": "extracted_at",
+            "dataType": "dateTime",
+            "sourceColumn": "extracted_at",
+            "displayFolder": "Metadata"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "AdvisorRecommendations",
+            "mode": "directLake",
+            "source": {
+              "type": "entity",
+              "entityName": "AdvisorRecommendations",
+              "expressionSource": "DatabaseQuery"
+            }
+          }
+        ]
+      },
+      {
+        "name": "CarbonEmissions",
+        "description": "Azure carbon emissions data for sustainability reporting",
+        "columns": [
+          {
+            "name": "resource_id",
+            "dataType": "string",
+            "sourceColumn": "resource_id",
+            "displayFolder": "Identifiers"
+          },
+          {
+            "name": "resource_name",
+            "dataType": "string",
+            "sourceColumn": "resource_name",
+            "displayFolder": "Resource Details"
+          },
+          {
+            "name": "resource_type",
+            "dataType": "string",
+            "sourceColumn": "resource_type",
+            "displayFolder": "Resource Details"
+          },
+          {
+            "name": "emission_scope",
+            "dataType": "string",
+            "sourceColumn": "emission_scope",
+            "displayFolder": "Emissions Classification"
+          },
+          {
+            "name": "carbon_emission_quantity",
+            "dataType": "double",
+            "sourceColumn": "carbon_emission_quantity",
+            "displayFolder": "Emissions Metrics",
+            "formatString": "#,0.0000"
+          },
+          {
+            "name": "carbon_emission_unit",
+            "dataType": "string",
+            "sourceColumn": "carbon_emission_unit",
+            "displayFolder": "Emissions Metrics"
+          },
+          {
+            "name": "cost",
+            "dataType": "double",
+            "sourceColumn": "cost",
+            "displayFolder": "Financial Impact",
+            "formatString": "\\$#,0.00"
+          },
+          {
+            "name": "subscription_id",
+            "dataType": "string",
+            "sourceColumn": "subscription_id",
+            "displayFolder": "Identifiers"
+          },
+          {
+            "name": "subscription_name",
+            "dataType": "string",
+            "sourceColumn": "subscription_name",
+            "displayFolder": "Organization"
+          },
+          {
+            "name": "extracted_at",
+            "dataType": "dateTime",
+            "sourceColumn": "extracted_at",
+            "displayFolder": "Metadata"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "CarbonEmissions",
+            "mode": "directLake",
+            "source": {
+              "type": "entity",
+              "entityName": "CarbonEmissions",
+              "expressionSource": "DatabaseQuery"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Subscriptions",
+        "description": "Azure subscription governance and metadata",
+        "columns": [
+          {
+            "name": "subscription_id",
+            "dataType": "string",
+            "sourceColumn": "subscription_id",
+            "displayFolder": "Identifiers"
+          },
+          {
+            "name": "subscription_name",
+            "dataType": "string",
+            "sourceColumn": "subscription_name",
+            "displayFolder": "Subscription Details"
+          },
+          {
+            "name": "state",
+            "dataType": "string",
+            "sourceColumn": "state",
+            "displayFolder": "Status"
+          },
+          {
+            "name": "tenant_id",
+            "dataType": "string",
+            "sourceColumn": "tenant_id",
+            "displayFolder": "Identifiers"
+          },
+          {
+            "name": "management_group_id",
+            "dataType": "string",
+            "sourceColumn": "management_group_id",
+            "displayFolder": "Organization"
+          },
+          {
+            "name": "management_group_name",
+            "dataType": "string",
+            "sourceColumn": "management_group_name",
+            "displayFolder": "Organization"
+          },
+          {
+            "name": "tags",
+            "dataType": "string",
+            "sourceColumn": "tags",
+            "displayFolder": "Metadata"
+          },
+          {
+            "name": "extracted_at",
+            "dataType": "dateTime",
+            "sourceColumn": "extracted_at",
+            "displayFolder": "Metadata"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Subscriptions",
+            "mode": "directLake",
+            "source": {
+              "type": "entity",
+              "entityName": "Subscriptions",
+              "expressionSource": "DatabaseQuery"
+            }
+          }
+        ]
+      },
+      {
+        "name": "ADO_PipelineWorkItems",
+        "description": "Azure DevOps pipeline to work item mappings for deployment traceability",
+        "columns": [
+          {
+            "name": "pipeline_run_id",
+            "dataType": "string",
+            "sourceColumn": "pipeline_run_id",
+            "displayFolder": "Identifiers"
+          },
+          {
+            "name": "pipeline_name",
+            "dataType": "string",
+            "sourceColumn": "pipeline_name",
+            "displayFolder": "Pipeline Details"
+          },
+          {
+            "name": "work_item_id",
+            "dataType": "int64",
+            "sourceColumn": "work_item_id",
+            "displayFolder": "Identifiers"
+          },
+          {
+            "name": "run_result",
+            "dataType": "string",
+            "sourceColumn": "run_result",
+            "displayFolder": "Pipeline Status"
+          },
+          {
+            "name": "run_created_date",
+            "dataType": "dateTime",
+            "sourceColumn": "run_created_date",
+            "displayFolder": "Dates"
+          },
+          {
+            "name": "extracted_at",
+            "dataType": "dateTime",
+            "sourceColumn": "extracted_at",
+            "displayFolder": "Metadata"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "ADO_PipelineWorkItems",
+            "mode": "directLake",
+            "source": {
+              "type": "entity",
+              "entityName": "ADO_PipelineWorkItems",
+              "expressionSource": "DatabaseQuery"
+            }
+          }
+        ]
+      }
+    ],
+    "relationships": [
+      {
+        "name": "Resources_to_AdvisorRecommendations",
+        "fromTable": "AdvisorRecommendations",
+        "fromColumn": "impacted_resource_id",
+        "toTable": "Resources",
+        "toColumn": "resource_id",
+        "crossFilteringBehavior": "bothDirections"
+      },
+      {
+        "name": "Resources_to_CarbonEmissions",
+        "fromTable": "CarbonEmissions",
+        "fromColumn": "resource_id",
+        "toTable": "Resources",
+        "toColumn": "resource_id",
+        "crossFilteringBehavior": "bothDirections"
+      },
+      {
+        "name": "Subscriptions_to_Resources",
+        "fromTable": "Resources",
+        "fromColumn": "subscription_id",
+        "toTable": "Subscriptions",
+        "toColumn": "subscription_id",
+        "crossFilteringBehavior": "bothDirections"
+      },
+      {
+        "name": "Subscriptions_to_AdvisorRecommendations",
+        "fromTable": "AdvisorRecommendations",
+        "fromColumn": "subscription_id",
+        "toTable": "Subscriptions",
+        "toColumn": "subscription_id",
+        "crossFilteringBehavior": "bothDirections"
+      },
+      {
+        "name": "Subscriptions_to_CarbonEmissions",
+        "fromTable": "CarbonEmissions",
+        "fromColumn": "subscription_id",
+        "toTable": "Subscriptions",
+        "toColumn": "subscription_id",
+        "crossFilteringBehavior": "bothDirections"
+      }
+    ],
+    "measures": [
+      {
+        "name": "Total Resources",
+        "expression": "COUNTROWS(Resources)",
+        "displayFolder": "Resource Metrics"
+      },
+      {
+        "name": "Total Potential Savings",
+        "expression": "SUM(AdvisorRecommendations[potential_annual_savings_usd])",
+        "formatString": "\\$#,0",
+        "displayFolder": "Financial Metrics"
+      },
+      {
+        "name": "Total Carbon Emissions",
+        "expression": "SUM(CarbonEmissions[carbon_emission_quantity])",
+        "formatString": "#,0.00",
+        "displayFolder": "Sustainability Metrics"
+      },
+      {
+        "name": "Total Emissions Cost",
+        "expression": "SUM(CarbonEmissions[cost])",
+        "formatString": "\\$#,0",
+        "displayFolder": "Financial Metrics"
+      },
+      {
+        "name": "Active Subscriptions",
+        "expression": "CALCULATE(DISTINCTCOUNT(Subscriptions[subscription_id]), Subscriptions[state] = \"Enabled\")",
+        "displayFolder": "Governance Metrics"
+      },
+      {
+        "name": "High Impact Recommendations",
+        "expression": "CALCULATE(COUNTROWS(AdvisorRecommendations), AdvisorRecommendations[impact] = \"High\")",
+        "displayFolder": "Optimization Metrics"
+      },
+      {
+        "name": "Scope 1 Emissions",
+        "expression": "CALCULATE(SUM(CarbonEmissions[carbon_emission_quantity]), CarbonEmissions[emission_scope] = \"Scope1\")",
+        "formatString": "#,0.00",
+        "displayFolder": "Sustainability Metrics"
+      },
+      {
+        "name": "Scope 2 Emissions", 
+        "expression": "CALCULATE(SUM(CarbonEmissions[carbon_emission_quantity]), CarbonEmissions[emission_scope] = \"Scope2\")",
+        "formatString": "#,0.00",
+        "displayFolder": "Sustainability Metrics"
+      },
+      {
+        "name": "Scope 3 Emissions",
+        "expression": "CALCULATE(SUM(CarbonEmissions[carbon_emission_quantity]), CarbonEmissions[emission_scope] = \"Scope3\")",
+        "formatString": "#,0.00",
+        "displayFolder": "Sustainability Metrics"
+      },
+      {
+        "name": "Average Savings per Recommendation",
+        "expression": "DIVIDE([Total Potential Savings], COUNTROWS(AdvisorRecommendations))",
+        "formatString": "\\$#,0",
+        "displayFolder": "Financial Metrics"
+      },
+      {
+        "name": "Carbon Intensity (per Resource)",
+        "expression": "DIVIDE([Total Carbon Emissions], [Total Resources])",
+        "formatString": "#,0.00",
+        "displayFolder": "Sustainability Metrics"
+      },
+      {
+        "name": "Successful Deployments",
+        "expression": "CALCULATE(DISTINCTCOUNT(ADO_PipelineWorkItems[pipeline_run_id]), ADO_PipelineWorkItems[run_result] = \"succeeded\")",
+        "displayFolder": "DevOps Metrics"
+      }
+    ],
+    "annotations": [
+      {
+        "name": "PBI_QueryOrder",
+        "value": "[\"Resources\",\"AdvisorRecommendations\",\"CarbonEmissions\",\"Subscriptions\",\"ADO_PipelineWorkItems\"]"
+      },
+      {
+        "name": "PBI_ProTooling",
+        "value": "[\"DevMode\"]"
+      }
+    ]
+  }
+}

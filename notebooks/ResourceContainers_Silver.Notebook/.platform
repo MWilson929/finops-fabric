@@ -1,0 +1,21 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Notebook",
+    "displayName": "ResourceContainers_Silver",
+    "description": "Silver layer transformation splitting Bronze ResourceContainers into typed tables for organizational analysis",
+    "tags": {
+      "application": "finops hub",
+      "category": "data-transformation",
+      "layer": "silver",
+      "source": "bronze-resourcecontainers",
+      "purpose": "organizational-hierarchy-processing",
+      "scope": "single-tenant",
+      "architecture": "medallion"
+    }
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "PLACEHOLDER_GUID_RESOURCECONTAINERS_SILVER"
+  }
+}

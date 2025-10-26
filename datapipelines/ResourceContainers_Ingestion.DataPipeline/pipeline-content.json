@@ -39,30 +39,6 @@
           "workspaceId": "PLACEHOLDER_WORKSPACE_ID",
           "parameters": {}
         }
-      },
-      {
-        "name": "Validate Silver Layer Data",
-        "description": "Validates that Silver layer tables were created successfully with expected record counts",
-        "type": "TridentNotebook",
-        "dependsOn": [
-          {
-            "activity": "Execute ResourceContainers Silver", 
-            "dependencyConditions": [
-              "Succeeded"
-            ]
-          }
-        ],
-        "policy": {
-          "timeout": "0.01:00:00",
-          "retry": 1,
-          "retryIntervalInSeconds": 60
-        },
-        "typeProperties": {
-          "notebookId": "PLACEHOLDER_VALIDATION_NOTEBOOK_ID",
-          "workspaceId": "PLACEHOLDER_WORKSPACE_ID",
-          "parameters": {},
-          "snapshot": true
-        }
       }
     ],
     "variables": {

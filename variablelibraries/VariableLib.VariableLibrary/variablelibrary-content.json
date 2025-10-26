@@ -111,22 +111,6 @@
       "defaultValue": "finops-packages",
       "isRequired": false,
       "isSecret": false
-    },
-    {
-      "name": "monitoring_eventhouse_name",
-      "type": "String",
-      "description": "EventHouse name for capturing Fabric workspace monitoring data and activity logs",
-      "defaultValue": "FinOpsMonitoring",
-      "isRequired": false,
-      "isSecret": false
-    },
-    {
-      "name": "monitoring_enabled",
-      "type": "Bool",
-      "description": "Enable comprehensive workspace monitoring with EventHouse integration",
-      "defaultValue": true,
-      "isRequired": false,
-      "isSecret": false
     }
   ]
 }

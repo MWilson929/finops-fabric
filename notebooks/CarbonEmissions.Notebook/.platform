@@ -1,0 +1,12 @@
+{
+    "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+    "metadata": {
+        "type": "Notebook",
+        "displayName": "CarbonEmissions",
+        "description": "Queries Azure Carbon Optimization API for comprehensive emissions data across all Azure subscriptions, supporting ESG and sustainability reporting for FinOps Hub"
+    },
+    "config": {
+        "version": "2.0",
+        "logicalId": "7f8e9a0b-1c2d-3e4f-5a6b-7c8d9e0f1a2b"
+    }
+}

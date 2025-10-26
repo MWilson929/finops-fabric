@@ -1,17 +1,5 @@
 [
   {
-    "name": "costexport",
-    "path": "/Tables",
-    "target": {
-      "type": "AdlsGen2",
-      "adlsGen2": {
-        "connectionId": "PLACEHOLDER_CONNECTION_ID",
-        "location": "https://PLACEHOLDER_STORAGE_ACCOUNT.dfs.core.windows.net",
-        "subpath": "/PLACEHOLDER_CONTAINER_NAME"
-      }
-    }
-  },
-  {
     "name": "azure_billing_exports",
     "path": "/Tables",
     "target": {
@@ -24,30 +12,6 @@
     }
   },
   {
-    "name": "aws_cost_reports",
-    "path": "/Tables", 
-    "target": {
-      "type": "AdlsGen2",
-      "adlsGen2": {
-        "connectionId": "PLACEHOLDER_CONNECTION_ID",
-        "location": "https://PLACEHOLDER_STORAGE_ACCOUNT.dfs.core.windows.net",
-        "subpath": "/billing/aws"
-      }
-    }
-  },
-  {
-    "name": "resource_inventory",
-    "path": "/Tables",
-    "target": {
-      "type": "AdlsGen2", 
-      "adlsGen2": {
-        "connectionId": "PLACEHOLDER_CONNECTION_ID",
-        "location": "https://PLACEHOLDER_STORAGE_ACCOUNT.dfs.core.windows.net",
-        "subpath": "/inventory"
-      }
-    }
-  },
-  {
     "name": "external_data_sources",
     "path": "/Files",
     "target": {
@@ -56,42 +20,6 @@
         "connectionId": "PLACEHOLDER_CONNECTION_ID",
         "location": "https://PLACEHOLDER_STORAGE_ACCOUNT.dfs.core.windows.net", 
         "subpath": "/external"
-      }
-    }
-  },
-  {
-    "name": "budget_allocations",
-    "path": "/Tables",
-    "target": {
-      "type": "AdlsGen2",
-      "adlsGen2": {
-        "connectionId": "PLACEHOLDER_CONNECTION_ID", 
-        "location": "https://PLACEHOLDER_STORAGE_ACCOUNT.dfs.core.windows.net",
-        "subpath": "/budgets"
-      }
-    }
-  },
-  {
-    "name": "external_data_sources",
-    "path": "/Files",
-    "target": {
-      "type": "AdlsGen2",
-      "adlsGen2": {
-        "connectionId": "PLACEHOLDER_CONNECTION_ID",
-        "location": "https://PLACEHOLDER_STORAGE_ACCOUNT.dfs.core.windows.net", 
-        "subpath": "/external"
-      }
-    }
-  },
-  {
-    "name": "archived_reports",
-    "path": "/Files",
-    "target": {
-      "type": "AdlsGen2",
-      "adlsGen2": {
-        "connectionId": "PLACEHOLDER_CONNECTION_ID",
-        "location": "https://PLACEHOLDER_STORAGE_ACCOUNT.dfs.core.windows.net",
-        "subpath": "/archives"
       }
     }
   }

@@ -1,0 +1,21 @@
+# Azure DevOps Pipeline Task for Enabling Fabric Workspace Monitoring
+# Add this to your azure-pipelines.yml after successful deployment
+
+- task: PowerShell@2
+  displayName: 'Enable Fabric Workspace Monitoring'
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+  inputs:
+    filePath: 'scripts/Enable-WorkspaceMonitoring.ps1'
+    arguments: |
+      -TenantId "$(TENANT_ID)" 
+      -ClientId "$(CLIENT_ID)" 
+      -ClientSecret "$(CLIENT_SECRET)" 
+      -WorkspaceName "$(DEV_WORKSPACE_NAME)"
+      -EventhouseName "FinOpsMonitoring"
+    errorActionPreference: 'stop'
+    failOnStderr: true
+  env:
+    TENANT_ID: $(TENANT_ID)
+    CLIENT_ID: $(CLIENT_ID) 
+    CLIENT_SECRET: $(CLIENT_SECRET)
+    DEV_WORKSPACE_NAME: $(DEV_WORKSPACE_NAME)

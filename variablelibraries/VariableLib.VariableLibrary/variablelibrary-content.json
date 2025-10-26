@@ -103,6 +103,14 @@
       "defaultValue": "primary-sp-secret",
       "isRequired": true,
       "isSecret": false
+    },
+    {
+      "name": "ado_artifactory_feed",
+      "type": "String",
+      "description": "Azure DevOps Artifacts feed name for Python packages (pip) used in FinOps Hub notebooks",
+      "defaultValue": "finops-packages",
+      "isRequired": false,
+      "isSecret": false
     }
   ]
 }

@@ -1,0 +1,12 @@
+{
+    "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+    "metadata": {
+        "type": "Notebook",
+        "displayName": "ADO_WorkItems",
+        "description": "Queries Azure DevOps Pipeline API to map pipeline runs to associated work items, enabling resource deployment traceability and cost attribution for FinOps Hub"
+    },
+    "config": {
+        "version": "2.0",
+        "logicalId": "8a9b0c1d-2e3f-4a5b-6c7d-8e9f0a1b2c3d"
+    }
+}

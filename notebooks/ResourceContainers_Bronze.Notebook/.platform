@@ -2,7 +2,16 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
   "metadata": {
     "type": "Notebook",
-    "displayName": "ResourceContainers_Bronze"
+    "displayName": "ResourceContainers_Bronze",
+    "description": "Azure ResourceContainers bronze layer ingestion for organizational hierarchy analysis",
+    "tags": {
+      "application": "finops hub",
+      "category": "data-ingestion",
+      "layer": "bronze",
+      "source": "azure-resource-graph",
+      "purpose": "organizational-hierarchy",
+      "scope": "single-tenant"
+    }
   },
   "config": {
     "version": "2.0",

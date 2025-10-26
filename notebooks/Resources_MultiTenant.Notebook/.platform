@@ -2,7 +2,16 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
   "metadata": {
     "type": "Notebook",
-    "displayName": "Resources_MultiTenant"
+    "displayName": "Resources_MultiTenant",
+    "description": "Multi-tenant Azure Resource Graph inventory for cross-tenant FinOps analysis",
+    "tags": {
+      "application": "finops hub",
+      "category": "data-ingestion",
+      "layer": "bronze",
+      "source": "azure-resource-graph",
+      "purpose": "multi-tenant-inventory",
+      "scope": "cross-tenant"
+    }
   },
   "config": {
     "version": "2.0",

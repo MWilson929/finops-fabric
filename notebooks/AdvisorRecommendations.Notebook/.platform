@@ -2,7 +2,16 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
   "metadata": {
     "type": "Notebook",
-    "displayName": "AdvisorRecommendations"
+    "displayName": "AdvisorRecommendations",
+    "description": "Multi-tenant Azure Advisor recommendations extraction for cost optimization",
+    "tags": {
+      "application": "finops hub",
+      "category": "data-ingestion",
+      "layer": "bronze",
+      "source": "azure-advisor",
+      "purpose": "cost-optimization",
+      "scope": "multi-tenant"
+    }
   },
   "config": {
     "version": "2.0",

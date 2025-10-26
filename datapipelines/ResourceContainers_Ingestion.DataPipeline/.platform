@@ -1,0 +1,12 @@
+{
+    "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+    "metadata": {
+        "type": "DataPipeline",
+        "displayName": "ResourceContainers_Ingestion",
+        "description": "Orchestrates FinOps Hub resource container data ingestion from Bronze to Silver layers, executing ResourceContainers_Bronze and ResourceContainers_Silver notebooks in sequence for medallion architecture processing"
+    },
+    "config": {
+        "version": "2.0",
+        "logicalId": "b1c2d3e4-5f6a-7b8c-9d0e-1f2a3b4c5d6e"
+    }
+}

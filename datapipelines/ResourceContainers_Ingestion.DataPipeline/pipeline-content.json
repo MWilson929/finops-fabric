@@ -1,0 +1,126 @@
+{
+  "properties": {
+    "activities": [
+      {
+        "name": "Execute ResourceContainers Bronze",
+        "description": "Executes ResourceContainers_Bronze notebook to extract raw organizational hierarchy data from Azure Resource Graph",
+        "type": "TridentNotebook",
+        "dependsOn": [],
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 2,
+          "retryIntervalInSeconds": 300
+        },
+        "typeProperties": {
+          "notebookId": "PLACEHOLDER_BRONZE_NOTEBOOK_ID",
+          "workspaceId": "PLACEHOLDER_WORKSPACE_ID",
+          "parameters": {}
+        }
+      },
+      {
+        "name": "Execute ResourceContainers Silver",
+        "description": "Executes ResourceContainers_Silver notebook to transform Bronze data into structured Silver layer tables with enhanced schema",
+        "type": "TridentNotebook", 
+        "dependsOn": [
+          {
+            "activity": "Execute ResourceContainers Bronze",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 2,
+          "retryIntervalInSeconds": 300
+        },
+        "typeProperties": {
+          "notebookId": "PLACEHOLDER_SILVER_NOTEBOOK_ID",
+          "workspaceId": "PLACEHOLDER_WORKSPACE_ID",
+          "parameters": {}
+        }
+      },
+      {
+        "name": "Validate Silver Layer Data",
+        "description": "Validates that Silver layer tables were created successfully with expected record counts",
+        "type": "TridentNotebook",
+        "dependsOn": [
+          {
+            "activity": "Execute ResourceContainers Silver", 
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "0.01:00:00",
+          "retry": 1,
+          "retryIntervalInSeconds": 60
+        },
+        "typeProperties": {
+          "notebookId": "PLACEHOLDER_VALIDATION_NOTEBOOK_ID",
+          "workspaceId": "PLACEHOLDER_WORKSPACE_ID",
+          "parameters": {},
+          "snapshot": true
+        }
+      }
+    ],
+    "variables": {
+      "BronzeTablePath": {
+        "type": "String",
+        "defaultValue": "bronze/ResourceContainers"
+      },
+      "SilverManagementGroupsPath": {
+        "type": "String", 
+        "defaultValue": "silver/ManagementGroups"
+      },
+      "SilverSubscriptionsPath": {
+        "type": "String",
+        "defaultValue": "silver/Subscriptions_Hierarchy"
+      },
+      "SilverResourceGroupsPath": {
+        "type": "String",
+        "defaultValue": "silver/ResourceGroups_Hierarchy"
+      },
+      "MaxRetries": {
+        "type": "String",
+        "defaultValue": "3"
+      }
+    },
+    "parameters": {
+      "TenantId": {
+        "type": "String",
+        "defaultValue": ""
+      },
+      "SubscriptionFilter": {
+        "type": "String", 
+        "defaultValue": ""
+      },
+      "ForceFullRefresh": {
+        "type": "Bool",
+        "defaultValue": false
+      }
+    },
+    "folder": {
+      "name": "FinOps Hub"
+    },
+    "annotations": [
+      {
+        "name": "PipelineType",
+        "value": "FinOps Data Ingestion"
+      },
+      {
+        "name": "DataFlow",
+        "value": "Azure Resource Graph → Bronze Layer → Silver Layer"
+      },
+      {
+        "name": "Schedule",
+        "value": "Daily at 6:00 AM UTC"
+      },
+      {
+        "name": "Owner",
+        "value": "FinOps Team"
+      }
+    ]
+  }
+}

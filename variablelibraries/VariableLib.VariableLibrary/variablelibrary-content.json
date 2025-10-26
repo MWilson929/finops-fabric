@@ -1,0 +1,108 @@
+{
+  "variables": [
+    {
+      "name": "a_tenant_id",
+      "type": "String",
+      "description": "Azure AD Tenant ID for Tenant A (Primary tenant for multi-tenant operations)",
+      "defaultValue": "00000000-0000-0000-0000-000000000000",
+      "isRequired": true,
+      "isSecret": false
+    },
+    {
+      "name": "a_client_id", 
+      "type": "String",
+      "description": "Service Principal Application (Client) ID for Tenant A authentication",
+      "defaultValue": "00000000-0000-0000-0000-000000000000",
+      "isRequired": true,
+      "isSecret": false
+    },
+    {
+      "name": "a_secret_name",
+      "type": "String", 
+      "description": "Azure Key Vault secret name containing the client secret for Tenant A service principal",
+      "defaultValue": "tenant-a-sp-secret",
+      "isRequired": true,
+      "isSecret": false
+    },
+    {
+      "name": "b_tenant_id",
+      "type": "String",
+      "description": "Azure AD Tenant ID for Tenant B (Secondary tenant for multi-tenant operations)",
+      "defaultValue": "00000000-0000-0000-0000-000000000000",
+      "isRequired": true,
+      "isSecret": false
+    },
+    {
+      "name": "b_client_id",
+      "type": "String",
+      "description": "Service Principal Application (Client) ID for Tenant B authentication", 
+      "defaultValue": "00000000-0000-0000-0000-000000000000",
+      "isRequired": true,
+      "isSecret": false
+    },
+    {
+      "name": "b_secret_name",
+      "type": "String",
+      "description": "Azure Key Vault secret name containing the client secret for Tenant B service principal",
+      "defaultValue": "tenant-b-sp-secret",
+      "isRequired": true,
+      "isSecret": false
+    },
+    {
+      "name": "key_vault_url",
+      "type": "String",
+      "description": "Azure Key Vault URL containing service principal secrets and other sensitive configuration",
+      "defaultValue": "https://your-keyvault.vault.azure.net/",
+      "isRequired": true,
+      "isSecret": false
+    },
+    {
+      "name": "finopshub_root_path",
+      "type": "String",
+      "description": "Root path for FinOpsHub Delta Lake tables in the Fabric lakehouse storage",
+      "defaultValue": "abfss://workspace@onelake.dfs.fabric.microsoft.com/FinOpsHub.Lakehouse/Tables",
+      "isRequired": true,
+      "isSecret": false
+    },
+    {
+      "name": "ado_organization",
+      "type": "String",
+      "description": "Azure DevOps organization name for CI/CD pipeline integration and automation",
+      "defaultValue": "your-ado-organization", 
+      "isRequired": true,
+      "isSecret": false
+    },
+    {
+      "name": "ado_project", 
+      "type": "String",
+      "description": "Azure DevOps project name containing the Fabric CI/CD pipelines and repositories",
+      "defaultValue": "your-ado-project",
+      "isRequired": true,
+      "isSecret": false
+    },
+    {
+      "name": "tenant_id",
+      "type": "String",
+      "description": "Primary Azure AD Tenant ID for single-tenant operations (same as a_tenant_id for compatibility)",
+      "defaultValue": "00000000-0000-0000-0000-000000000000",
+      "isRequired": true,
+      "isSecret": false
+    },
+    {
+      "name": "client_id",
+      "type": "String", 
+      "description": "Primary Service Principal Application (Client) ID for single-tenant operations (same as a_client_id for compatibility)",
+      "defaultValue": "00000000-0000-0000-0000-000000000000",
+      "isRequired": true,
+      "isSecret": false
+    },
+    {
+      "name": "secret_name",
+      "type": "String",
+      "description": "Primary Azure Key Vault secret name for single-tenant operations (same as a_secret_name for compatibility)",
+      "defaultValue": "primary-sp-secret",
+      "isRequired": true,
+      "isSecret": false
+    }
+  ]
+}

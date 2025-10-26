@@ -18,6 +18,7 @@ core:
     - Notebook
     - Lakehouse
     - SQLDatabase
+    - VariableLibrary
 
 publish:
   # Exclude items with specific patterns from deployment

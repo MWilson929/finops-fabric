@@ -1,14 +1,3 @@
 {
-  "version": "1.0",
-  "datasetReference": {
-    "byPath": null,
-    "byConnection": {
-      "connectionString": null,
-      "pbiServiceModelId": null,
-      "pbiModelVirtualServerName": "sobe_wowvirtualserver",
-      "pbiModelDatabaseName": "CostSummary",
-      "name": "EntityDataSource",
-      "connectionType": "pbiServiceXmlaStyleLive"
-    }
-  }
+  "version": "1.0"
 }

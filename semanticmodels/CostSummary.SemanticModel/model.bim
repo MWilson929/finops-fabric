@@ -1,10 +1,6 @@
 {
-  "version": "1.0",
-  "settings": {
-    "PBIDesktopVersion": "2.123.822.0 (23.11)",
-    "PBIDesktopBuildVersion": "2.123.822.0",
-    "QueryVersion": "1.0"
-  },
+  "name": "CostSummary",
+  "compatibilityLevel": 1550,
   "model": {
     "name": "CostSummary",
     "description": "FinOps Hub unified cost analysis semantic model",

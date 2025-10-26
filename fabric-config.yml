@@ -18,8 +18,8 @@ core:
     - Notebook
     - Lakehouse
     - SQLDatabase
-    - SemanticModel
     - DataPipeline
+    - SemanticModel
     # VariableLibrary temporarily excluded due to deployment issue
 
 publish:

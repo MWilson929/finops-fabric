@@ -69,7 +69,7 @@ LIMIT 1000;
 ## Connection Details
 
 ### Storage Account Configuration
-- **Storage Account**: `2trickcostexport.dfs.core.windows.net`
+- **Storage Account**: `finopscostexport.dfs.core.windows.net`
 - **Connection ID**: `ac9d047e-1e22-404f-ab2c-3a3a71e90273`
 - **Protocol**: Azure Data Lake Storage Gen2 (ADLSv2)
 - **Authentication**: Managed Identity or Service Principal
@@ -242,10 +242,10 @@ ORDER BY execution_time_ms DESC;
 #### 1. **Connection Failures**
 ```bash
 # Check connection status
-az storage account show --name 2trickcostexport --query "primaryEndpoints.dfs"
+az storage account show --name finopscostexport --query "primaryEndpoints.dfs"
 
 # Verify managed identity permissions
-az role assignment list --assignee <managed-identity-id> --scope /subscriptions/<sub-id>/resourceGroups/<rg>/providers/Microsoft.Storage/storageAccounts/2trickcostexport
+az role assignment list --assignee <managed-identity-id> --scope /subscriptions/<sub-id>/resourceGroups/<rg>/providers/Microsoft.Storage/storageAccounts/finopscostexport
 ```
 
 #### 2. **Data Access Issues**

@@ -52,21 +52,21 @@ For each environment, set the following variables in your Azure DevOps Variable 
 
 ### Example DEV Variables
 ```
-DEV_STORAGE_ACCOUNT_NAME = "2trickcostexportdev"
+DEV_STORAGE_ACCOUNT_NAME = "finopscostexportdev"
 DEV_CONTAINER_NAME = "costexport"
 DEV_CONNECTION_ID = "ac9d047e-1e22-404f-ab2c-3a3a71e90273"
 ```
 
 ### Example TEST Variables
 ```
-TEST_STORAGE_ACCOUNT_NAME = "2trickcostexporttest"
+TEST_STORAGE_ACCOUNT_NAME = "finopscostexporttest"
 TEST_CONTAINER_NAME = "costexport"
 TEST_CONNECTION_ID = "bc9d047e-1e22-404f-ab2c-3a3a71e90274"
 ```
 
 ### Example PROD Variables
 ```
-PROD_STORAGE_ACCOUNT_NAME = "2trickcostexport"
+PROD_STORAGE_ACCOUNT_NAME = "finopscostexport"
 PROD_CONTAINER_NAME = "costexport"
 PROD_CONNECTION_ID = "cc9d047e-1e22-404f-ab2c-3a3a71e90275"
 ```

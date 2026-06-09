@@ -1,0 +1,20 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Notebook",
+    "displayName": "CarbonEmissions_MultiTenant",
+    "description": "Multi-tenant Azure Carbon Optimization emissions data for cross-tenant sustainability analysis",
+    "tags": {
+      "application": "finops hub",
+      "category": "data-ingestion",
+      "layer": "bronze",
+      "source": "azure-carbon-optimization",
+      "purpose": "multi-tenant-emissions",
+      "scope": "cross-tenant"
+    }
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "PLACEHOLDER_GUID_CARBONEMISSIONS_MULTITENANT"
+  }
+}

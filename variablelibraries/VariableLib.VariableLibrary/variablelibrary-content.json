@@ -107,8 +107,16 @@
     {
       "name": "ado_artifactory_feed",
       "type": "String",
-      "description": "Azure DevOps Artifacts feed name for Python packages (pip) used in FinOps Hub notebooks",
-      "defaultValue": "finops-packages",
+      "description": "Azure DevOps Artifacts feed name for Python packages (pip) used in FinOps Hub notebooks. Must match the feed the package pipeline publishes to.",
+      "defaultValue": "finops-python",
+      "isRequired": false,
+      "isSecret": false
+    },
+    {
+      "name": "ado_feed_pat_secret_name",
+      "type": "String",
+      "description": "Azure Key Vault secret name containing the PAT used to install packages from the Azure DevOps Artifacts feed",
+      "defaultValue": "ado-feed-pat",
       "isRequired": false,
       "isSecret": false
     }

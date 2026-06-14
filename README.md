@@ -40,7 +40,7 @@ A comprehensive Azure DevOps CI/CD pipeline for deploying Microsoft Fabric items
 ## 📁 Repository Structure
 
 ```
-FabricCICD/
+finops-fabric/
 ├── azure-pipelines.yml          # Main CI/CD pipeline
 ├── parameter.yml                # Environment-specific parameter replacements
 ├── fabric-config.yml            # Fabric deployment configuration

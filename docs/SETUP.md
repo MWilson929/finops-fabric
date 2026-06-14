@@ -103,8 +103,8 @@ Create three environments in **Pipelines** → **Environments**:
 
 ```powershell
 # Clone this repository template
-git clone https://github.com/your-org/FabricCICD.git
-cd FabricCICD
+git clone https://github.com/your-org/finops-fabric.git
+cd finops-fabric
 
 # Create and switch to develop branch
 git checkout -b develop

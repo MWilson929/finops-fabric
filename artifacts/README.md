@@ -7,7 +7,7 @@ This directory explains the folder structure for organizing Microsoft Fabric ite
 ### Core Directories
 
 ```
-FabricCICD/
+finops-fabric/
 ├── artifacts/              # General artifacts and shared resources
 ├── lakehouses/             # Lakehouse definitions and configurations
 ├── notebooks/              # Jupyter notebooks (.ipynb files and .Notebook folders)

@@ -10,8 +10,8 @@ The Cost Management Benefit Recommendations API exposes the hourly savings-plan-
 
 Two ingestions, two purposes:
 
-1. `bronze.benefits_usage` — per-subscription hourly series, fetched **monthly** (gap > 60 days is permanently unrecoverable; a continuity check fails the run loudly), snapshot-append with `snapshot_date`. Purpose: visibility and a multi-year hourly demand profile; the per-subscription *usage* sums cleanly even though recommendations don't.
-2. `bronze.benefits_recommendations` — shared-scope (billing profile / EA) alternatives for both terms, `is_recommended` flagged. Purpose: the **purchase decision**, and the predicted-wastage history for forecast-vs-actual variance.
+1. `bronze.savingsplan_usage` — per-subscription hourly series, fetched **monthly** (gap > 60 days is permanently unrecoverable; a continuity check fails the run loudly), snapshot-append with `snapshot_date`. Purpose: visibility and a multi-year hourly demand profile; the per-subscription *usage* sums cleanly even though recommendations don't.
+2. `bronze.savingsplan_recommendations` — shared-scope (billing profile / EA) alternatives for both terms, `is_recommended` flagged. Purpose: the **purchase decision**, and the predicted-wastage history for forecast-vs-actual variance.
 
 ## Consequences
 

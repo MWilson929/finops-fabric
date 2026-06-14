@@ -14,7 +14,7 @@ Three tiers, by grain and access quality:
 |---|---|---|
 | Money | FOCUS (already landed) | capacity × day |
 | Utilisation | ARM Capacities usages API (preview; payload to verify) | capacity × point-in-time |
-| Attribution | Capacity Metrics semantic-model scrape (sempy DAX) → `bronze.monitoring_capacity` | workspace/item/operation × day |
+| Attribution | Capacity Metrics semantic-model scrape (sempy DAX) → `bronze.fabric_capacity` | workspace/item/operation × day |
 
 Both packaged tools (FCA, Chargeback app) are skipped: the requirement is data in the lakehouse, not another report. The scrape runs daily (14-day source retention; gaps unrecoverable) under ADR-0011's schema-contract pattern.
 

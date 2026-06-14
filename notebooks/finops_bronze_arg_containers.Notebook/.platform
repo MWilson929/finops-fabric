@@ -2,10 +2,10 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
   "metadata": {
     "type": "Notebook",
-    "displayName": "ResourceContainers_MultiTenant"
+    "displayName": "finops_bronze_arg_containers"
   },
   "config": {
     "version": "2.0",
-    "logicalId": "PLACEHOLDER_GUID_RESOURCECONTAINERS_MULTITENANT"
+    "logicalId": "bf522fba-05a8-4eac-a6ab-63f714bf160e"
   }
 }

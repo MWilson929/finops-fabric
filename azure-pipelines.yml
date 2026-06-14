@@ -1,519 +1,347 @@
-# Azure DevOps Pipeline for Microsoft Fabric CI/CD (General Purpose)
-# Git-based deployments using Microsoft fabric-cicd library
-
-parameters:
-- name: deployToDev
-  displayName: 'Deploy to Development'
-  type: boolean
-  default: 'true'
-- name: deployToTest
-  displayName: 'Deploy to Test'
-  type: boolean
-  default: 'false'
-- name: deployToProd
-  displayName: 'Deploy to Production'
-  type: boolean
-  default: 'false'
-- name: targetEnvironment
-  displayName: 'Target Environment (overrides individual checkboxes)'
-  type: string
-  default: 'auto'
-  values:
-  - auto
-  - dev-only
-  - test-only
-  - prod-only
-  - dev-test
-  - dev-prod
-  - test-prod
-  - all
+# FinOps Hub Microsoft Fabric CI/CD
+#
+# Branches are environment state:
+#   dev      -> Dev
+#   preprod  -> Preprod Data Engineering, then Preprod Reporting
+#   main     -> Prod Data Engineering, then Prod Reporting
+#
+# Pull requests validate only. Deployments always publish the complete desired
+# state represented by the target branch.
 
 trigger:
   branches:
     include:
-    - main
-    - develop
+      - dev
+      - preprod
+      - main
   paths:
     include:
-    - artifacts/*
-    - lakehouses/*
-    - notebooks/*
-    - datapipelines/*
-    - dataflows/*
-    - reports/*
-    - semanticmodels/*
-    - environments/*
-    - warehouses/*
-    - parameter.yml
-    - fabric-config.yml
-    exclude:
-    - README.md
-    - docs/*
-    - temp/*
-    - debug/*
+      - azure-pipelines.yml
+      - fabric-config.yml
+      - parameter.yml
+      - requirements-cicd.txt
+      - config/**
+      - scripts/**
+      - docs/naming_standards.md
+      - docs/notebook_standards.md
+      - docs/lakehouse_standards.md
+      - notebooks/**
+      - lakehouses/**
+      - datapipelines/**
+      - dataflows/**
+      - environments/**
+      - eventhouses/**
+      - sqldatabases/**
+      - variablelibraries/**
+      - udfs/**
+      - warehouses/**
+      - semanticmodels/**
+      - reports/**
 
 pr:
   branches:
     include:
-    - main
+      - dev
+      - preprod
+      - main
   paths:
     include:
-    - artifacts/*
-    - lakehouses/*
-    - notebooks/*
-    - datapipelines/*
-    - dataflows/*
-    - reports/*
-    - semanticmodels/*
-    - environments/*
-    - warehouses/*
-    - parameter.yml
-    - fabric-config.yml
+      - azure-pipelines.yml
+      - fabric-config.yml
+      - parameter.yml
+      - requirements-cicd.txt
+      - config/**
+      - scripts/**
+      - docs/naming_standards.md
+      - docs/notebook_standards.md
+      - docs/lakehouse_standards.md
+      - notebooks/**
+      - lakehouses/**
+      - datapipelines/**
+      - dataflows/**
+      - environments/**
+      - eventhouses/**
+      - sqldatabases/**
+      - variablelibraries/**
+      - udfs/**
+      - warehouses/**
+      - semanticmodels/**
+      - reports/**
 
 variables:
-  # Global variables
-  - name: pythonVersion
-    value: '3.11'
-  - name: azureServiceConnection
-    value: 'fabric-service-connection' # Update with your service connection name
-  # Variable groups for different environments
-  - group: fabric-dev-variables
-  - group: fabric-test-variables  
-  - group: fabric-prod-variables
+  pythonVersion: '3.12'
+  artifactName: 'finops-fabric-release'
+  nonProdServiceConnection: 'fabric-cicd-nonprod'
+  prodServiceConnection: 'fabric-cicd-prod'
 
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: ubuntu-latest
 
 stages:
-# ==============================================================================
-# BUILD STAGE - Validate and prepare artifacts
-# ==============================================================================
-- stage: Build
-  displayName: 'Build and Validate'
-  jobs:
-  - job: BuildJob
-    displayName: 'Build and Validate Fabric Resources'
-    steps:
-    
-    - checkout: self
-      persistCredentials: 'true'
-      clean: 'true'
-    
-    - task: UsePythonVersion@0
-      displayName: 'Set Python Version'
-      inputs:
-        versionSpec: '$(pythonVersion)'
-        addToPath: true
-    
-    - script: |
-        python -m pip install --upgrade pip
-        pip install --upgrade fabric-cicd
-        pip install --upgrade azure-identity
-        pip install pyyaml
-        pip install jsonschema
-        echo "Installed fabric-cicd version:"
-        pip show fabric-cicd
-      displayName: 'Install Dependencies'
-    
-    - task: PythonScript@0
-      displayName: 'Validate Fabric Items Structure'
-      inputs:
-        scriptSource: 'inline'
-        script: |
-          import json
-          import os
-          import sys
-          from pathlib import Path
-          
-          def validate_fabric_item(item_path):
-              """Validate Fabric item structure based on type"""
-              try:
-                  item_name = Path(item_path).name
-                  
-                  # Validate notebooks (.ipynb files or Notebook folders)
-                  if item_path.endswith('.ipynb') or '.Notebook' in item_name:
-                      if item_path.endswith('.ipynb'):
-                          with open(item_path, 'r', encoding='utf-8') as f:
-                              notebook = json.load(f)
-                          required_keys = ['cells', 'metadata', 'nbformat']
-                          for key in required_keys:
-                              if key not in notebook:
-                                  print(f"ERROR: Missing required key '{key}' in {item_path}")
-                                  return False
-                      print(f"✓ Validated Notebook: {item_path}")
-                      return True
-                  
-                  # Validate Lakehouses
-                  elif '.Lakehouse' in item_name:
-                      # Check for basic lakehouse structure
-                      if os.path.isdir(item_path):
-                          print(f"✓ Validated Lakehouse: {item_path}")
-                      return True
-                  
-                  # Validate Data Pipelines
-                  elif '.DataPipeline' in item_name:
-                      pipeline_file = os.path.join(item_path, 'pipeline-content.json')
-                      if os.path.exists(pipeline_file):
-                          with open(pipeline_file, 'r', encoding='utf-8') as f:
-                              pipeline = json.load(f)
-                          if 'properties' not in pipeline:
-                              print(f"ERROR: Missing 'properties' in {pipeline_file}")
-                              return False
-                      print(f"✓ Validated DataPipeline: {item_path}")
-                      return True
-                  
-                  # Validate other item types (basic existence check)
-                  elif any(suffix in item_name for suffix in ['.Dataflow', '.Report', '.SemanticModel', '.Environment']):
-                      print(f"✓ Validated Fabric Item: {item_path}")
-                      return True
-                  
-                  return True
-                  
-              except json.JSONDecodeError as e:
-                  print(f"ERROR: Invalid JSON in {item_path}: {e}")
-                  return False
-              except Exception as e:
-                  print(f"ERROR: Failed to validate {item_path}: {e}")
-                  return False
-          
-          # Find and validate all Fabric items
-          validation_failed = False
-          fabric_extensions = ['.ipynb', '.Notebook', '.Lakehouse', '.DataPipeline', '.Dataflow', '.Report', '.SemanticModel', '.Environment']
-          
-          for root, dirs, files in os.walk("."):
-              # Check files
-              for file in files:
-                  if any(file.endswith(ext) for ext in ['.ipynb']):
-                      item_path = os.path.join(root, file)
-                      if not validate_fabric_item(item_path):
-                          validation_failed = True
-              
-              # Check directories (Fabric items as folders)
-              for directory in dirs:
-                  if any(ext in directory for ext in fabric_extensions[1:]):  # Skip .ipynb as it's a file
-                      item_path = os.path.join(root, directory)
-                      if not validate_fabric_item(item_path):
-                          validation_failed = True
-          
-          if validation_failed:
-              sys.exit(1)
-          else:
-              print("✓ All Fabric items validated successfully")
-    
-    - task: PythonScript@0
-      displayName: 'Validate Configuration Files'
-      inputs:
-        scriptSource: 'inline'
-        script: |
-          import json
-          import yaml
-          import os
-          import sys
-          
-          def validate_config_files():
-              """Validate configuration file structure"""
-              validation_failed = False
-              
-              # Required configuration files for fabric-cicd
-              required_files = {
-                  'parameter.yml': 'yaml',
-                  'fabric-config.yml': 'yaml'
-              }
-              
-              # Optional legacy configuration files
-              optional_files = {
-                  'config/environments.yaml': 'yaml',
-                  'config/deployment_order.json': 'json'
-              }
-              
-              # Validate required files
-              for filename, file_type in required_files.items():
-                  if not os.path.exists(filename):
-                      print(f"ERROR: Required config file {filename} not found")
-                      validation_failed = True
-                      continue
-                  
-                  try:
-                      with open(filename, 'r', encoding='utf-8') as f:
-                          content = yaml.safe_load(f) if file_type == 'yaml' else json.load(f)
-                      print(f"✓ Validated: {filename}")
-                  except Exception as e:
-                      print(f"ERROR: Invalid {file_type.upper()} in {filename}: {e}")
-                      validation_failed = True
-              
-              # Validate optional files if they exist
-              for filename, file_type in optional_files.items():
-                  if os.path.exists(filename):
-                      try:
-                          with open(filename, 'r', encoding='utf-8') as f:
-                              content = yaml.safe_load(f) if file_type == 'yaml' else json.load(f)
-                          print(f"✓ Validated: {filename}")
-                      except Exception as e:
-                          print(f"ERROR: Invalid {file_type.upper()} in {filename}: {e}")
-                          validation_failed = True
-                  else:
-                      print(f"INFO: Optional config file {filename} not found")
-              
-              # Validate parameter.yml structure
-              if os.path.exists('parameter.yml'):
-                  try:
-                      with open('parameter.yml', 'r', encoding='utf-8') as f:
-                          params = yaml.safe_load(f)
-                      
-                      # Check for expected parameter sections
-                      expected_sections = ['find_replace']  # At minimum
-                      for section in expected_sections:
-                          if section in params:
-                              print(f"✓ Parameter section '{section}' found")
-                          else:
-                              print(f"INFO: Optional parameter section '{section}' not found")
-                              
-                  except Exception as e:
-                      print(f"ERROR: Failed to validate parameter.yml structure: {e}")
-                      validation_failed = True
-              
-              return not validation_failed
-          
-          if not validate_config_files():
-              sys.exit(1)
-          else:
-              print("✓ All configuration files validated successfully")
-    
-    - task: PublishPipelineArtifact@1
-      displayName: 'Publish Build Artifacts'
-      inputs:
-        targetPath: '$(Build.SourcesDirectory)'
-        artifact: 'fabric-deployment-package'
-        publishLocation: 'pipeline'
+  - stage: Validate
+    displayName: Validate Fabric release
+    jobs:
+      - job: Validate
+        displayName: Validate source and parameterization
+        steps:
+          - checkout: self
+            clean: true
 
-# ==============================================================================
-# DEV DEPLOYMENT STAGE
-# ==============================================================================
-- stage: DeployDev
-  displayName: 'Deploy to Development'
-  dependsOn: Build
-  condition: and(succeeded(), or(eq('${{ parameters.deployToDev }}', 'true'), containsValue('${{ parameters.targetEnvironment }}', 'dev'), eq('${{ parameters.targetEnvironment }}', 'all'), eq('${{ parameters.targetEnvironment }}', 'auto')))
-  variables:
-  - group: fabric-dev-variables
-  jobs:
-  - deployment: DeployToFabricDev
-    displayName: 'Deploy Resources to Development Environment'
-    environment: 'fabric-dev'
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-          
-          - download: current
-            artifact: 'fabric-deployment-package'
-          
           - task: UsePythonVersion@0
             inputs:
-              versionSpec: '$(pythonVersion)'
-          
-          - script: |
-              python -m pip install --upgrade pip
-              pip install --upgrade fabric-cicd
-              pip install --upgrade azure-identity
-              pip install pyyaml
-              echo "Installed fabric-cicd version:"
-              pip show fabric-cicd | grep -E "(Name|Version)"
-            displayName: 'Install Fabric CI/CD Dependencies'
-          
-          - task: PythonScript@0
-            displayName: 'Validate Environment Configuration'
-            inputs:
-              scriptSource: 'inline'
-              script: |
-                import sys
-                import os
-                
-                print(f"🔍 Validating DEV environment configuration...")
-                print(f"Python version: {sys.version}")
-                print(f"Current directory: {os.getcwd()}")
-                
-                # Validate required environment variables
-                required_vars = ['DEV_WORKSPACE_ID', 'DEV_SUBSCRIPTION_ID']
-                missing_vars = []
-                
-                for var in required_vars:
-                    value = os.environ.get(var, '')
-                    if value:
-                        masked = value[:8] + "..." + value[-4:] if len(value) > 12 else value
-                        print(f"  ✅ {var}: {masked}")
-                    else:
-                        missing_vars.append(var)
-                        print(f"  ❌ {var}: Missing")
-                
-                if missing_vars:
-                    print(f"❌ Missing required environment variables: {missing_vars}")
-                    sys.exit(1)
-                else:
-                    print("✅ All required environment variables are present")
-            env:
-              DEV_WORKSPACE_ID: $(dev-workspace-id)
-              DEV_SUBSCRIPTION_ID: $(dev-subscription-id)
-          
-          - script: |
-              cd "$(Pipeline.Workspace)/fabric-deployment-package"
-              python scripts/deploy_fabric_items.py --environment dev --config-file fabric-config.yml --install-deps
-            displayName: 'Deploy Fabric Items to Dev Environment'
-            env:
-              DEV_WORKSPACE_ID: $(dev-workspace-id)
-              DEV_SUBSCRIPTION_ID: $(dev-subscription-id)
-              DEV_STORAGE_ACCOUNT: $(dev-storage-account)
-              DEV_CONTAINER_NAME: $(dev-container-name)
-              AZURE_CLIENT_ID: $(servicePrincipalId)
-              AZURE_CLIENT_SECRET: $(servicePrincipalKey)
-              AZURE_TENANT_ID: $(tenantId)
-          
-          - task: PythonScript@0
-            displayName: 'Validate Deployment Success'
-            inputs:
-              scriptSource: 'inline'
-              script: |
-                import os
-                print("🔍 Validating deployment to DEV environment...")
-                
-                # Check if fabric-config.yml exists
-                config_file = "$(Pipeline.Workspace)/fabric-deployment-package/fabric-config.yml"
-                if os.path.exists(config_file):
-                    print(f"✅ Configuration file found: {config_file}")
-                else:
-                    print(f"❌ Configuration file not found: {config_file}")
-                
-                # Additional validation can be added here
-                print("✅ Basic deployment validation completed")
-            env:
-              DEV_WORKSPACE_ID: $(dev-workspace-id)
+              versionSpec: $(pythonVersion)
+              addToPath: true
 
-# ==============================================================================
-# TEST DEPLOYMENT STAGE
-# ==============================================================================
-- stage: DeployTest
-  displayName: 'Deploy to Test'
-  dependsOn: DeployDev
-  condition: and(succeeded(), or(eq('${{ parameters.deployToTest }}', 'true'), contains('${{ parameters.targetEnvironment }}', 'test'), eq('${{ parameters.targetEnvironment }}', 'all')))
-  variables:
-  - group: fabric-test-variables
-  jobs:
-  - deployment: DeployToFabricTest
-    displayName: 'Deploy Resources to Test Environment'
-    environment: 'fabric-test'
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-          
-          - download: current
-            artifact: 'fabric-deployment-package'
-          
-          - task: UsePythonVersion@0
-            inputs:
-              versionSpec: '$(pythonVersion)'
-          
-          - script: |
-              python -m pip install --upgrade pip
-              pip install ms-fabric-cli
-              pip install requests
-              pip install pyyaml
-            displayName: 'Install Fabric CLI'
-          
-          - task: PythonScript@0
-            displayName: 'Configure Notebooks for Test Environment'
-            inputs:
-              scriptSource: 'filePath'
-              scriptPath: '$(Pipeline.Workspace)/fabric-deployment-package/scripts/configure_notebooks.py'
-              arguments: '--environment test --artifact-path $(Pipeline.Workspace)/fabric-deployment-package'
-            env:
-              TEST_STORAGE_ACCOUNT: $(test-storage-account)
-              TEST_WORKSPACE_ID: $(test-workspace-id)
-              TEST_WORKSPACE_NAME: $(test-workspace-name)
-              TEST_CONTAINER_NAME: $(test-container-name)
-              TEST_SUBSCRIPTION_ID: $(test-subscription-id)
-          
-          - task: AzureCLI@2
-            displayName: 'Deploy to Fabric Test Workspace'
-            inputs:
-              azureSubscription: '$(azureServiceConnection)'
-              scriptType: 'bash'
-              scriptLocation: 'scriptPath'
-              scriptPath: '$(Pipeline.Workspace)/fabric-deployment-package/scripts/deploy_to_fabric.sh'
-              arguments: 'test $(Pipeline.Workspace)/fabric-deployment-package'
-            env:
-              AZURE_CONFIG_DIR: $(Agent.TempDirectory)/.azure
-              TEST_WORKSPACE_NAME: $(test-workspace-name)
-          
-          - task: PythonScript@0
-            displayName: 'Run Integration Tests'
-            inputs:
-              scriptSource: 'filePath'
-              scriptPath: '$(Pipeline.Workspace)/fabric-deployment-package/scripts/run_integration_tests.py'
-              arguments: '--environment test'
-            env:
-              TEST_WORKSPACE_ID: $(test-workspace-id)
+          - script: python -m pip install --requirement requirements-cicd.txt
+            displayName: Install pinned CI/CD dependencies
 
-# ==============================================================================
-# PRODUCTION DEPLOYMENT STAGE
-# ==============================================================================
-- stage: DeployProd
-  displayName: 'Deploy to Production'
-  dependsOn: DeployTest
-  condition: and(succeeded(), or(eq('${{ parameters.deployToProd }}', 'true'), contains('${{ parameters.targetEnvironment }}', 'prod'), eq('${{ parameters.targetEnvironment }}', 'all')))
-  variables:
-  - group: fabric-prod-variables
-  jobs:
-  - deployment: DeployToFabricProd
-    displayName: 'Deploy Resources to Production Environment'
-    environment: 'fabric-prod'
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-          
-          - download: current
-            artifact: 'fabric-deployment-package'
-          
-          - task: UsePythonVersion@0
+          - script: python scripts/validate_fabric_repository.py
+            displayName: Validate Fabric repository
+
+          - task: CopyFiles@2
+            condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
             inputs:
-              versionSpec: '$(pythonVersion)'
-          
-          - script: |
-              python -m pip install --upgrade pip
-              pip install ms-fabric-cli
-              pip install requests
-            displayName: 'Install Fabric CLI'
-          
-          - task: PythonScript@0
-            displayName: 'Configure Notebooks for Production Environment'
+              SourceFolder: $(Build.SourcesDirectory)
+              Contents: |
+                fabric-config.yml
+                parameter.yml
+                requirements-cicd.txt
+                config/**
+                docs/naming_standards.md
+                docs/notebook_standards.md
+                docs/lakehouse_standards.md
+                scripts/**
+                notebooks/**
+                lakehouses/**
+                datapipelines/**
+                dataflows/**
+                environments/**
+                eventhouses/**
+                sqldatabases/**
+                variablelibraries/**
+                udfs/**
+                warehouses/**
+                semanticmodels/**
+                reports/**
+              TargetFolder: $(Build.ArtifactStagingDirectory)/$(artifactName)
+              CleanTargetFolder: true
+            displayName: Stage Fabric release artifact
+
+          - task: PublishPipelineArtifact@1
+            condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
             inputs:
-              scriptSource: 'filePath'
-              scriptPath: '$(Pipeline.Workspace)/fabric-deployment-package/scripts/configure_notebooks.py'
-              arguments: '--environment prod --artifact-path $(Pipeline.Workspace)/fabric-deployment-package'
-            env:
-              PROD_STORAGE_ACCOUNT: $(prod-storage-account)
-              PROD_WORKSPACE_ID: $(prod-workspace-id)
-              PROD_WORKSPACE_NAME: $(prod-workspace-name)
-              PROD_CONTAINER_NAME: $(prod-container-name)
-              PROD_SUBSCRIPTION_ID: $(prod-subscription-id)
-          
-          - task: AzureCLI@2
-            displayName: 'Deploy to Fabric Production Workspace'
-            inputs:
-              azureSubscription: '$(azureServiceConnection)'
-              scriptType: 'bash'
-              scriptLocation: 'scriptPath'
-              scriptPath: '$(Pipeline.Workspace)/fabric-deployment-package/scripts/deploy_to_fabric.sh'
-              arguments: 'prod $(Pipeline.Workspace)/fabric-deployment-package'
-            env:
-              AZURE_CONFIG_DIR: $(Agent.TempDirectory)/.azure
-              PROD_WORKSPACE_NAME: $(prod-workspace-name)
-          
-          - task: PythonScript@0
-            displayName: 'Production Health Check'
-            inputs:
-              scriptSource: 'filePath'
-              scriptPath: '$(Pipeline.Workspace)/fabric-deployment-package/scripts/production_health_check.py'
-              arguments: '--environment prod'
-            env:
-              PROD_WORKSPACE_ID: $(prod-workspace-id)
+              targetPath: $(Build.ArtifactStagingDirectory)/$(artifactName)
+              artifact: $(artifactName)
+              publishLocation: pipeline
+            displayName: Publish immutable release artifact
+
+  - stage: DeployDev
+    displayName: Deploy Dev
+    dependsOn: Validate
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
+    variables:
+      - group: fabric-dev
+    jobs:
+      - deployment: DeployDev
+        displayName: Deploy Dev workspace
+        environment: fabric-dev
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - download: current
+                  artifact: $(artifactName)
+
+                - task: UsePythonVersion@0
+                  inputs:
+                    versionSpec: $(pythonVersion)
+                    addToPath: true
+
+                - task: AzureCLI@2
+                  displayName: Deploy Dev with fabric-cicd
+                  inputs:
+                    azureSubscription: $(nonProdServiceConnection)
+                    scriptType: bash
+                    scriptLocation: inlineScript
+                    workingDirectory: $(Pipeline.Workspace)/$(artifactName)
+                    inlineScript: |
+                      set -euo pipefail
+                      python -m pip install --requirement requirements-cicd.txt
+                      python scripts/deploy_fabric_items.py \
+                        --environment DEV \
+                        --workspace-id "$DEV_WORKSPACE_ID" \
+                        --scope all
+                  env:
+                    DEV_WORKSPACE_ID: $(workspace-id)
+                    DEV_STORAGE_ACCOUNT_NAME: $(storage-account-name)
+                    DEV_CONTAINER_NAME: $(container-name)
+                    DEV_CONNECTION_ID: $(connection-id)
+                    DEV_LAKEHOUSE_CONNECTION: $(lakehouse-connection-id)
+
+  - stage: DeployPreprodEngineering
+    displayName: Deploy Preprod Data Engineering
+    dependsOn: Validate
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'), eq(variables['Build.SourceBranch'], 'refs/heads/preprod'))
+    variables:
+      - group: fabric-preprod
+    jobs:
+      - deployment: DeployPreprodEngineering
+        displayName: Deploy Preprod Data Engineering workspace
+        environment: fabric-preprod-engineering
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - download: current
+                  artifact: $(artifactName)
+
+                - task: UsePythonVersion@0
+                  inputs:
+                    versionSpec: $(pythonVersion)
+                    addToPath: true
+
+                - task: AzureCLI@2
+                  displayName: Deploy Preprod engineering with fabric-cicd
+                  inputs:
+                    azureSubscription: $(nonProdServiceConnection)
+                    scriptType: bash
+                    scriptLocation: inlineScript
+                    workingDirectory: $(Pipeline.Workspace)/$(artifactName)
+                    inlineScript: |
+                      set -euo pipefail
+                      python -m pip install --requirement requirements-cicd.txt
+                      python scripts/deploy_fabric_items.py \
+                        --environment PREPROD_ENGINEERING \
+                        --workspace-id "$PREPROD_ENGINEERING_WORKSPACE_ID" \
+                        --scope engineering
+                  env:
+                    PREPROD_ENGINEERING_WORKSPACE_ID: $(engineering-workspace-id)
+                    PREPROD_STORAGE_ACCOUNT_NAME: $(storage-account-name)
+                    PREPROD_CONTAINER_NAME: $(container-name)
+                    PREPROD_CONNECTION_ID: $(connection-id)
+                    PREPROD_LAKEHOUSE_CONNECTION: $(lakehouse-connection-id)
+
+  - stage: DeployPreprodReporting
+    displayName: Deploy Preprod Reporting
+    dependsOn: DeployPreprodEngineering
+    condition: succeeded()
+    variables:
+      - group: fabric-preprod
+    jobs:
+      - deployment: DeployPreprodReporting
+        displayName: Deploy Preprod Reporting workspace
+        environment: fabric-preprod-reporting
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - download: current
+                  artifact: $(artifactName)
+
+                - task: UsePythonVersion@0
+                  inputs:
+                    versionSpec: $(pythonVersion)
+                    addToPath: true
+
+                - task: AzureCLI@2
+                  displayName: Deploy Preprod reporting with fabric-cicd
+                  inputs:
+                    azureSubscription: $(nonProdServiceConnection)
+                    scriptType: bash
+                    scriptLocation: inlineScript
+                    workingDirectory: $(Pipeline.Workspace)/$(artifactName)
+                    inlineScript: |
+                      set -euo pipefail
+                      python -m pip install --requirement requirements-cicd.txt
+                      python scripts/deploy_fabric_items.py \
+                        --environment PREPROD_REPORTING \
+                        --workspace-id "$PREPROD_REPORTING_WORKSPACE_ID" \
+                        --scope reporting
+                  env:
+                    PREPROD_REPORTING_WORKSPACE_ID: $(reporting-workspace-id)
+                    PREPROD_ENGINEERING_WORKSPACE_ID: $(engineering-workspace-id)
+                    PREPROD_LAKEHOUSE_CONNECTION: $(lakehouse-connection-id)
+
+  - stage: DeployProdEngineering
+    displayName: Deploy Prod Data Engineering
+    dependsOn: Validate
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+    variables:
+      - group: fabric-prod
+    jobs:
+      - deployment: DeployProdEngineering
+        displayName: Deploy Prod Data Engineering workspace
+        environment: fabric-prod-engineering
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - download: current
+                  artifact: $(artifactName)
+
+                - task: UsePythonVersion@0
+                  inputs:
+                    versionSpec: $(pythonVersion)
+                    addToPath: true
+
+                - task: AzureCLI@2
+                  displayName: Deploy Prod engineering with fabric-cicd
+                  inputs:
+                    azureSubscription: $(prodServiceConnection)
+                    scriptType: bash
+                    scriptLocation: inlineScript
+                    workingDirectory: $(Pipeline.Workspace)/$(artifactName)
+                    inlineScript: |
+                      set -euo pipefail
+                      python -m pip install --requirement requirements-cicd.txt
+                      python scripts/deploy_fabric_items.py \
+                        --environment PROD_ENGINEERING \
+                        --workspace-id "$PROD_ENGINEERING_WORKSPACE_ID" \
+                        --scope engineering
+                  env:
+                    PROD_ENGINEERING_WORKSPACE_ID: $(engineering-workspace-id)
+                    PROD_STORAGE_ACCOUNT_NAME: $(storage-account-name)
+                    PROD_CONTAINER_NAME: $(container-name)
+                    PROD_CONNECTION_ID: $(connection-id)
+                    PROD_LAKEHOUSE_CONNECTION: $(lakehouse-connection-id)
+
+  - stage: DeployProdReporting
+    displayName: Deploy Prod Reporting
+    dependsOn: DeployProdEngineering
+    condition: succeeded()
+    variables:
+      - group: fabric-prod
+    jobs:
+      - deployment: DeployProdReporting
+        displayName: Deploy Prod Reporting workspace
+        environment: fabric-prod-reporting
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - download: current
+                  artifact: $(artifactName)
+
+                - task: UsePythonVersion@0
+                  inputs:
+                    versionSpec: $(pythonVersion)
+                    addToPath: true
+
+                - task: AzureCLI@2
+                  displayName: Deploy Prod reporting with fabric-cicd
+                  inputs:
+                    azureSubscription: $(prodServiceConnection)
+                    scriptType: bash
+                    scriptLocation: inlineScript
+                    workingDirectory: $(Pipeline.Workspace)/$(artifactName)
+                    inlineScript: |
+                      set -euo pipefail
+                      python -m pip install --requirement requirements-cicd.txt
+                      python scripts/deploy_fabric_items.py \
+                        --environment PROD_REPORTING \
+                        --workspace-id "$PROD_REPORTING_WORKSPACE_ID" \
+                        --scope reporting
+                  env:
+                    PROD_REPORTING_WORKSPACE_ID: $(reporting-workspace-id)
+                    PROD_ENGINEERING_WORKSPACE_ID: $(engineering-workspace-id)
+                    PROD_LAKEHOUSE_CONNECTION: $(lakehouse-connection-id)

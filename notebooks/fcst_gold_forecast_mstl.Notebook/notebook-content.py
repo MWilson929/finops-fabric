@@ -8,7 +8,7 @@
 # META   },
 # META   "dependencies": {
 # META     "lakehouse": {
-# META       "default_lakehouse": "PLACEHOLDER_WORKSPACE_ID",
+# META       "default_lakehouse": "PLACEHOLDER_LAKEHOUSE_ID",
 # META       "default_lakehouse_name": "FinOpsHub",
 # META       "default_lakehouse_workspace_id": "PLACEHOLDER_WORKSPACE_ID"
 # META     }
@@ -59,7 +59,7 @@
 # PARAMETERS CELL ********************
 
 # ---- Source tables ----
-LAKEHOUSE_NAME    = "Finops_Hub"
+LAKEHOUSE_NAME    = "FinOpsHub"
 SOURCE_TABLE      = "focus_cost"          # input FOCUS table
 ACTUALS_TABLE     = "focus_actuals_daily" # output: daily aggregated actuals
 FORECAST_TABLE    = "focus_forecast_daily" # output: forecast
@@ -98,7 +98,7 @@ spark.sql(f"USE SCHEMA default")  # adjust schema as needed
 # ---- Read FOCUS table (lazy Polars with streaming) ----
 print(f"Reading {SOURCE_TABLE}...")
 lf = pl.scan_delta(
-    f"abfss://Lakehouse@onelake.dfs.fabric.microsoft.com/Workspaces/<workspace-guid>/Lakehouses/{LAKEHOUSE_NAME}/Tables/{SOURCE_TABLE}"
+    f"abfss://Lakehouse@onelake.dfs.fabric.microsoft.com/Workspaces/PLACEHOLDER_WORKSPACE_ID/Lakehouses/{LAKEHOUSE_NAME}/Tables/{SOURCE_TABLE}"
 )
 
 # ---- Aggregate to daily cost per subscription ----
@@ -120,7 +120,7 @@ display(daily_actuals.head())
 # CELL ********************
 
 # ---- Write actuals table ----
-abfss_path = f"abfss://Lakehouse@onelake.dfs.fabric.microsoft.com/Workspaces/<workspace-guid>/Lakehouses/{LAKEHOUSE_NAME}/Tables/{ACTUALS_TABLE}"
+abfss_path = f"abfss://Lakehouse@onelake.dfs.fabric.microsoft.com/Workspaces/PLACEHOLDER_WORKSPACE_ID/Lakehouses/{LAKEHOUSE_NAME}/Tables/{ACTUALS_TABLE}"
 
 daily_actuals.write_delta(
     abfss_path,
@@ -190,7 +190,7 @@ display(forecast_pl.head())
 # CELL ********************
 
 # ---- Write forecast table ----
-forecast_abfss_path = f"abfss://Lakehouse@onelake.dfs.fabric.microsoft.com/Workspaces/<workspace-guid>/Lakehouses/{LAKEHOUSE_NAME}/Tables/{FORECAST_TABLE}"
+forecast_abfss_path = f"abfss://Lakehouse@onelake.dfs.fabric.microsoft.com/Workspaces/PLACEHOLDER_WORKSPACE_ID/Lakehouses/{LAKEHOUSE_NAME}/Tables/{FORECAST_TABLE}"
 
 forecast_pl.write_delta(
     forecast_abfss_path,

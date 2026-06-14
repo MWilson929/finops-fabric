@@ -2,10 +2,10 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
   "metadata": {
     "type": "Notebook",
-    "displayName": "focus_cost_changepoints"
+    "displayName": "fcst_gold_forecast_changepoints"
   },
   "config": {
     "version": "2.0",
-    "logicalId": "PLACEHOLDER_GUID_FOCUS_COST_CHANGEPOINTS"
+    "logicalId": "c9ba2f8f-5562-4a9f-9607-a4fee473543c"
   }
 }

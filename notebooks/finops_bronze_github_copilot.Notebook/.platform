@@ -2,10 +2,10 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
   "metadata": {
     "type": "Notebook",
-    "displayName": "github-copilot-usage"
+    "displayName": "finops_bronze_github_copilot"
   },
   "config": {
     "version": "2.0",
-    "logicalId": "PLACEHOLDER_GUID_GITHUB-COPILOT-USAGE"
+    "logicalId": "8fcae94d-e39b-408d-a627-e157e1507cde"
   }
 }

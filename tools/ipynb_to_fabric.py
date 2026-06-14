@@ -27,6 +27,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+import uuid
 from pathlib import Path
 
 DEFAULT_LAKEHOUSE_META = """# META {
@@ -35,7 +36,7 @@ DEFAULT_LAKEHOUSE_META = """# META {
 # META   },
 # META   "dependencies": {
 # META     "lakehouse": {
-# META       "default_lakehouse": "PLACEHOLDER_WORKSPACE_ID",
+# META       "default_lakehouse": "PLACEHOLDER_LAKEHOUSE_ID",
 # META       "default_lakehouse_name": "FinOpsHub",
 # META       "default_lakehouse_workspace_id": "PLACEHOLDER_WORKSPACE_ID"
 # META     }
@@ -83,6 +84,12 @@ def convert(ipynb_path: Path) -> Path:
     (out_dir / "notebook-content.py").write_text("\n".join(parts) + "\n")
 
     # .platform — keep minimal; users can enrich description/tags in Fabric or via PR
+    platform_path = out_dir / ".platform"
+    logical_id = str(uuid.uuid4())
+    if platform_path.exists():
+        existing_platform = json.loads(platform_path.read_text())
+        logical_id = existing_platform.get("config", {}).get("logicalId", logical_id)
+
     platform = {
         "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
         "metadata": {
@@ -91,10 +98,10 @@ def convert(ipynb_path: Path) -> Path:
         },
         "config": {
             "version": "2.0",
-            "logicalId": f"PLACEHOLDER_GUID_{display_name.upper()}",
+            "logicalId": logical_id,
         },
     }
-    (out_dir / ".platform").write_text(json.dumps(platform, indent=2) + "\n")
+    platform_path.write_text(json.dumps(platform, indent=2) + "\n")
     return out_dir
 
 

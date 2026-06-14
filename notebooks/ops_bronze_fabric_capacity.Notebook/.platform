@@ -2,10 +2,10 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
   "metadata": {
     "type": "Notebook",
-    "displayName": "ops_bronze_monitoring_capacity"
+    "displayName": "ops_bronze_fabric_capacity"
   },
   "config": {
     "version": "2.0",
-    "logicalId": "PLACEHOLDER_GUID_OPS_BRONZE_MONITORING_CAPACITY"
+    "logicalId": "76217739-43c9-4f19-b31d-a9fc5ad68b59"
   }
 }

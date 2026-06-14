@@ -193,7 +193,18 @@ A name is valid if it matches either line. The regex is generated from the enume
 
 ## Exceptions
 
-There are none. Items that cannot be named within the convention belong outside the platform repository — in personal scratch workspaces, exploratory notebooks, or non-production capacity. Exception requests are a signal to revisit the convention itself, not to bypass it.
+Exceptions are break-glass controls, not an alternative naming convention.
+They are permitted only when immediate compliance would block a necessary
+release and the exception is:
+
+- recorded in `config/policy_exceptions.yml`;
+- scoped to one exact repository path and one validation rule;
+- supported by a reason, owner, approver, and tracking ticket;
+- time-boxed with an ISO `expires_on` date no more than 90 days ahead;
+- approved through the pull request and protected environment controls.
+
+Expired, malformed, broad, or no-longer-required exceptions fail validation.
+Repeated exceptions for the same pattern trigger a review of this standard.
 
 ## Decision Log
 

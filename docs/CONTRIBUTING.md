@@ -59,6 +59,11 @@ If people repeatedly want to deviate from a rule, the rule is probably wrong. De
 
 A standard that accumulates special cases is decaying. The healthy response to repeated friction is to fix the rule, not to grant exceptions. The standards bend to reality; they do not collect footnotes.
 
+Where a necessary release cannot immediately comply, the break-glass process
+in `naming_standards.md` applies. The exception must be committed, approved,
+exactly scoped, and time-limited. It is evidence of temporary risk acceptance,
+not a permanent amendment to the standard.
+
 ## A Rule Earns Its Place
 
 Do not add a rule for a situation the platform has not actually encountered. Speculative rules for hypothetical edge cases are cruft: they make the document harder to read and enforce for zero current benefit.

@@ -2,10 +2,10 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
   "metadata": {
     "type": "Notebook",
-    "displayName": "focus_cost_backtest"
+    "displayName": "fcst_gold_forecast_accuracy"
   },
   "config": {
     "version": "2.0",
-    "logicalId": "PLACEHOLDER_GUID_FOCUS_COST_BACKTEST"
+    "logicalId": "dff61092-d77d-4dad-b493-92ee99063a3f"
   }
 }

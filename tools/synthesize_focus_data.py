@@ -8,7 +8,7 @@
 # META   },
 # META   "dependencies": {
 # META     "lakehouse": {
-# META       "default_lakehouse": "PLACEHOLDER_WORKSPACE_ID",
+# META       "default_lakehouse": "PLACEHOLDER_LAKEHOUSE_ID",
 # META       "default_lakehouse_name": "FinOpsHub",
 # META       "default_lakehouse_workspace_id": "PLACEHOLDER_WORKSPACE_ID"
 # META     }
@@ -69,7 +69,7 @@ print("Dependencies loaded.")
 # PARAMETERS CELL ********************
 
 # ---- Input/output tables ----
-LAKEHOUSE_NAME = "Finops_Hub"
+LAKEHOUSE_NAME = "FinOpsHub"
 SOURCE_TABLE = "focus_cost"           # real 1-month sample
 OUTPUT_TABLE = "focus_cost_extended"  # 24-month output
 
@@ -87,7 +87,7 @@ NOISE_CV = 0.05  # 5% daily noise
 
 # ---- Read FOCUS table ----
 lf = pl.scan_delta(
-    f"abfss://Lakehouse@onelake.dfs.fabric.microsoft.com/Workspaces/<workspace-guid>/Lakehouses/{LAKEHOUSE_NAME}/Tables/{SOURCE_TABLE}"
+    f"abfss://Lakehouse@onelake.dfs.fabric.microsoft.com/Workspaces/PLACEHOLDER_WORKSPACE_ID/Lakehouses/{LAKEHOUSE_NAME}/Tables/{SOURCE_TABLE}"
 )
 
 real_data = lf.collect()
@@ -219,7 +219,7 @@ print(f"Subscriptions: {combined['SubAccountId'].n_unique()}")
 # CELL ********************
 
 # ---- Write to Delta ----
-output_path = f"abfss://Lakehouse@onelake.dfs.fabric.microsoft.com/Workspaces/<workspace-guid>/Lakehouses/{LAKEHOUSE_NAME}/Tables/{OUTPUT_TABLE}"
+output_path = f"abfss://Lakehouse@onelake.dfs.fabric.microsoft.com/Workspaces/PLACEHOLDER_WORKSPACE_ID/Lakehouses/{LAKEHOUSE_NAME}/Tables/{OUTPUT_TABLE}"
 
 combined.write_delta(
     output_path,

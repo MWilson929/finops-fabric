@@ -1,0 +1,14 @@
+# Policy exceptions are break-glass records, not a general allow-list.
+# Each exception must target one exact repository path and one rule.
+#
+# Example:
+#   - id: NAMING-2026-001
+#     rule: fabric-item-name
+#     path: notebooks/legacy_name.Notebook/.platform
+#     reason: Upstream dependency cannot be renamed before the July release.
+#     owner: finops-platform
+#     approved_by: head-of-finops
+#     ticket: ADO-12345
+#     expires_on: 2026-07-31
+
+exceptions: []

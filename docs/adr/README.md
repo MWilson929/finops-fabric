@@ -15,3 +15,4 @@ One page per significant decision: **Context** (the situation and forces), **Dec
 | [0009](0009-commitment-chargeback-effectivecost.md) | Commitment chargeback on EffectiveCost; unused is a period variance | Accepted | 2026-06-12 |
 | [0010](0010-system-table-hybrid-synthesis.md) | Databricks system-table test data: generate small, synthesize the rest | Accepted | 2026-06-12 |
 | [0011](0011-schema-contract-unofficial-sources.md) | Unofficial sources get a version-pinned schema contract | Accepted | 2026-06-12 |
+| [0012](0012-environment-branches-five-workspaces.md) | Environment branches promote into five security-aligned workspaces | Accepted | 2026-06-14 |

@@ -8,7 +8,7 @@
 # META   },
 # META   "dependencies": {
 # META     "lakehouse": {
-# META       "default_lakehouse": "PLACEHOLDER_WORKSPACE_ID",
+# META       "default_lakehouse": "PLACEHOLDER_LAKEHOUSE_ID",
 # META       "default_lakehouse_name": "FinOpsHub",
 # META       "default_lakehouse_workspace_id": "PLACEHOLDER_WORKSPACE_ID"
 # META     }
@@ -88,7 +88,7 @@ logger = logging.getLogger(__name__)
 # CELL ********************
 
 # ---- Source / output tables ----
-LAKEHOUSE_NAME = "Finops_Hub"
+LAKEHOUSE_NAME = "FinOpsHub"
 SOURCE_TABLE   = "focus_cost"          # legacy name; silver.focusazure_normalised post-migration
 SCHEMA_NAME    = "gold"
 METRICS_TABLE  = "forecast_accuracy"   # gold.forecast_accuracy
@@ -115,7 +115,7 @@ STEP_SIZE_DAYS  = 28    # cutoff spacing (4 weeks keeps weekly seasonality align
 HORIZON_BUCKETS = [(1, 28, "01-28d"), (29, 91, "29-91d"), (92, 182, "92-182d")]
 
 # ---- Lakehouse paths ----
-WORKSPACE_GUID = "<workspace-guid>"
+WORKSPACE_GUID = "PLACEHOLDER_WORKSPACE_ID"
 TABLES_ROOT = f"abfss://Lakehouse@onelake.dfs.fabric.microsoft.com/Workspaces/{WORKSPACE_GUID}/Lakehouses/{LAKEHOUSE_NAME}/Tables"
 GOLD_ROOT = f"{TABLES_ROOT}/{SCHEMA_NAME}"
 

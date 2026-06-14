@@ -1,50 +1,30 @@
-# Microsoft Fabric CI/CD Configuration
-# Configuration-based deployment for all Fabric item types
-# Note: Feature flags are set programmatically in deploy_fabric_items.py
-
 core:
-  # Environment-specific workspace mappings
-  workspace_id:
-    DEV: "$ENV:DEV_WORKSPACE_ID"
-    
-  workspace:
-    DEV: "Fabric Development"
-    
-  # Repository directory containing all Fabric items
+  workspace_id: "00000000-0000-0000-0000-000000000000"
   repository_directory: "."
-  
-  # Complete Fabric item types for FinOps Hub deployment
+  parameter: "parameter.yml"
   item_types_in_scope:
     - Notebook
     - Lakehouse
     - SQLDatabase
     - DataPipeline
-    - SemanticModel
-    # VariableLibrary temporarily excluded due to deployment issue
+    - Environment
+    - Eventhouse
+    - VariableLibrary
+    - UserDataFunction
 
 publish:
-  # Exclude items with specific patterns from deployment
   exclude_regex: "^(TEMP_|DEBUG_|DRAFT_).*"
-  
-  # Exclude items in specific folders
-  folder_exclude_regex: "^(temp|debug|drafts)/"
-  
-  # Force update existing items
-  overwrite_existing: true
-  
-  # Environment-specific publishing controls
-  skip:
-    DEV: false    # Always deploy to dev
+  folder_exclude_regex: "^/(incubation|scratch|archive|temp|debug|drafts)(/|$)"
+  skip: false
 
 unpublish:
-  # Remove orphaned items not found in repository
   exclude_regex: "^(SYSTEM_|ADMIN_).*"
-  
-  skip:
-    DEV: true     # Skip unpublish in dev to prevent item removal
+  skip: true
 
-# Additional features moved to root level above
+features:
+  - enable_shortcut_publish
+  - enable_exclude_folder
+  - enable_environment_variable_replacement
 
 constants:
-  # Override default constants if needed
   DEFAULT_API_ROOT_URL: "https://api.fabric.microsoft.com"

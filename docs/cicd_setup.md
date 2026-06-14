@@ -42,6 +42,41 @@ and omit `incubation/**`. `fabric-config.yml` excludes incubation as defense in
 depth. A notebook is promoted by moving its complete `.Notebook/` folder from
 incubation into `notebooks/` through a pull request.
 
+## Deployable Item Roots
+
+Fabric items are stored in type-specific repository roots:
+
+| Root | Fabric item type |
+|---|---|
+| `notebooks/` | Notebook |
+| `lakehouses/` | Lakehouse |
+| `datapipelines/` | Data pipeline |
+| `dataflows/` | Dataflow |
+| `environments/` | Environment |
+| `eventhouses/` | Eventhouse |
+| `sqldatabases/` | SQL database |
+| `variablelibraries/` | Variable library |
+| `udfs/` | User data function |
+| `warehouses/` | Warehouse |
+| `semanticmodels/` | Semantic model |
+| `reports/` | Report |
+
+Fabric Git source folders use `<displayName>.<ItemType>/` and include a
+`.platform` file. The folder stem and `.platform` `displayName` must match.
+Notebook source folders contain `notebook-content.py`; loose `.ipynb` files are
+not deployment artifacts.
+
+The release artifact uses an explicit allowlist. Supporting another Fabric item
+type therefore requires coordinated changes to:
+
+1. The trigger and artifact paths in `azure-pipelines.yml`.
+2. `DEPLOYABLE_ROOTS`, `ITEM_SUFFIXES`, and the relevant scope in
+   `scripts/validate_fabric_repository.py`.
+3. The item scope used by `scripts/deploy_fabric_items.py`.
+
+Refer to the official `fabric-cicd` item-type documentation for the source
+format required by a newly supported type.
+
 ## Azure DevOps Service Connections
 
 Create workload-identity-federated Azure Resource Manager service connections:

@@ -3,7 +3,7 @@
 #
 # Example:
 #   - id: NAMING-2026-001
-#     rule: fabric-item-name
+#     rule: fabric-item-naming
 #     path: notebooks/legacy_name.Notebook/.platform
 #     reason: Upstream dependency cannot be renamed before the July release.
 #     owner: finops-platform

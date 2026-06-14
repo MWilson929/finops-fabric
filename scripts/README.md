@@ -9,7 +9,8 @@ python scripts/validate_fabric_repository.py
 ```
 
 It validates YAML, `.platform` logical IDs, placeholder coverage, deployment
-configuration, parameter structure, scoped item types, and Fabric item naming.
+configuration, parameter structure, scoped item types, notebook naming, and
+folder/display-name consistency for Fabric items.
 The naming regex is derived from `docs/naming_standards.md`, rather than being
 duplicated in the script.
 

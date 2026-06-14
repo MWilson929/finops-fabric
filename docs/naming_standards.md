@@ -1,6 +1,6 @@
 # Naming Convention — FinOps Fabric Platform
 
-This document is the source of truth for naming Fabric items in this repository. It is enforced by pre-commit hooks and CI pipeline validation. Adherence is required for merge.
+This document is the source of truth for naming deployable Fabric notebooks in this repository. Other Fabric item types retain their platform names until an item-specific standard is agreed. Notebook adherence is required for merge and is enforced by CI pipeline validation.
 
 ## Why This Exists
 
@@ -14,7 +14,7 @@ A team following a slightly suboptimal naming convention consistently will outpe
 {domain}_{layer}_{source}_{entity}
 ```
 
-Always exactly four underscore-separated tokens. All tokens lowercase. Mechanically parseable: `split('_')` returns four elements, every time, for every item in the platform.
+Always exactly four underscore-separated tokens. All tokens lowercase. Mechanically parseable: `split('_')` returns four elements for every deployable notebook.
 
 ## Token Definitions
 
@@ -174,11 +174,10 @@ _platform/
 
 ## Validation
 
-The pattern is enforced by:
+For deployable notebooks, the pattern is enforced by:
 
-1. **Pre-commit hook** — validates all changed `*.Notebook/.platform` files against the regex below. Configured in `.pre-commit-config.yaml`.
-2. **CI pipeline** — repeats the validation as a stage in the ADO pipeline before the `fabric-cicd` publish step. Backstop for commits made without the pre-commit hook installed.
-3. **Semantic model BPA** — Fabric Best Practice Analyzer via `sempy_labs` validates table, column, and measure naming inside semantic models. Scheduled run with results surfaced in the operations dashboard.
+1. **CI pipeline** — validates all deployable `*.Notebook/.platform` files against the regex below before the `fabric-cicd` publish step.
+2. **Semantic model BPA** — planned separately for table, column, and measure naming inside semantic models; it is not part of this notebook naming rule.
 
 ### Validation regex
 

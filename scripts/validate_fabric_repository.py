@@ -335,7 +335,13 @@ def validate_items(
             else None
         )
         naming_violations = []
-        if not isinstance(display_name, str) or not naming_pattern.fullmatch(display_name):
+        if (
+            item_type == "Notebook"
+            and (
+                not isinstance(display_name, str)
+                or not naming_pattern.fullmatch(display_name)
+            )
+        ):
             naming_violations.append(f"displayName {display_name!r} is non-compliant")
         if source_name != display_name:
             naming_violations.append(

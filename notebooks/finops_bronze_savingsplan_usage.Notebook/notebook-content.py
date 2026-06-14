@@ -17,7 +17,7 @@
 
 # CELL ********************
 
-# # finops_bronze_benefits_usage
+# # finops_bronze_savingsplan_usage
 #
 # **Purpose**: Lands the hourly savings-plan-eligible PAYG usage series per subscription from the Cost Management Benefit Recommendations API, across all configured tenants.
 #

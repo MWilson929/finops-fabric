@@ -17,7 +17,7 @@
 
 # CELL ********************
 
-# # fcst_gold_forecast_reconciled
+# # fcst_gold_forecast_hierarchical
 #
 # **Purpose**: Produces coherent daily cost forecasts across the Service_ID hierarchy (MinT-reconciled, with BottomUp baseline), plus the hierarchical daily actuals they are built from.
 #

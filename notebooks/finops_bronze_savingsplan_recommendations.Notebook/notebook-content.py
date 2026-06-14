@@ -17,7 +17,7 @@
 
 # CELL ********************
 
-# # finops_bronze_benefits_recommendations
+# # finops_bronze_savingsplan_recommendations
 #
 # **Purpose**: Lands the shared-scope savings plan recommendation and all alternative commitment levels (coverage / savings / wastage per level) at MCA billing-profile scope, per tenant, for both terms.
 #

@@ -17,7 +17,7 @@
 
 # CELL ********************
 
-# # ops_bronze_monitoring_capacity
+# # ops_bronze_fabric_capacity
 #
 # **Purpose**: Ingests Capacity Unit consumption by workspace/item/operation/day from the Fabric Capacity Metrics app's semantic model into the FinOps Hub (control SVC-FAB 1.2).
 #

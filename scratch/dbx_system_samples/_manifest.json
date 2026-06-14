@@ -1,0 +1,48 @@
+{
+  "system.billing.usage": {
+    "file": "billing__usage.json",
+    "row_count": 11,
+    "columns": 18,
+    "sampled": 11,
+    "purpose": "fact, populated"
+  },
+  "system.billing.list_prices": {
+    "file": "billing__list_prices.json",
+    "row_count": 946,
+    "columns": 8,
+    "sampled": 20,
+    "purpose": "price dim, auto-populated"
+  },
+  "system.billing.account_prices": {
+    "error": "DESCRIBE TABLE system.billing.account_prices... -> {'state': 'FAILED', 'error': {'error_code': 'BAD_REQUEST', 'message': '[TABLE_OR_VIEW_NOT_FOUND] The table or view `system`.`billing`.`account_prices",
+    "purpose": "negotiated price dim, auto-populated"
+  },
+  "system.access.workspaces_latest": {
+    "file": "access__workspaces_latest.json",
+    "row_count": 1,
+    "columns": 6,
+    "sampled": 1,
+    "purpose": "workspace dim, auto-populated"
+  },
+  "system.compute.clusters": {
+    "file": "compute__clusters.json",
+    "row_count": 1,
+    "columns": 27,
+    "sampled": 1,
+    "purpose": "cluster dim"
+  },
+  "system.compute.warehouses": {
+    "file": "compute__warehouses.json",
+    "row_count": 1,
+    "columns": 14,
+    "sampled": 1,
+    "purpose": "warehouse dim"
+  },
+  "system.lakeflow.pipelines": {
+    "file": "lakeflow__pipelines.json",
+    "row_count": 0,
+    "columns": 13,
+    "sampled": 0,
+    "purpose": "DLT pipeline dim"
+  }
+}

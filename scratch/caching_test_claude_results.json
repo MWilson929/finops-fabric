@@ -1,0 +1,36 @@
+{
+  "tested_at": "2026-06-13",
+  "model": "claude-opus-4-8 on Foundry; databricks-claude-opus-4-8 endpoint inaccessible",
+  "status": "FOUNDRY COMPLETE; DATABRICKS BLOCKED — no available enablement path",
+  "foundry": {
+    "endpoint": "https://aiprice-fdy-mw929.services.ai.azure.com/anthropic/v1/messages",
+    "deployment": "claude-opus-4-8 (GlobalStandard, capacity 40)",
+    "totals": {
+      "input_tokens": 190,
+      "cache_creation_input_tokens": 10017,
+      "cache_read_input_tokens": 90153,
+      "output_tokens": 600
+    },
+    "interpretation": "10 sequential calls with explicit Anthropic cache_control marker on the system block. Call 1 wrote the cache (10017 tokens). Calls 2-10 each read 10017 tokens from cache (90153 total). Only 19 fresh input + 60 output per call. The Anthropic-format cache_control marker is honoured at the model server level. Tomorrow's billing readout will confirm whether the Foundry billing pathway monetises cache_read_input_tokens at Anthropic's documented 10% rate (analogous to the OpenAI-format result confirmed yesterday at $0.205 vs $2.049 per 1M)."
+  },
+  "databricks": {
+    "endpoint": "https://adb-7405611779356180.0.azuredatabricks.net/serving-endpoints/databricks-claude-opus-4-8/invocations",
+    "state": "READY (per /api/2.0/serving-endpoints), rate_limits=None",
+    "invocation_error": "403 PERMISSION_DENIED: The endpoint is temporarily disabled due to a Databricks-set rate limit of 0.",
+    "format_tried": ["Anthropic Messages (v1/messages)", "OpenAI Chat Completions via /invocations"],
+    "result_both": "Same 403, confirming the block is endpoint-state not request-format",
+    "enablement_attempts": [
+      "Account-admin login at accounts.azuredatabricks.net (succeeded yesterday; system schemas enableable)",
+      "Foundry Marketplace SaaS subscription accepted (Foundry Claude deployed successfully)",
+      "PUT /api/2.0/serving-endpoints/{name}/rate-limits — deprecated for Foundation Model endpoints, points to AI Gateway",
+      "Partner-powered AI features setting reviewed — this controls Databricks' OWN AI assistive features (Genie Code, AI-assisted viz), not pay-per-token Foundation Model endpoints"
+    ],
+    "interpretation": "No documented self-service path to remove the rate-limit-of-zero default on Anthropic pay-per-token endpoints. Provisioned throughput works but would cost real money for dedicated capacity. Microsoft's docs list databricks-claude-opus-4-8 as supported in East US 2 but do not describe an enablement flow. This is 'contact Databricks support' territory — itself a data point for the FinOps report: an enterprise reaching for Claude on Databricks pay-per-token will hit the same wall."
+  },
+  "what_this_completes": [
+    "Foundry honours prompt caching at the model server for BOTH API formats (OpenAI auto-cache confirmed yesterday; Anthropic explicit cache_control confirmed today)",
+    "Phase-2 billing readout tomorrow will confirm the Foundry billing pathway for Claude format",
+    "+73% worked example for cache-heavy Claude workloads survives intact: Foundry would bill 10017*9 cache_read tokens at the discounted rate, Databricks pay-per-token has no SKU at which to bill them differently",
+    "Report can be written. Databricks-Claude live data was the cherry on top, not the proof"
+  ]
+}

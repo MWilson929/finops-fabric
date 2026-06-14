@@ -1,0 +1,173 @@
+{
+  "table": "system.compute.clusters",
+  "purpose": "cluster dim",
+  "row_count": 1,
+  "schema": [
+    {
+      "col_name": "account_id",
+      "data_type": "string",
+      "comment": "ID of the account where this cluster was created."
+    },
+    {
+      "col_name": "workspace_id",
+      "data_type": "string",
+      "comment": "ID of the workspace where this cluster was created."
+    },
+    {
+      "col_name": "cluster_id",
+      "data_type": "string",
+      "comment": "ID of the cluster for which this record is associated."
+    },
+    {
+      "col_name": "cluster_name",
+      "data_type": "string",
+      "comment": "User defined name for the cluster."
+    },
+    {
+      "col_name": "owned_by",
+      "data_type": "string",
+      "comment": "Username of the cluster owner. Defaults to the cluster creator, but can be changed through the [Clusters API](https://docs.databricks.com/api/workspace/clusters/changeowner)."
+    },
+    {
+      "col_name": "create_time",
+      "data_type": "timestamp",
+      "comment": "Timestamp of the change to this compute definition."
+    },
+    {
+      "col_name": "delete_time",
+      "data_type": "timestamp",
+      "comment": "Timestamp of when the cluster was deleted. The value is null if the cluster is not deleted."
+    },
+    {
+      "col_name": "driver_node_type",
+      "data_type": "string",
+      "comment": "Driver node type name. This matches the instance type name from the cloud provider."
+    },
+    {
+      "col_name": "worker_node_type",
+      "data_type": "string",
+      "comment": "Worker node type name. This matches the instance type name from the cloud provider."
+    },
+    {
+      "col_name": "worker_count",
+      "data_type": "bigint",
+      "comment": "Number of workers. Defined for fixed-size clusters only."
+    },
+    {
+      "col_name": "min_autoscale_workers",
+      "data_type": "bigint",
+      "comment": "The set minimum number of workers. This field is valid only for autoscaling clusters."
+    },
+    {
+      "col_name": "max_autoscale_workers",
+      "data_type": "bigint",
+      "comment": "The set maximum number of workers. This field is valid only for autoscaling clusters."
+    },
+    {
+      "col_name": "auto_termination_minutes",
+      "data_type": "bigint",
+      "comment": "The configured autotermination duration."
+    },
+    {
+      "col_name": "enable_elastic_disk",
+      "data_type": "boolean",
+      "comment": "Autoscaling disk enablement status."
+    },
+    {
+      "col_name": "tags",
+      "data_type": "map<string,string>",
+      "comment": "User-defined tags for the cluster (does not include default tags)."
+    },
+    {
+      "col_name": "cluster_source",
+      "data_type": "string",
+      "comment": "Where the cluster was created. For all-purpose compute, the source could be `UI` or `API`. Other compute types are logged as `JOB`, `PIPELINE`, or `PIPELINE_MAINTENANCE`."
+    },
+    {
+      "col_name": "init_scripts",
+      "data_type": "array<string>",
+      "comment": "Set of paths for init scripts."
+    },
+    {
+      "col_name": "aws_attributes",
+      "data_type": "struct<first_on_demand:bigint,availability:string,zone_id:string,instance_profile_arn:string,spot_bid_price_percent:bigint,ebs_volume_type:string,ebs_volume_count:bigint,ebs_volume_size:bigint,ebs_volume_iops:bigint,ebs_volume_throughput:bigint>",
+      "comment": "AWS specific settings."
+    },
+    {
+      "col_name": "azure_attributes",
+      "data_type": "struct<first_on_demand:bigint,availability:string,spot_bid_max_price:double>",
+      "comment": "Azure specific settings."
+    },
+    {
+      "col_name": "gcp_attributes",
+      "data_type": "struct<use_preemptible_executors:boolean,google_service_account:string,boot_disk_size:bigint,availability:string,zone_id:string,local_ssd_count:bigint>",
+      "comment": "GCP specific settings."
+    },
+    {
+      "col_name": "driver_instance_pool_id",
+      "data_type": "string",
+      "comment": "Instance pool ID if the driver is configured on top of an instance pool."
+    },
+    {
+      "col_name": "worker_instance_pool_id",
+      "data_type": "string",
+      "comment": "Instance Pool ID if the worker is configured on top of an instance pool."
+    },
+    {
+      "col_name": "dbr_version",
+      "data_type": "string",
+      "comment": "The Databricks Runtime of the cluster."
+    },
+    {
+      "col_name": "change_time",
+      "data_type": "timestamp",
+      "comment": "Timestamp of change to the compute definition."
+    },
+    {
+      "col_name": "change_date",
+      "data_type": "date",
+      "comment": "Change date. Used for retention."
+    },
+    {
+      "col_name": "data_security_mode",
+      "data_type": "string",
+      "comment": "Data security mode decides what data governance model to use when accessing data from a cluster."
+    },
+    {
+      "col_name": "policy_id",
+      "data_type": "string",
+      "comment": "The ID of the cluster policy used to create the cluster if applicable."
+    }
+  ],
+  "sample": [
+    {
+      "account_id": "dabebb7e-b920-4512-9b68-8c20698aba26",
+      "workspace_id": "7405611779356180",
+      "cluster_id": "0612-175506-9ttgiayo",
+      "cluster_name": "aiprice-allpurpose-sample",
+      "owned_by": "markwilson@2trick.onmicrosoft.com",
+      "create_time": "2026-06-12T17:55:06.810Z",
+      "delete_time": null,
+      "driver_node_type": "Standard_DS3_v2",
+      "worker_node_type": "Standard_DS3_v2",
+      "worker_count": "0",
+      "min_autoscale_workers": null,
+      "max_autoscale_workers": null,
+      "auto_termination_minutes": "10",
+      "enable_elastic_disk": "true",
+      "tags": "{\"ResourceClass\":\"SingleNode\",\"Service_ID\":\"Research/FinOps/PriceTest/ClusterSample\",\"purpose\":\"system-table-sample\"}",
+      "cluster_source": "UI",
+      "init_scripts": "[]",
+      "aws_attributes": null,
+      "azure_attributes": "{\"first_on_demand\":\"1\",\"availability\":\"ON_DEMAND_AZURE\",\"spot_bid_max_price\":\"-1.0\"}",
+      "gcp_attributes": null,
+      "driver_instance_pool_id": null,
+      "worker_instance_pool_id": null,
+      "dbr_version": "17.3.x-scala2.13",
+      "change_time": "2026-06-12T17:55:06.826Z",
+      "change_date": "2026-06-12",
+      "data_security_mode": "SINGLE_USER",
+      "policy_id": null
+    }
+  ]
+}

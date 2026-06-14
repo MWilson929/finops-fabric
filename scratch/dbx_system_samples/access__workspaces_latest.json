@@ -1,0 +1,47 @@
+{
+  "table": "system.access.workspaces_latest",
+  "purpose": "workspace dim, auto-populated",
+  "row_count": 1,
+  "schema": [
+    {
+      "col_name": "account_id",
+      "data_type": "string",
+      "comment": "The ID of the parent account of this workspace."
+    },
+    {
+      "col_name": "workspace_id",
+      "data_type": "string",
+      "comment": "The ID of the workspace."
+    },
+    {
+      "col_name": "workspace_name",
+      "data_type": "string",
+      "comment": "The human-readable name of the workspace."
+    },
+    {
+      "col_name": "workspace_url",
+      "data_type": "string",
+      "comment": "URL of the databricks workspace."
+    },
+    {
+      "col_name": "create_time",
+      "data_type": "timestamp",
+      "comment": "Timestamp of when the workspace was created."
+    },
+    {
+      "col_name": "status",
+      "data_type": "string",
+      "comment": "Lifecycle status of the workspace: NOT_PROVISIONED | PROVISIONING | RUNNING | FAILED | BANNED"
+    }
+  ],
+  "sample": [
+    {
+      "account_id": "dabebb7e-b920-4512-9b68-8c20698aba26",
+      "workspace_id": "7405611779356180",
+      "workspace_name": "dbx-aiprice-mw929",
+      "workspace_url": "https://adb-7405611779356180.0.azuredatabricks.net",
+      "create_time": "2026-06-12T17:18:15.000Z",
+      "status": "RUNNING"
+    }
+  ]
+}

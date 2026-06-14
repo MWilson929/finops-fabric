@@ -4,6 +4,18 @@ This document defines how notebooks are written in this platform. Naming is cove
 
 These standards are enforced by code review. Items marked **must** are non-negotiable; items marked **should** are strong defaults that can be deviated from with a documented reason in PR.
 
+## Where notebooks live
+
+Notebooks live in exactly one of three places. Anything outside these three is deleted — git history is the archive.
+
+| Folder | Purpose | CICD scope |
+|---|---|---|
+| `notebooks/` | Production: deployed by CICD to Fabric. The canonical name (per naming_standards.md) is reserved here. | Deployed |
+| `incubation/` | Work-in-progress destined for `notebooks/`. Uses the *same* canonical name it will graduate to, so promotion is a single `git mv`. | Not deployed |
+| `tools/` | Utilities and developer scripts (data synth, format converters, bulk renamers). Not deployable Fabric items; can be `.py` or `.ipynb`. | Not deployed |
+
+**The incubation rule:** the only way out of `incubation/` is graduation to `notebooks/` (delete the predecessor + `git mv` the incubation copy up) or deletion. No sideways drift, no parallel maintenance forever, no using `incubation/` as a holding pen for "maybe useful one day" — that's what git history is for.
+
 ## Header
 
 Every notebook begins with a markdown cell containing structured intent. Git owns history; the header owns intent.

@@ -63,14 +63,17 @@ Identifies what the data fundamentally *is*, expressed in terms natural to a Fin
 | focusazure    | FOCUS-formatted billing data from Azure              |
 | focusm365     | FOCUS-formatted billing data from Microsoft 365      |
 | arg           | Azure Resource Graph                                 |
+| arm           | Azure Resource Manager direct APIs (subscriptions, ARM management endpoints) — distinct from `arg` (graph queries) |
+| ado           | Azure DevOps REST API (work items, pipelines, runs)  |
 | pricesheet    | Negotiated EA/MCA price sheet (golden source)        |
 | reservations  | Azure reservation data (details, recommendations, transactions) |
+| savingsplan   | Azure savings plan data (recommendations, eligibility, hourly usage). Distinct from `reservations`; combine only if a true commitments-agnostic source emerges. |
 | carbon        | Azure Carbon Optimization API                        |
-| benefits      | Cost Management Benefit Recommendations (savings plan / RI sizing, hourly eligible usage) |
 | defender      | Defender for Cloud                                   |
-| gh            | GitHub API                                           |
+| github        | GitHub API                                           |
 | instana       | Instana                                              |
-| monitoring    | Fabric Workspace Monitoring telemetry                |
+| fabric        | Microsoft Fabric platform telemetry from other workspaces (e.g. Capacity Metrics app). Distinct from `monitoring`, which is our own platform's observability. |
+| monitoring    | Our own platform's Workspace Monitoring telemetry    |
 
 **Rule:** Source describes the *primary* dataset being transformed. Reference data (lookups, dimensions, mapping tables) joined into the transformation does not change the source token — the entity token reflects the resulting shape instead.
 
@@ -182,7 +185,7 @@ The pattern is enforced by:
 Token 3 is layer-dependent (source at bronze/silver, subject at gold), so validation is two alternatives:
 
 ```
-^(finops|fcst|cback|esg|ops|gov)_(bronze|silver)_(focusazure|focusm365|arg|pricesheet|reservations|carbon|benefits|defender|gh|instana|monitoring)_[a-z]+$
+^(finops|fcst|cback|esg|ops|gov)_(bronze|silver)_(focusazure|focusm365|arg|arm|ado|pricesheet|reservations|savingsplan|carbon|defender|github|instana|fabric|monitoring)_[a-z]+$
 ^(finops|fcst|cback|esg|ops|gov)_gold_(forecast|chargeback|emissions|monitoring|budget)_[a-z]+$
 ```
 

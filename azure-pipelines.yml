@@ -2,7 +2,7 @@
 #
 # Branches are environment state:
 #   dev      -> Dev
-#   preprod  -> Preprod Data Engineering, then Preprod Reporting
+#   test  -> Test Data Engineering, then Test Reporting
 #   main     -> Prod Data Engineering, then Prod Reporting
 #
 # Pull requests validate only. Deployments always publish the complete desired
@@ -12,7 +12,7 @@ trigger:
   branches:
     include:
       - dev
-      - preprod
+      - test
       - main
   paths:
     include:
@@ -42,7 +42,7 @@ pr:
   branches:
     include:
       - dev
-      - preprod
+      - test
       - main
   paths:
     include:
@@ -178,16 +178,16 @@ stages:
                     DEV_CONNECTION_ID: $(connection-id)
                     DEV_LAKEHOUSE_CONNECTION: $(lakehouse-connection-id)
 
-  - stage: DeployPreprodEngineering
-    displayName: Deploy Preprod Data Engineering
+  - stage: DeployTestEngineering
+    displayName: Deploy Test Data Engineering
     dependsOn: Validate
-    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'), eq(variables['Build.SourceBranch'], 'refs/heads/preprod'))
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'), eq(variables['Build.SourceBranch'], 'refs/heads/test'))
     variables:
-      - group: fabric-preprod
+      - group: fabric-test
     jobs:
-      - deployment: DeployPreprodEngineering
-        displayName: Deploy Preprod Data Engineering workspace
-        environment: fabric-preprod-engineering
+      - deployment: DeployTestEngineering
+        displayName: Deploy Test Data Engineering workspace
+        environment: fabric-test-engineering
         strategy:
           runOnce:
             deploy:
@@ -201,7 +201,7 @@ stages:
                     addToPath: true
 
                 - task: AzureCLI@2
-                  displayName: Deploy Preprod engineering with fabric-cicd
+                  displayName: Deploy Test engineering with fabric-cicd
                   inputs:
                     azureSubscription: $(nonProdServiceConnection)
                     scriptType: bash
@@ -211,26 +211,26 @@ stages:
                       set -euo pipefail
                       python -m pip install --requirement requirements-cicd.txt
                       python scripts/deploy_fabric_items.py \
-                        --environment PREPROD_ENGINEERING \
-                        --workspace-id "$PREPROD_ENGINEERING_WORKSPACE_ID" \
+                        --environment TEST_ENGINEERING \
+                        --workspace-id "$TEST_ENGINEERING_WORKSPACE_ID" \
                         --scope engineering
                   env:
-                    PREPROD_ENGINEERING_WORKSPACE_ID: $(engineering-workspace-id)
-                    PREPROD_STORAGE_ACCOUNT_NAME: $(storage-account-name)
-                    PREPROD_CONTAINER_NAME: $(container-name)
-                    PREPROD_CONNECTION_ID: $(connection-id)
-                    PREPROD_LAKEHOUSE_CONNECTION: $(lakehouse-connection-id)
+                    TEST_ENGINEERING_WORKSPACE_ID: $(engineering-workspace-id)
+                    TEST_STORAGE_ACCOUNT_NAME: $(storage-account-name)
+                    TEST_CONTAINER_NAME: $(container-name)
+                    TEST_CONNECTION_ID: $(connection-id)
+                    TEST_LAKEHOUSE_CONNECTION: $(lakehouse-connection-id)
 
-  - stage: DeployPreprodReporting
-    displayName: Deploy Preprod Reporting
-    dependsOn: DeployPreprodEngineering
+  - stage: DeployTestReporting
+    displayName: Deploy Test Reporting
+    dependsOn: DeployTestEngineering
     condition: succeeded()
     variables:
-      - group: fabric-preprod
+      - group: fabric-test
     jobs:
-      - deployment: DeployPreprodReporting
-        displayName: Deploy Preprod Reporting workspace
-        environment: fabric-preprod-reporting
+      - deployment: DeployTestReporting
+        displayName: Deploy Test Reporting workspace
+        environment: fabric-test-reporting
         strategy:
           runOnce:
             deploy:
@@ -244,7 +244,7 @@ stages:
                     addToPath: true
 
                 - task: AzureCLI@2
-                  displayName: Deploy Preprod reporting with fabric-cicd
+                  displayName: Deploy Test reporting with fabric-cicd
                   inputs:
                     azureSubscription: $(nonProdServiceConnection)
                     scriptType: bash
@@ -254,13 +254,13 @@ stages:
                       set -euo pipefail
                       python -m pip install --requirement requirements-cicd.txt
                       python scripts/deploy_fabric_items.py \
-                        --environment PREPROD_REPORTING \
-                        --workspace-id "$PREPROD_REPORTING_WORKSPACE_ID" \
+                        --environment TEST_REPORTING \
+                        --workspace-id "$TEST_REPORTING_WORKSPACE_ID" \
                         --scope reporting
                   env:
-                    PREPROD_REPORTING_WORKSPACE_ID: $(reporting-workspace-id)
-                    PREPROD_ENGINEERING_WORKSPACE_ID: $(engineering-workspace-id)
-                    PREPROD_LAKEHOUSE_CONNECTION: $(lakehouse-connection-id)
+                    TEST_REPORTING_WORKSPACE_ID: $(reporting-workspace-id)
+                    TEST_ENGINEERING_WORKSPACE_ID: $(engineering-workspace-id)
+                    TEST_LAKEHOUSE_CONNECTION: $(lakehouse-connection-id)
 
   - stage: DeployProdEngineering
     displayName: Deploy Prod Data Engineering

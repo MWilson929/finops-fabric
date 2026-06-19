@@ -5,44 +5,44 @@ find_replace:
   - find_value: "PLACEHOLDER_STORAGE_ACCOUNT"
     replace_value:
       DEV: "$ENV:DEV_STORAGE_ACCOUNT_NAME"
-      PREPROD_ENGINEERING: "$ENV:PREPROD_STORAGE_ACCOUNT_NAME"
+      TEST_ENGINEERING: "$ENV:TEST_STORAGE_ACCOUNT_NAME"
       PROD_ENGINEERING: "$ENV:PROD_STORAGE_ACCOUNT_NAME"
 
   - find_value: "PLACEHOLDER_CONTAINER_NAME"
     replace_value:
       DEV: "$ENV:DEV_CONTAINER_NAME"
-      PREPROD_ENGINEERING: "$ENV:PREPROD_CONTAINER_NAME"
+      TEST_ENGINEERING: "$ENV:TEST_CONTAINER_NAME"
       PROD_ENGINEERING: "$ENV:PROD_CONTAINER_NAME"
 
   - find_value: "PLACEHOLDER_CONNECTION_ID"
     replace_value:
       DEV: "$ENV:DEV_CONNECTION_ID"
-      PREPROD_ENGINEERING: "$ENV:PREPROD_CONNECTION_ID"
+      TEST_ENGINEERING: "$ENV:TEST_CONNECTION_ID"
       PROD_ENGINEERING: "$ENV:PROD_CONNECTION_ID"
 
   - find_value: "PLACEHOLDER_WORKSPACE_ID"
     replace_value:
       DEV: "$workspace.$id"
-      PREPROD_ENGINEERING: "$workspace.$id"
+      TEST_ENGINEERING: "$workspace.$id"
       PROD_ENGINEERING: "$workspace.$id"
 
   - find_value: "PLACEHOLDER_LAKEHOUSE_ID"
     replace_value:
       DEV: "$items.Lakehouse.FinOpsHub.$id"
-      PREPROD_ENGINEERING: "$items.Lakehouse.FinOpsHub.$id"
+      TEST_ENGINEERING: "$items.Lakehouse.FinOpsHub.$id"
       PROD_ENGINEERING: "$items.Lakehouse.FinOpsHub.$id"
 
   - find_value: "PLACEHOLDER_BRONZE_NOTEBOOK_ID"
     replace_value:
       DEV: "$items.Notebook.finops_bronze_arg_containers.$id"
-      PREPROD_ENGINEERING: "$items.Notebook.finops_bronze_arg_containers.$id"
+      TEST_ENGINEERING: "$items.Notebook.finops_bronze_arg_containers.$id"
       PROD_ENGINEERING: "$items.Notebook.finops_bronze_arg_containers.$id"
     item_type: "DataPipeline"
 
   - find_value: "PLACEHOLDER_SILVER_NOTEBOOK_ID"
     replace_value:
       DEV: "$items.Notebook.finops_silver_arg_containers.$id"
-      PREPROD_ENGINEERING: "$items.Notebook.finops_silver_arg_containers.$id"
+      TEST_ENGINEERING: "$items.Notebook.finops_silver_arg_containers.$id"
       PROD_ENGINEERING: "$items.Notebook.finops_silver_arg_containers.$id"
     item_type: "DataPipeline"
 
@@ -51,25 +51,25 @@ find_replace:
   - find_value: "PLACEHOLDER_ENGINEERING_WORKSPACE_ID"
     replace_value:
       DEV: "$workspace.$id"
-      PREPROD_REPORTING: "$workspace.FinOps Hub - Preprod Data Engineering.$id"
+      TEST_REPORTING: "$workspace.FinOps Hub - Test Data Engineering.$id"
       PROD_REPORTING: "$workspace.FinOps Hub - Prod Data Engineering.$id"
 
   - find_value: "PLACEHOLDER_ENGINEERING_LAKEHOUSE_ID"
     replace_value:
       DEV: "$items.Lakehouse.FinOpsHub.$id"
-      PREPROD_REPORTING: "$workspace.FinOps Hub - Preprod Data Engineering.$items.Lakehouse.FinOpsHub.$id"
+      TEST_REPORTING: "$workspace.FinOps Hub - Test Data Engineering.$items.Lakehouse.FinOpsHub.$id"
       PROD_REPORTING: "$workspace.FinOps Hub - Prod Data Engineering.$items.Lakehouse.FinOpsHub.$id"
 
   - find_value: "PLACEHOLDER_ENGINEERING_SQL_ENDPOINT_ID"
     replace_value:
       DEV: "$items.Lakehouse.FinOpsHub.$sqlendpointid"
-      PREPROD_REPORTING: "$workspace.FinOps Hub - Preprod Data Engineering.$items.Lakehouse.FinOpsHub.$sqlendpointid"
+      TEST_REPORTING: "$workspace.FinOps Hub - Test Data Engineering.$items.Lakehouse.FinOpsHub.$sqlendpointid"
       PROD_REPORTING: "$workspace.FinOps Hub - Prod Data Engineering.$items.Lakehouse.FinOpsHub.$sqlendpointid"
 
   - find_value: "PLACEHOLDER_REPORTING_CONNECTION_ID"
     replace_value:
       DEV: "$ENV:DEV_LAKEHOUSE_CONNECTION"
-      PREPROD_REPORTING: "$ENV:PREPROD_LAKEHOUSE_CONNECTION"
+      TEST_REPORTING: "$ENV:TEST_LAKEHOUSE_CONNECTION"
       PROD_REPORTING: "$ENV:PROD_LAKEHOUSE_CONNECTION"
     item_type: "SemanticModel"
 
@@ -77,13 +77,13 @@ key_value_replace:
   - find_key: $.properties.activities[?(@.typeProperties.source.datasetSettings.externalReferences.connection)]
     replace_value:
       DEV: "$ENV:DEV_CONNECTION_ID"
-      PREPROD_ENGINEERING: "$ENV:PREPROD_CONNECTION_ID"
+      TEST_ENGINEERING: "$ENV:TEST_CONNECTION_ID"
       PROD_ENGINEERING: "$ENV:PROD_CONNECTION_ID"
     item_type: "DataPipeline"
 
   - find_key: $.connections[?(@.kind=="Lakehouse")].connectionId
     replace_value:
       DEV: "$ENV:DEV_LAKEHOUSE_CONNECTION"
-      PREPROD_ENGINEERING: "$ENV:PREPROD_LAKEHOUSE_CONNECTION"
+      TEST_ENGINEERING: "$ENV:TEST_LAKEHOUSE_CONNECTION"
       PROD_ENGINEERING: "$ENV:PROD_LAKEHOUSE_CONNECTION"
     item_type: "Dataflow"

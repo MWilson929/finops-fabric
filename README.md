@@ -17,18 +17,18 @@ Fabric folder exclusions, and repository validation all enforce this boundary.
 Environment branches represent the complete desired state of each environment:
 
 ```text
-feature/* -> dev -> preprod -> main
+feature/* -> dev -> test -> main
 ```
 
 | Branch | Deployment |
 |---|---|
 | `feature/*` | Pull-request validation only |
 | `dev` | Dev workspace |
-| `preprod` | Preprod Data Engineering, then Preprod Reporting |
+| `test` | Test Data Engineering, then Test Reporting |
 | `main` | Prod Data Engineering, then Prod Reporting |
 
 Promotion happens through reviewed pull requests. Promote all related notebooks,
-pipelines, models, and configuration together. Direct changes in Preprod and
+pipelines, models, and configuration together. Direct changes in Test and
 Production workspaces are not part of the operating model.
 
 See [ADR-0012](docs/adr/0012-environment-branches-five-workspaces.md) for the

@@ -2,7 +2,7 @@
 
 ## Rules
 
-Fabric definitions in Git are environment neutral. Do not commit Dev, Preprod,
+Fabric definitions in Git are environment neutral. Do not commit Dev, Test,
 or Production workspace/item GUIDs into notebooks, pipelines, semantic models,
 or reports.
 
@@ -43,12 +43,12 @@ pipeline JSON after promotion.
 
 ## Reporting-To-Engineering References
 
-Preprod and Production Reporting are separate workspaces. Use the Engineering
+Test and Production Reporting are separate workspaces. Use the Engineering
 placeholders in semantic-model or report definitions. They resolve through the
 controlled workspace display name:
 
 ```yaml
-PREPROD_REPORTING: "$workspace.FinOps Hub - Preprod Data Engineering.$items.Lakehouse.FinOpsHub.$id"
+TEST_REPORTING: "$workspace.FinOps Hub - Test Data Engineering.$items.Lakehouse.FinOpsHub.$id"
 ```
 
 The deployment identity must be able to read the Engineering workspace.

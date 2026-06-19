@@ -7,8 +7,8 @@ Create the following workspaces:
 | Workspace | Suggested display name |
 |---|---|
 | Dev | `FinOps Hub - Dev` |
-| Preprod Data Engineering | `FinOps Hub - Preprod Data Engineering` |
-| Preprod Reporting | `FinOps Hub - Preprod Reporting` |
+| Test Data Engineering | `FinOps Hub - Test Data Engineering` |
+| Test Reporting | `FinOps Hub - Test Reporting` |
 | Prod Data Engineering | `FinOps Hub - Prod Data Engineering` |
 | Prod Reporting | `FinOps Hub - Prod Reporting` |
 
@@ -18,7 +18,7 @@ parameter expressions; no workspace or item GUIDs need to be committed.
 
 ## Branches And Policies
 
-Create `dev` and `preprod` from `main`. Protect all three environment branches:
+Create `dev` and `test` from `main`. Protect all three environment branches:
 
 - require pull requests;
 - require the pipeline validation stage;
@@ -28,7 +28,7 @@ Create `dev` and `preprod` from `main`. Protect all three environment branches:
 - tag successful Production releases.
 
 The Dev workspace can be connected to `dev` through Fabric Git integration.
-Preprod and Production are deployed by Azure DevOps and should not be edited
+Test and Production are deployed by Azure DevOps and should not be edited
 directly.
 
 ## Deployable Notebook Boundary
@@ -107,20 +107,20 @@ Create these variable groups and authorize the pipeline.
 | `connection-id` | Dev source connection ID |
 | `lakehouse-connection-id` | Connection used by Dev semantic models |
 
-### `fabric-preprod`
+### `fabric-test`
 
 | Variable | Meaning |
 |---|---|
-| `engineering-workspace-id` | Preprod Data Engineering workspace ID |
-| `reporting-workspace-id` | Preprod Reporting workspace ID |
-| `storage-account-name` | Preprod storage account |
-| `container-name` | Preprod container |
-| `connection-id` | Preprod source connection ID |
-| `lakehouse-connection-id` | Connection used by Preprod semantic models |
+| `engineering-workspace-id` | Test Data Engineering workspace ID |
+| `reporting-workspace-id` | Test Reporting workspace ID |
+| `storage-account-name` | Test storage account |
+| `container-name` | Test container |
+| `connection-id` | Test source connection ID |
+| `lakehouse-connection-id` | Connection used by Test semantic models |
 
 ### `fabric-prod`
 
-Use the same variable names as `fabric-preprod`, with Production values.
+Use the same variable names as `fabric-test`, with Production values.
 
 Workspace IDs are identifiers rather than credentials, but variable-group
 permissions should still be restricted. Connection credentials belong in the
@@ -131,12 +131,12 @@ Fabric connection or Key Vault, not in source or ordinary ADO variables.
 Create:
 
 - `fabric-dev`
-- `fabric-preprod-engineering`
-- `fabric-preprod-reporting`
+- `fabric-test-engineering`
+- `fabric-test-reporting`
 - `fabric-prod-engineering`
 - `fabric-prod-reporting`
 
-Configure approvals and checks on the Preprod and Production environments.
+Configure approvals and checks on the Test and Production environments.
 Engineering deploys before Reporting so cross-workspace references resolve
 against an already deployed Engineering state.
 
@@ -145,8 +145,8 @@ against an already deployed Engineering state.
 1. Run the pipeline against a pull request into `dev`.
 2. Resolve every validation failure before merging.
 3. Merge to `dev` and verify the Dev deployment.
-4. Reconcile any existing manually created Preprod/Production items with Git.
-5. Promote through `preprod`, then `main`.
+4. Reconcile any existing manually created Test/Production items with Git.
+5. Promote through `test`, then `main`.
 6. After Git is confirmed as the complete source of truth, assess enabling
    orphan removal in `fabric-config.yml`. It is disabled during initial adoption
    to prevent accidental deletion.

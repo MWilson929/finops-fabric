@@ -24,7 +24,7 @@ Deploys an immutable pipeline artifact:
 
 ```bash
 python scripts/deploy_fabric_items.py \
-  --environment PREPROD_ENGINEERING \
+  --environment TEST_ENGINEERING \
   --workspace-id <workspace-id> \
   --scope engineering
 ```

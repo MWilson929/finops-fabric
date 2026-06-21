@@ -1,0 +1,12 @@
+{
+    "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+    "metadata": {
+        "type": "Notebook",
+    "displayName": "finops_bronze_benefits_usage",
+        "description": "Lands the hourly savings-plan-eligible PAYG usage series per subscription from the Cost Management Benefit Recommendations API, across all configured tenants"
+    },
+    "config": {
+        "version": "2.0",
+        "logicalId": "d34209e4-64bd-4aa8-8a58-58638d023b57"
+    }
+}

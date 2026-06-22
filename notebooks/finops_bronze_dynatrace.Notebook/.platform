@@ -1,0 +1,12 @@
+{
+    "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+    "metadata": {
+        "type": "Notebook",
+    "displayName": "finops_bronze_dynatrace",
+        "description": "Lands Dynatrace Platform Subscription cost and usage (subscription + environment grain) plus subscription metadata for the configured Dynatrace account, in one OAuth-authenticated pass."
+    },
+    "config": {
+        "version": "2.0",
+        "logicalId": "4aa72bb6-e700-4dbb-b06a-fecbea1c1eea"
+    }
+}

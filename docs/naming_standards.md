@@ -72,6 +72,7 @@ Identifies what the data fundamentally *is*, expressed in terms natural to a Fin
 | defender      | Defender for Cloud                                   |
 | github        | GitHub API                                           |
 | instana       | Instana                                              |
+| dynatrace     | Dynatrace Account Management and Platform Subscription APIs |
 | fabric        | Microsoft Fabric platform telemetry from other workspaces (e.g. Capacity Metrics app). Distinct from `monitoring`, which is our own platform's observability. |
 | monitoring    | Our own platform's Workspace Monitoring telemetry    |
 
@@ -184,7 +185,7 @@ For deployable notebooks, the pattern is enforced by:
 Token 3 is layer-dependent (source at bronze/silver, subject at gold), so validation is two alternatives:
 
 ```
-^(finops|fcst|cback|esg|ops|gov)_(bronze|silver)_(focusazure|focusm365|arg|arm|ado|pricesheet|reservations|savingsplan|carbon|defender|github|instana|fabric|monitoring)_[a-z]+$
+^(finops|fcst|cback|esg|ops|gov)_(bronze|silver)_(focusazure|focusm365|arg|arm|ado|pricesheet|reservations|savingsplan|carbon|defender|github|instana|dynatrace|fabric|monitoring)_[a-z]+$
 ^(finops|fcst|cback|esg|ops|gov)_gold_(forecast|chargeback|emissions|monitoring|budget)_[a-z]+$
 ```
 

@@ -119,6 +119,70 @@
       "defaultValue": "ado-feed-pat",
       "isRequired": false,
       "isSecret": false
+    },
+    {
+      "name": "dynatrace_account_uuid",
+      "type": "String",
+      "description": "Dynatrace account UUID used by the Account Management and Platform Subscription APIs",
+      "defaultValue": "00000000-0000-0000-0000-000000000000",
+      "isRequired": false,
+      "isSecret": false
+    },
+    {
+      "name": "dynatrace_client_id",
+      "type": "String",
+      "description": "Dynatrace OAuth client ID with account-uac-read scope",
+      "defaultValue": "dt0s00.example",
+      "isRequired": false,
+      "isSecret": false
+    },
+    {
+      "name": "dynatrace_client_secret_name",
+      "type": "String",
+      "description": "Azure Key Vault secret name containing the Dynatrace OAuth client secret",
+      "defaultValue": "dynatrace-oauth-client-secret",
+      "isRequired": false,
+      "isSecret": false
+    },
+    {
+      "name": "dynatrace_token_url",
+      "type": "String",
+      "description": "Dynatrace OAuth token endpoint for client credentials flow",
+      "defaultValue": "https://sso.dynatrace.com/sso/oauth2/token",
+      "isRequired": false,
+      "isSecret": false
+    },
+    {
+      "name": "dynatrace_api_base_url",
+      "type": "String",
+      "description": "Dynatrace global API base URL for Account Management APIs",
+      "defaultValue": "https://api.dynatrace.com",
+      "isRequired": false,
+      "isSecret": false
+    },
+    {
+      "name": "dynatrace_environment_ids",
+      "type": "String",
+      "description": "Optional comma-separated Dynatrace environment IDs for environment-level usage, cost, and allocation extracts",
+      "defaultValue": "",
+      "isRequired": false,
+      "isSecret": false
+    },
+    {
+      "name": "dynatrace_capability_keys",
+      "type": "String",
+      "description": "Optional comma-separated Dynatrace capability keys to filter usage and cost extracts",
+      "defaultValue": "",
+      "isRequired": false,
+      "isSecret": false
+    },
+    {
+      "name": "dynatrace_cluster_ids",
+      "type": "String",
+      "description": "Optional comma-separated Dynatrace Managed cluster IDs to filter usage and cost extracts",
+      "defaultValue": "",
+      "isRequired": false,
+      "isSecret": false
     }
   ]
 }

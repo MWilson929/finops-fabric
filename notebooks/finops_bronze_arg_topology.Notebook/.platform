@@ -1,0 +1,12 @@
+{
+    "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+    "metadata": {
+        "type": "Notebook",
+    "displayName": "finops_bronze_arg_topology",
+        "description": "Extracts configured Azure network topology from Azure Resource Graph (Batch 1) into bronze arg_topology_* tables, across all configured tenants, via the finops-topology query catalogue."
+    },
+    "config": {
+        "version": "2.0",
+        "logicalId": "fd5e44c4-fecd-48c1-b550-e7776fe3cea5"
+    }
+}

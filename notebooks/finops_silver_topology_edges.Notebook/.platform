@@ -1,0 +1,12 @@
+{
+    "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+    "metadata": {
+        "type": "Notebook",
+    "displayName": "finops_silver_topology_edges",
+        "description": "Builds Batch 1 graph-ready silver topology_edge_* tables from the bronze arg_topology_* extracts, using the finops-topology edge schema and builder."
+    },
+    "config": {
+        "version": "2.0",
+        "logicalId": "0ed49621-4a04-4b8f-bc1e-a7cf0faf653b"
+    }
+}

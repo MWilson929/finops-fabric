@@ -4,6 +4,3 @@
 __pycache__/
 *.pyc
 fabric_cicd*.log
-
-# Generated .ipynb exports (scripts/fabric_py_to_ipynb.py) — regenerable, not source
-build/
